@@ -1,0 +1,6 @@
+<form (ngSubmit)="iniciarSesion()">
+  <input type="text" placeholder="Usuario" [(ngModel)]="correo" name="usuario" required>
+  <input type="password" placeholder="Contraseña" [(ngModel)]="cedula" name="cedula" required>
+  <button type="submit">Iniciar Sesión</button>
+  <div *ngIf="error">{{ error }}</div>
+</form>
