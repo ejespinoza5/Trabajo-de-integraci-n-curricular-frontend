@@ -1,0 +1,100 @@
+<h1 class="text-2xl font-bold mb-6">GESTIÓN DE HORARIOS</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <!-- Periodo -->
+  <div>
+    <label class="block font-semibold mb-2">Periodo:</label>
+    <select #periodoSelect (change)="onPeriodoChange(+periodoSelect.value)"
+            class="w-full p-2 border border-gray-300 rounded">
+      <option value="0" selected>Seleccionar periodo</option>
+      <option *ngFor="let p of periodos" [value]="p.ID_PERIODO">{{ p.NOMBRE_PERIODO }}</option>
+    </select>
+  </div>
+
+  <!-- Docente -->
+  <div>
+    <label class="block font-semibold mb-2">Docente:</label>
+    <select #docenteSelect (change)="onDocenteChange(+docenteSelect.value)"
+            class="w-full p-2 border border-gray-300 rounded">
+      <option value="0" selected>Seleccionar docente</option>
+      <option *ngFor="let d of docentes" [value]="d.ID_DOCENTE">
+        {{ d.NOMBRES_1_DOCENTE }} {{ d.APELLIDOS_1_DOCENTE }}
+      </option>
+    </select>
+  </div>
+
+<!-- Asignatura -->
+<div>
+  <label class="block font-semibold mb-2">Asignatura:</label>
+  <select #asignaturaSelect (change)="onAsignaturaChange(+asignaturaSelect.value)"
+          class="w-full p-2 border border-gray-300 rounded">
+    <option value="0" selected>Seleccionar asignatura</option>
+    <option *ngFor="let a of asignaturas" [value]="a.ID_ASIGNATURA">{{ a.NOMBRE_ASIGNATURA }}</option>
+  </select>
+</div>
+
+
+<!-- Carrera -->
+<div>
+  <label class="block font-semibold mb-2">Carrera:</label>
+  <select [(ngModel)]="CarreraSeleccionada" class="w-full p-2 border border-gray-300 rounded">
+    <option value="0" selected>Seleccionar carrera</option>
+    <option *ngFor="let c of carreras" [value]="c.ID_CARRERAS">{{ c.NOMBRE_CARRERAS }}</option>
+  </select>
+</div>
+
+<!-- Niveles -->
+<div>
+  <label class="block font-semibold mb-2">Nivel:</label>
+  <select [(ngModel)]="NivelSeleccionado" class="w-full p-2 border border-gray-300 rounded">
+    <option value="0" selected>Seleccionar nivel</option>
+    <option *ngFor="let n of niveles" [value]="n.ID_CURSOS">{{ n.NIVEL }}</option>
+  </select>
+</div>
+
+
+  <!-- Aula -->
+  <div>
+    <label class="block font-semibold mb-2">Aula:</label>
+    <select #aulaSelect (click)="onAulaChange()" [(ngModel)]="AulaSeleccionada"
+            class="w-full p-2 border border-gray-300 rounded">
+      <option value="0" selected>Seleccionar aula</option>
+      <option *ngFor="let aula of aulas" [value]="aula.ID_AULA">{{ aula.NOMBRE_AULA }}</option>
+    </select>
+  </div>
+
+  <!-- Día -->
+  <div>
+    <label class="block font-semibold mb-2">Día:</label>
+    <select #diaSelect (click)="onDiaChange()" [(ngModel)]="DiaSeleccionado"
+            class="w-full p-2 border border-gray-300 rounded">
+      <option value="0" selected>Seleccionar día</option>
+      <option *ngFor="let dia of dias" [value]="dia.ID_DIA">{{ dia.NOMBRE_DIA }}</option>
+    </select>
+  </div>
+
+  <div class="flex flex-wrap items-end gap-4">
+    <!-- Hora inicio -->
+    <div>
+      <label for="horaInicio" class="block text-sm font-medium ">Hora inicio:</label>
+      <input type="time" id="horaInicio" name="horaInicio" [(ngModel)]="horaInicio"
+             class="p-2 border border-gray-300 rounded text-sm w-32">
+    </div>
+
+    <!-- Hora fin -->
+    <div>
+      <label for="horaFin" class="block text-sm font-medium ">Hora fin:</label>
+      <input type="time" id="horaFin" name="horaFin" [(ngModel)]="horaFin"
+             class="p-2 border border-gray-300 rounded text-sm w-32">
+    </div>
+
+    <!-- Botón aceptar -->
+    <div>
+      <button
+              class="bg-azul-botones text-white text-sm px-4 py-2 rounded hover:bg-blue-700">
+        Aceptar
+      </button>
+    </div>
+  </div>
+
+</div>

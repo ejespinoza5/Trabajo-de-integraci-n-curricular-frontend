@@ -1,0 +1,26 @@
+<div class="flex items-center mb-6">
+  <button (click)="router.navigate(['inicio/gestionar-aulas'])" class="text-gray-600 hover:text-gray-800 mr-3">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  </button>
+  <h1 class="text-2xl font-bold">EDITAR AULA</h1>
+</div>
+
+<div class="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+  <div class="mb-4">
+    <label class="block mb-1">Nombre:</label>
+    <input [(ngModel)]="aula.nombre" class="w-full border p-2 rounded" />
+  </div>
+  <div class="mb-4">
+    <label class="block mb-1">Tipo:</label>
+    <select [(ngModel)]="aula.tipo" class="w-full border p-2 rounded">
+      <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
+    </select>
+  </div>
+  <div class="flex justify-end gap-4">
+    <button (click)="guardarCambios()" class="bg-azul-botones text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
+    <button (click)="router.navigate(['inicio/gestionar-aulas'])" class="bg-rosado-oscuro text-white px-4 py-2 rounded hover:bg-rosado-oscuro-hover">Cancelar</button>
+  </div>
+</div>

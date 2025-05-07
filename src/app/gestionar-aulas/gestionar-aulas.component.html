@@ -1,0 +1,65 @@
+<h1 class="text-2xl font-bold mb-6">GESTIÓN DE AULAS</h1>
+
+<!-- Formulario para agregar aula en línea -->
+<div class="max-w-4xl mx-auto mb-6 p-6 bg-white rounded-lg shadow-md">
+  <div class="grid grid-cols-3 gap-6 items-end">
+    <!-- Campo de Nombre -->
+    <div class="col-span-1">
+      <label class="block font-semibold mb-2">Nombre:</label>
+      <input [(ngModel)]="nuevaAula.nombre" placeholder="Nombre" class="w-full p-2 border border-gray-300 rounded" />
+    </div>
+
+    <!-- Campo de Tipo -->
+    <div class="col-span-1">
+      <label class="block font-semibold mb-2">Tipo:</label>
+      <select [(ngModel)]="nuevaAula.tipo" class="w-full p-2 border border-gray-300 rounded">
+        <option value="" disabled selected>Selecciona un tipo</option>
+        <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
+      </select>
+    </div>
+
+    <!-- Botón para agregar aula -->
+    <div class="col-span-1 flex justify-end">
+      <button (click)="agregarAulas()" class="bg-azul-botones text-white px-4 py-2 rounded hover:bg-blue-600">
+        Agregar Aula
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<hr class="my-6">
+
+<!-- Tabla de Aulas -->
+<h3 class="text-xl font-semibold mb-4 text-center">Aulas Registradas</h3>
+
+<!-- Contenedor centrado con ancho máximo -->
+<div class="overflow-x-auto max-w-4xl mx-auto">
+  <table class="w-full table-auto bg-white rounded-lg shadow-md text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-3 text-left font-medium text-gray-600">Nombre</th>
+        <th class="px-4 py-3 text-left font-medium text-gray-600">Tipo</th>
+        <th class="px-4 py-3 text-center font-medium text-gray-600">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let aula of aulas" class="border-t">
+        <td class="px-4 py-3 text-gray-800">{{ aula.NOMBRE_AULA }}</td>
+        <td class="px-4 py-3 text-gray-800">{{ aula.TIPO_AULA }}</td>
+        <td class="px-4 py-3 text-center">
+          <button (click)="editarAula(aula.ID_AULA.toString())" class="bg-azul-botones text-white px-4 py-2 rounded-md hover:bg-blue-600">Editar</button>
+          <button (click)="eliminarAula(aula.ID_AULA)" class="bg-rosado-oscuro text-white px-4 py-2 rounded-md hover:bg-rosado-oscuro-hover ml-2">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- Botones de paginación -->
+<div class="flex justify-center items-center mt-4 gap-2">
+  <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Anterior</button>
+  <span class="px-4 py-2">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+  <button (click)="cambiarPagina(1)" [disabled]="paginaActual === totalPaginas" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Siguiente</button>
+</div>
