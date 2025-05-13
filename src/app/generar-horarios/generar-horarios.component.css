@@ -1,0 +1,114 @@
+/* Estilos para FullCalendar */
+::ng-deep .fc {
+  --fc-border-color: #e5e7eb;
+  --fc-page-bg-color: #ffffff;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #fff;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+  --fc-today-bg-color: rgba(255, 220, 40, 0.15);
+  --fc-button-bg-color: #199DBF;
+  --fc-button-border-color: #199DBF;
+  --fc-button-hover-bg-color: #1d4ed8;
+  --fc-button-hover-border-color: #199DBF;
+  --fc-button-active-bg-color: #199DBF;
+  --fc-button-active-border-color: #199DBF;
+}
+
+/* Asegurar que las fuentes sean consistentes */
+::ng-deep .fc {
+  font-family: inherit;
+}
+
+/* Estilos para los eventos en el calendario */
+::ng-deep .fc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Asegurar que el contenido de los eventos sea legible */
+::ng-deep .fc-event-title {
+  font-weight: bold;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Hacer que los eventos ocupen todo el espacio disponible */
+::ng-deep .fc-event-main {
+  padding: 4px;
+}
+
+/* Estilo para el evento cuando se pasa el mouse */
+::ng-deep .fc-event:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mejorar la apariencia de los encabezados del calendario */
+::ng-deep .fc-col-header-cell {
+  background-color: #f3f4f6;
+  font-weight: bold;
+}
+
+/* Estilo para el día actual */
+::ng-deep .fc-day-today {
+  background-color: rgba(37, 99, 235, 0.05) !important;
+}
+
+/* Ajustar altura de las celdas de tiempo */
+::ng-deep .fc-timegrid-slot {
+  height: 3rem !important;
+}
+
+/* Hacer que el texto de los eventos sea más legible */
+::ng-deep .fc-event-title,
+::ng-deep .fc-event-time {
+  color: #000000;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Diseño responsive para el calendario */
+@media (max-width: 768px) {
+  ::ng-deep .fc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  ::ng-deep .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+/* Tooltip personalizado para mostrar información adicional */
+::ng-deep .fc-event-tooltip {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-size: 0.85rem;
+  max-width: 300px;
+}
+
+/* Estilo para la leyenda de materias */
+.materia-legend {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.materia-legend:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

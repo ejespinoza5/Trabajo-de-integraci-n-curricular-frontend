@@ -12,6 +12,7 @@ import { GenerarReportesComponent } from './generar-reportes/generar-reportes.co
 import { VerHorariosComponent } from './ver-horarios/ver-horarios.component';
 import { VerHorariosDocentesComponent } from './ver-horarios-docentes/ver-horarios-docentes.component';
 import { EditarAulaComponent } from './editar-aula/editar-aula.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { EditarAulaComponent } from './editar-aula/editar-aula.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    FullCalendarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

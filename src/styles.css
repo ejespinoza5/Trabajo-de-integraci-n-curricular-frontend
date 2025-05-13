@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Configuración global de la fuente Montserrat */
+html, body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Puedes añadir variaciones de peso para diferentes elementos */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 320; /* Semi-bold para títulos */
+}
+
+p, span, div, a, button, input, select, textarea {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 100; /* Regular para texto normal */
+}
+
+/* Resto de tus estilos globales */
