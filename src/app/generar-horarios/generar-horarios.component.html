@@ -31,96 +31,139 @@
     [ngClass]="{'max-h-0 opacity-0': !isAccordionOpen, 'max-h-screen opacity-100': isAccordionOpen}"
   >
     <div class="p-4 bg-white">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <!-- Periodo -->
         <div>
           <label class="block font-medium mb-1 text-xs">Periodo:</label>
-          <select [(ngModel)]="PeriodoSeleccionado" name="periodo" (change)="onPeriodoChange(PeriodoSeleccionado)"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar periodo</option>
-            <option *ngFor="let p of periodos" [value]="p.ID_PERIODO">{{ p.NOMBRE_PERIODO }}</option>
-          </select>
-        </div>
-
-        <!-- Docente -->
-        <div>
-          <label class="block font-medium mb-1 text-xs">Docente:</label>
-          <select [(ngModel)]="DocenteSeleccionado" name="docente" (change)="onDocenteChange(DocenteSeleccionado)"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar docente</option>
-            <option *ngFor="let d of docentes" [value]="d.ID_DOCENTE">
-              {{ d.NOMBRES_1_DOCENTE }} {{ d.APELLIDOS_1_DOCENTE }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Asignatura -->
-        <div>
-          <label class="block font-medium mb-1 text-xs">Asignatura:</label>
-          <select [(ngModel)]="AsignaturaSeleccionada" name="asignatura" (change)="onAsignaturaChange(AsignaturaSeleccionada)"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar asignatura</option>
-            <option *ngFor="let a of asignaturas" [value]="a.ID_ASIGNATURA">{{ a.NOMBRE_ASIGNATURA }}</option>
-          </select>
+          <ng-select
+            [items]="periodos"
+            bindLabel="NOMBRE_PERIODO"
+            bindValue="ID_PERIODO"
+            [(ngModel)]="PeriodoSeleccionado"
+            placeholder="Seleccionar periodo"
+            (change)="onPeriodoChange(PeriodoSeleccionado)"
+            [searchable]="true"
+            [clearable]="false"
+            [appendTo]="'body'"
+            class="text-xs">
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs">{{ item ? item.NOMBRE_PERIODO : 'Seleccionar periodo' }}</div>
+            </ng-template>
+          </ng-select>
         </div>
 
         <!-- Carrera -->
         <div>
           <label class="block font-medium mb-1 text-xs">Carrera:</label>
-          <select [(ngModel)]="CarreraSeleccionada" name="carrera"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar carrera</option>
-            <option *ngFor="let c of carreras" [value]="c.ID_CARRERAS">{{ c.NOMBRE_CARRERAS }}</option>
-          </select>
+          <ng-select
+            [items]="carreras"
+            bindLabel="NOMBRE_CARRERAS"
+            bindValue="ID_CARRERAS"
+            [(ngModel)]="CarreraSeleccionada"
+            placeholder="Seleccionar carrera"
+            (change)="onCarreraChange(CarreraSeleccionada)"
+            [searchable]="true"
+            [clearable]="false"
+            [appendTo]="'body'"
+            class="text-xs">
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs">{{ item ? item.NOMBRE_CARRERAS : 'Seleccionar carrera' }}</div>
+            </ng-template>
+          </ng-select>
         </div>
 
-        <!-- Niveles -->
-        <div>
-          <label class="block font-medium mb-1 text-xs">Nivel:</label>
-          <select [(ngModel)]="NivelSeleccionado" name="nivel"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar nivel</option>
-            <option *ngFor="let n of niveles" [value]="n.ID_CURSOS">{{ n.NIVEL }}</option>
-          </select>
-        </div>
+        <!-- Docente-Asignatura-Nivel Combinado - MOVIDO A COLUMNA COMPLETA -->
+        <div class="md:col-span-2">
+  <label class="block font-medium mb-1 text-xs">Docente - Asignatura - Nivel:</label>
+  <ng-select
+    [items]="docenteAsignaturaNivel"
+    [(ngModel)]="CombinacionSeleccionada"
+    placeholder="Seleccionar docente, asignatura y nivel"
+    (change)="onCombinacionChange(CombinacionSeleccionada)"
+    [searchable]="true"
+    [clearable]="false"
+    [appendTo]="'body'"
+    [typeahead]="searchInput"
+    [groupBy]="'DOCENTE'"
+    [virtualScroll]="true"
+    [searchFn]="customSearchFn"
+    class="text-xs">
+    <ng-template ng-label-tmp let-item="item">
+      <div class="text-xs truncate">
+        {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) + ' - ' + (item.NIVEL | uppercase) : 'Seleccionar docente, asignatura y nivel' }}
+      </div>
+    </ng-template>
+    <ng-template ng-option-tmp let-item="item">
+      <div class="text-xs py-1">
+        <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
+        <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
+        <div><strong>Nivel:</strong> {{ item.NIVEL | uppercase }}</div>
+      </div>
+    </ng-template>
+    <ng-template ng-header-tmp>
+      <div class="text-xs font-semibold p-1">Seleccionar docente, asignatura y nivel</div>
+    </ng-template>
+    <ng-template ng-notfound-tmp>
+      <div class="text-xs p-2">No se encontraron resultados</div>
+    </ng-template>
+  </ng-select>
+</div>
 
         <!-- Aula -->
         <div>
           <label class="block font-medium mb-1 text-xs">Aula:</label>
-          <select [(ngModel)]="AulaSeleccionada" name="aula"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar aula</option>
-            <option *ngFor="let aula of aulas" [value]="aula.ID_AULA">{{ aula.NOMBRE_AULA }}</option>
-          </select>
+          <ng-select
+            [items]="aulas"
+            bindLabel="NOMBRE_AULA"
+            bindValue="ID_AULA"
+            [(ngModel)]="AulaSeleccionada"
+            placeholder="Seleccionar aula"
+            [searchable]="true"
+            [clearable]="false"
+            [appendTo]="'body'"
+            class="text-xs">
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs">{{ item ? item.NOMBRE_AULA : 'Seleccionar aula' }}</div>
+            </ng-template>
+          </ng-select>
         </div>
 
         <!-- Día -->
         <div>
           <label class="block font-medium mb-1 text-xs">Día:</label>
-          <select [(ngModel)]="DiaSeleccionado" name="dia"
-                  class="w-full p-1.5 border border-gray-300 rounded text-xs">
-            <option value="0" selected>Seleccionar día</option>
-            <option *ngFor="let dia of dias" [value]="dia.ID_DIA">{{ dia.NOMBRE_DIA }}</option>
-          </select>
+          <ng-select
+            [items]="dias"
+            bindLabel="NOMBRE_DIA"
+            bindValue="ID_DIA"
+            [(ngModel)]="DiaSeleccionado"
+            placeholder="Seleccionar día"
+            [searchable]="true"
+            [clearable]="false"
+            [appendTo]="'body'"
+            class="text-xs">
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs">{{ item ? item.NOMBRE_DIA : 'Seleccionar día' }}</div>
+            </ng-template>
+          </ng-select>
         </div>
 
         <!-- Horario -->
-        <div class="flex flex-wrap items-end gap-3">
+        <div class="md:col-span-2 flex flex-wrap items-end gap-3">
           <div>
             <label for="horaInicio" class="block text-xs font-medium mb-1">Hora inicio:</label>
             <input type="time" id="horaInicio" name="horaInicio" [(ngModel)]="horaInicio"
-                   class="p-1 border border-gray-300 rounded text-xs w-24">
+                  class="p-1 border border-gray-300 rounded text-xs w-24">
           </div>
 
           <div>
             <label for="horaFin" class="block text-xs font-medium mb-1">Hora fin:</label>
             <input type="time" id="horaFin" name="horaFin" [(ngModel)]="horaFin"
-                   class="p-1 border border-gray-300 rounded text-xs w-24">
+                  class="p-1 border border-gray-300 rounded text-xs w-24">
           </div>
 
           <div>
             <button (click)="asignarHorario()"
-                    class="bg-azul-botones text-white text-xs px-2 py-1 rounded hover:bg-blue-700 transition-all duration-300">
+                  class="bg-azul-botones text-white text-xs px-2 py-1 rounded hover:bg-blue-700 transition-all duration-300">
               Aceptar
             </button>
           </div>
@@ -129,7 +172,6 @@
     </div>
   </div>
 </div>
-
 <!-- Mensaje de error -->
 <div *ngIf="mensajeError" class="bg-red-100 text-red-700 p-4 rounded mb-4">
   {{ mensajeError }}
@@ -140,21 +182,22 @@
   <h2 class=" font-bold mb-4">Horario Semanal</h2>
 
   <!-- Contenedor del calendario -->
-  <div class="border border-gray-300 rounded shadow-sm">
-    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
-  </div>
+  <div class="border border-gray-300 rounded shadow-sm calendar-container"
+     *ngIf="horariosFiltrados && horariosFiltrados.length > 0">
+  <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+</div>
 
   <!-- Leyenda de materias y sus colores -->
-  <div class="mt-6" *ngIf="materiasUnicas && materiasUnicas.length > 0">
-    <h3 class="text-lg font-bold mb-2">Materias</h3>
-    <div class="flex flex-wrap gap-2">
-      <div *ngFor="let materia of materiasUnicas" class="flex items-center px-3 py-1 rounded"
-        [ngStyle]="{'background-color': getColorMateria(materia.id)}">
-        <span class="mr-2 w-3 h-3 rounded-full" [ngStyle]="{'background-color': getColorMateria(materia.id)}"></span>
-        <span>{{ materia.nombre }}</span>
-      </div>
+<div class="mt-6 legend-container" *ngIf="materiasUnicas && materiasUnicas.length > 0">
+  <h3 class="text-lg font-bold mb-2">Materias</h3>
+  <div class="flex flex-wrap gap-2">
+    <div *ngFor="let materia of materiasUnicas" class="flex items-center px-3 py-1 rounded materia-item"
+      [ngStyle]="{'background-color': getColorMateria(materia.id)}">
+      <span class="mr-2 w-3 h-3 rounded-full" [ngStyle]="{'background-color': getColorMateria(materia.id)}"></span>
+      <span>{{ materia.nombre }}</span>
     </div>
   </div>
+</div>
 
   <!-- Mensaje cuando no hay horarios -->
   <div *ngIf="!horariosFiltrados || horariosFiltrados.length === 0" class="mt-4 p-4 bg-gray-100 rounded-lg text-center">

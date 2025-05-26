@@ -3,21 +3,36 @@
 <!-- Formulario para agregar aula en línea -->
 <div class="max-w-4xl mx-auto mb-6 p-6 bg-white rounded-lg shadow-md">
   <div class="grid grid-cols-3 gap-6 items-end">
-    <!-- Campo de Nombre -->
-    <div class="col-span-1">
-      <label class="block font-semibold mb-2">Nombre:</label>
-      <input [(ngModel)]="nuevaAula.nombre" placeholder="Nombre" class="w-full p-2 border border-gray-300 rounded" />
-    </div>
 
-    <!-- Campo de Tipo -->
-    <div class="col-span-1">
-      <label class="block font-semibold mb-2">Tipo:</label>
-      <select [(ngModel)]="nuevaAula.tipo" class="w-full p-2 border border-gray-300 rounded">
-        <option value="" disabled selected>Selecciona un tipo</option>
-        <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
-      </select>
-    </div>
+<!-- Campo de Nombre -->
+<div class="col-span-1">
+  <label class="block font-semibold mb-2 text-sm">Nombre:</label>
+  <input
+    [(ngModel)]="nuevaAula.nombre"
+    placeholder="Nombre"
+    class="w-full p-2 border border-gray-300 rounded text-sm" />
+</div>
 
+<!-- Campo de Tipo -->
+<div class="col-span-1">
+  <label class="block font-semibold mb-2 text-sm">Tipo:</label>
+  <ng-select
+    [items]="tipos"
+    [(ngModel)]="nuevaAula.tipo"
+    placeholder="Selecciona un tipo"
+    [searchable]="true"
+    [clearable]="false"
+    [appendTo]="'body'"
+    [ngClass]="'custom-ng-select'"
+    class="text-sm">
+    <ng-template ng-label-tmp let-item="item">
+      <div class="text-sm">{{ item || 'Selecciona un tipo' }}</div>
+    </ng-template>
+    <ng-template ng-option-tmp let-item="item">
+      <div class="text-sm py-1">{{ item }}</div>
+    </ng-template>
+  </ng-select>
+</div>
     <!-- Botón para agregar aula -->
     <div class="col-span-1 flex justify-end">
       <button (click)="agregarAulas()" class="bg-azul-botones text-white px-4 py-2 rounded hover:bg-blue-600">

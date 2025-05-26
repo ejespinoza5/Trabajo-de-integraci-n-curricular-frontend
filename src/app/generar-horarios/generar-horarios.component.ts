@@ -7,6 +7,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import esLocale from '@fullcalendar/core/locales/es';
+import { Subject } from 'rxjs';
 
 interface HorarioResponse {
   id: number;
@@ -43,8 +44,11 @@ export class GenerarHorariosComponent implements OnInit {
   carreras: any[] = [];
   niveles: any[] = [];
 
+    docenteAsignaturaNivel: any[] = [];
+
   // Variables de selección
   PeriodoSeleccionado = 0;
+   CombinacionSeleccionada: string = '0';
   DocenteSeleccionado = 0;
   AulaSeleccionada = 0;
   DiaSeleccionado = 0;
@@ -252,25 +256,73 @@ export class GenerarHorariosComponent implements OnInit {
   // Acciones al cambiar selección de periodo
   onPeriodoChange(idPeriodo: number): void {
     this.PeriodoSeleccionado = idPeriodo;
-    this.DocenteSeleccionado = 0;
-    this.asignaturas = [];
-    this.docentes = [];
-
-    this.horariosService.obtenerDocentes(idPeriodo).subscribe(data => {
-      this.docentes = data;
+    this.CarreraSeleccionada = 0;
+    this.reiniciarSelecciones();
+    // Cargar carreras disponibles para el periodo seleccionado
+    this.horariosService.obtenerCarrerasPeriodo(idPeriodo).subscribe(data => {
+      this.carreras = data;
     });
 
     this.filtrarHorariosPorPeriodo(idPeriodo);
   }
 
-  // Acciones al cambiar selección de docente
-  onDocenteChange(idDocente: number): void {
-    this.DocenteSeleccionado = idDocente;
-    this.asignaturas = [];
+  onCarreraChange(idCarrera: number): void {
+    this.CarreraSeleccionada = idCarrera;
+    this.reiniciarSelecciones();
 
-    this.horariosService.obtenerAsignaturas(this.PeriodoSeleccionado, idDocente)
-      .subscribe(data => this.asignaturas = data);
+    // Cargar datos combinados de docente-asignatura-nivel
+    if (this.PeriodoSeleccionado > 0 && idCarrera > 0) {
+      this.horariosService.obtenerDocenteAsignaturaNivel(this.PeriodoSeleccionado, idCarrera).subscribe(data => {
+        this.docenteAsignaturaNivel = data;
+      });
+    }
   }
+searchInput = new Subject<string>();
+  customSearchFn(term: string, item: any): boolean {
+  term = term.toLowerCase();
+  // Buscar en los tres campos: docente, asignatura y nivel
+  return item.DOCENTE.toLowerCase().includes(term) ||
+         item.ASIGNATURA.toLowerCase().includes(term) ||
+         item.NIVEL.toLowerCase().includes(term);
+}
+onCombinacionChange(combinacion: any): void {
+  // Si no hay selección o se seleccionó la opción por defecto
+  if (!combinacion || combinacion === '0') {
+    this.DocenteSeleccionado = 0;
+    this.AsignaturaSeleccionada = 0;
+    this.NivelSeleccionado = 0;
+    return;
+  }
+
+
+  // Si el ng-select devuelve un objeto completo (cuando se usa el objeto entero como valor)
+  if (typeof combinacion === 'object') {
+    this.DocenteSeleccionado = Number(combinacion.ID_DOCENTE);
+    this.AsignaturaSeleccionada = Number(combinacion.ID_ASIGNATURA);
+    this.NivelSeleccionado = Number(combinacion.ID_CURSOS);
+    return;
+  }
+
+  // Si el ng-select devuelve un string (mantiene la lógica original)
+  if (typeof combinacion === 'string') {
+    const ids = combinacion.split('-');
+
+    if (ids.length === 3) {
+      this.DocenteSeleccionado = Number(ids[0]);
+      this.AsignaturaSeleccionada = Number(ids[1]);
+      this.NivelSeleccionado = Number(ids[2]);
+    }
+  }
+}
+
+   reiniciarSelecciones(): void {
+    this.CombinacionSeleccionada = '0';
+    this.DocenteSeleccionado = 0;
+    this.AsignaturaSeleccionada = 0;
+    this.NivelSeleccionado = 0;
+    this.docenteAsignaturaNivel = [];
+  }
+
 
   // Carga las aulas disponibles
   onAulaChange(): void {
@@ -286,19 +338,7 @@ export class GenerarHorariosComponent implements OnInit {
     });
   }
 
-  // Acciones al cambiar selección de asignatura
-  onAsignaturaChange(idAsignatura: number): void {
-    this.AsignaturaSeleccionada = idAsignatura;
-    this.carreras = [];
-    this.niveles = [];
-    this.CarreraSeleccionada = 0;
-    this.NivelSeleccionado = 0;
 
-    this.horariosService.obtenerCarreras(this.AsignaturaSeleccionada)
-      .subscribe(data => this.carreras = data);
-    this.horariosService.obtenerNiveles(this.AsignaturaSeleccionada)
-      .subscribe(data => this.niveles = data);
-  }
 
   // Asigna un nuevo horario
   asignarHorario(): void {

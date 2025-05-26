@@ -1,3 +1,4 @@
+@import "@ng-select/ng-select/themes/default.theme.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -18,4 +19,4 @@ p, span, div, a, button, input, select, textarea {
   font-weight: 100; /* Regular para texto normal */
 }
 
-/* Resto de tus estilos globales */
+

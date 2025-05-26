@@ -14,7 +14,7 @@ export class PrincipalComponent implements OnInit {
   nombreUsuario: string = '';
   apellidoUsuario: string = '';
 
-  constructor(private usuarioService: AuthService, private router:Router) {}
+  constructor(public usuarioService: AuthService, private router:Router) {}
   ngOnInit(): void {
     this.ObtenerNombreUsuario();
   }
@@ -24,27 +24,45 @@ export class PrincipalComponent implements OnInit {
   }
 
   ObtenerNombreUsuario() {
+    const idRol = this.usuarioService.ObtenerIdRol();
     const idUsuario = this.usuarioService.ObtenerIdToken();
-    console.log('ID de usuario:', idUsuario); // Verifica si el ID se obtiene correctamente
-    if (!idUsuario) {
-      console.error('No se pudo obtener el ID del usuario del token');
-      return;
-    }
-    this.usuarioService.getUsuarioById(idUsuario).subscribe({
-      next: (data) => {
-        this.nombreUsuario = data.NOMBRES_USUARIOS.toUpperCase();
-        this.apellidoUsuario = data.APELLIDOS_USUARIOS.toUpperCase();
-      },
-      error: (err) => {
-        console.error('Error al obtener el nombre', err);
+    if (idRol == 17 || idRol == 1) {
+      console.log('ID de usuario:', idUsuario); // Verifica si el ID se obtiene correctamente
+      if (!idUsuario) {
+        console.error('No se pudo obtener el ID del usuario del token');
+        return;
       }
-    });
+      this.usuarioService.getCoordinadorById(idUsuario).subscribe({
+        next: (data) => {
+          this.nombreUsuario = data.NOMBRE_COORDINADOR.toUpperCase();
+          this.apellidoUsuario = data.APELLIDO_COORDINADOR.toUpperCase();
+        },
+        error: (err) => {
+          console.error('Error al obtener el nombre', err);
+        }
+      });
+    } else {
+      console.log('ID de usuario:', idUsuario); // Verifica si el ID se obtiene correctamente
+      if (!idUsuario) {
+        console.error('No se pudo obtener el ID del usuario del token');
+        return;
+      }
+      this.usuarioService.getUsuarioById(idUsuario).subscribe({
+        next: (data) => {
+          this.nombreUsuario = data.NOMBRES_USUARIOS.toUpperCase();
+          this.apellidoUsuario = data.APELLIDOS_USUARIOS.toUpperCase();
+        },
+        error: (err) => {
+          console.error('Error al obtener el nombre', err);
+        }
+      });
+    }
   }
 
   ObtenerNombreRol(){
     const idRol = this.usuarioService.ObtenerIdRol();
     if (idRol == 1 || idRol == 17) {
-      return "ADMINISTRADOR";
+      return "COORDINADOR";
     } else if (idRol == 13) {
       return "SUPERADMINISTRADOR";
     } else if (idRol == 14) {
@@ -62,9 +80,10 @@ export class PrincipalComponent implements OnInit {
     return this.router.url.startsWith('/inicio/gestionar-aulas') || this.router.url.startsWith('/inicio/editar-aula');
   }
 
+
   CerrarSesion() {
     this.usuarioService.cerrarSesion();
-    this.router.navigate(['/login']);
+    window.location.href = '/login';
   }
 
 }

@@ -1,0 +1,102 @@
+<h1 class=" font-bold mb-6">COORDINADORES</h1>
+
+<!-- Selección de Coordinador -->
+<div class="max-w-4xl mx-auto mb-4 p-6 bg-white rounded-lg shadow-md">
+  <div class="mb-4">
+    <label class="block text-sm font-semibold text-gray-700 mb-2">Selecciona un coordinador:</label>
+    <ng-select
+      [items]="coordinadoresTotales"
+      [(ngModel)]="coordinadorSeleccionado"
+      placeholder="-- Selecciona --"
+      [searchable]="true"
+      [clearable]="false"
+      [appendTo]="'body'"
+      [typeahead]="searchInput"
+      [searchFn]="customSearchFn"
+      class="text-sm">
+      <ng-template ng-label-tmp let-item="item">
+        <div class="text-sm">
+          {{ item ? item.DOCUMENTO_USUARIOS + ' - ' + (item.APELLIDOS_USUARIOS | uppercase) + ' ' + (item.NOMBRES_USUARIOS | uppercase) : '-- Selecciona --' }}
+        </div>
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item">
+        <div class="text-sm py-1">
+          <div><strong>{{ item.DOCUMENTO_USUARIOS }}</strong> - {{ item.APELLIDOS_USUARIOS | uppercase }} {{ item.NOMBRES_USUARIOS | uppercase }}</div>
+        </div>
+      </ng-template>
+    </ng-select>
+  </div>
+
+  <!-- Selección de Carrera -->
+  <div>
+    <label class="block text-sm font-semibold text-gray-700 mb-2">Selecciona una carrera:</label>
+    <ng-select
+      [items]="carrerasTotales"
+      bindLabel="NOMBRE_CARRERAS"
+      bindValue="ID_CARRERAS"
+      [(ngModel)]="carreraSeleccionada"
+      placeholder="-- Selecciona --"
+      [searchable]="true"
+      [clearable]="false"
+      [appendTo]="'body'"
+
+      class="text-sm">
+      <ng-template ng-label-tmp let-item="item">
+        <div class="text-sm">{{ item ? (item.NOMBRE_CARRERAS | uppercase) : '-- Selecciona --' }}</div>
+      </ng-template>
+      <ng-template ng-option-tmp let-item="item">
+        <div class="text-sm py-1">{{ item.NOMBRE_CARRERAS | uppercase }}</div>
+      </ng-template>
+    </ng-select>
+  </div>
+
+  <!-- Botón Crear Coordinador -->
+  <div class="flex justify-end mt-4">
+    <button
+      (click)="insertarCoordinador()"
+      class="bg-azul-botones text-white px-4 py-2 rounded hover:bg-blue-600 transition-all duration-300"
+      [disabled]="!coordinadorSeleccionado || !carreraSeleccionada">
+      Crear Coordinador
+    </button>
+  </div>
+</div>
+
+<!-- Tabla de Coordinadores -->
+<h3 class="text-xl font-semibold mb-4 text-center">Coordinadores Registrados</h3>
+<div class="overflow-x-auto max-w-4xl mx-auto">
+  <table class="w-full table-auto bg-white rounded-lg shadow-md text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-3 text-left font-medium text-gray-600">Cédula</th>
+        <th class="px-4 py-3 text-left font-medium text-gray-600">Nombre</th>
+        <th class="px-4 py-3 text-left font-medium text-gray-600">Apellido</th>
+        <th class="px-4 py-3 text-left font-medium text-gray-600">Carrera</th>
+        <th class="px-4 py-3 text-center font-medium text-gray-600">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let coordinador of getCoordinadoresPaginados()" class="border-t">
+        <td class="px-4 py-3 text-gray-800">{{ coordinador.CEDULA_COORDINADOR }}</td>
+        <td class="px-4 py-3 text-gray-800">{{ coordinador.NOMBRE_COORDINADOR }}</td>
+        <td class="px-4 py-3 text-gray-800">{{ coordinador.APELLIDO_COORDINADOR }}</td>
+        <td class="px-4 py-3 text-gray-800">{{ coordinador.NOMBRE_CARRERA }}</td>
+        <td class="px-4 py-3 text-center">
+          <button (click)="eliminarCoordinador(coordinador.ID_COORDINADOR)" class="bg-rosado-oscuro text-white px-4 py-2 rounded-md hover:bg-rosado-oscuro-hover">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Botones de paginación -->
+<div class="flex justify-center items-center mt-4 gap-2">
+  <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+    Anterior
+  </button>
+  <span class="px-4 py-2">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+  <button (click)="cambiarPagina(1)" [disabled]="paginaActual === totalPaginas" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+    Siguiente
+  </button>
+</div>

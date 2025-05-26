@@ -9,24 +9,26 @@ import { VerHorariosComponent } from './ver-horarios/ver-horarios.component';
 import { VerHorariosDocentesComponent } from './ver-horarios-docentes/ver-horarios-docentes.component';
 import { AuthGuard } from './auth.guard';
 import { EditarAulaComponent } from './editar-aula/editar-aula.component';
+import { CoordinadoresComponent } from './coordinadores/coordinadores.component';
 
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
  { path: 'login', component: LoginComponent },
  {
-  path: 'inicio',component: PrincipalComponent,canActivate: [AuthGuard],
+  path: 'inicio',component: PrincipalComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR','ESTUDIANTE'] } ,
   children: [
-    { path: 'gestionar-aulas', component: GestionarAulasComponent, canActivate: [AuthGuard]},
-    { path: 'generar-horario', component: GenerarHorariosComponent,canActivate: [AuthGuard] },
-    { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard] },
-    { path: 'ver-horario', component: VerHorariosComponent,canActivate: [AuthGuard] },
-    { path: 'ver-horario-docente', component: VerHorariosDocentesComponent,canActivate: [AuthGuard] },
-    { path: 'editar-aula/:id', component: EditarAulaComponent, canActivate: [AuthGuard] },
-    { path: '', redirectTo: 'gestionar-aulas', pathMatch: 'full' }
+    { path: 'gestionar-aulas', component: GestionarAulasComponent, canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR'] } },
+    { path: 'generar-horario', component: GenerarHorariosComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR'] } },
+    { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR'] } },
+    { path: 'ver-horario', component: VerHorariosComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR'] } },
+    { path: 'ver-horario-docente', component: VerHorariosDocentesComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR'] } },
+    { path: 'editar-aula/:id', component: EditarAulaComponent, canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR'] } },
+    { path: 'coordinadores', component: CoordinadoresComponent, canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR'] }},
+    // { path: '', redirectTo: 'gestionar-aulas', pathMatch: 'full' }
   ]
 },
-{ path: '**', redirectTo: 'login' } // en caso de rutas no existentes
+{ path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({

@@ -13,6 +13,8 @@ import { VerHorariosComponent } from './ver-horarios/ver-horarios.component';
 import { VerHorariosDocentesComponent } from './ver-horarios-docentes/ver-horarios-docentes.component';
 import { EditarAulaComponent } from './editar-aula/editar-aula.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { CoordinadoresComponent } from './coordinadores/coordinadores.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -24,14 +26,16 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     GenerarReportesComponent,
     VerHorariosComponent,
     VerHorariosDocentesComponent,
-    EditarAulaComponent
+    EditarAulaComponent,
+    CoordinadoresComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    FullCalendarModule
+    FullCalendarModule,
+    NgSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

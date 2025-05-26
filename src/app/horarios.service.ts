@@ -123,15 +123,7 @@ export class HorariosService {
     return this.periodosSubject.asObservable();
   }
 
-  obtenerDocentes(idPeriodo: number, forceRefresh = false): Observable<any[]> {
-    const url = `${this.apiUrl}/docentes/${idPeriodo}`;
-    return this.cachedRequest<any[]>(url, forceRefresh);
-  }
 
-  obtenerAsignaturas(idPeriodo: number, idDocente: number, forceRefresh = false): Observable<any[]> {
-    const url = `${this.apiUrl}/asignaturas/${idPeriodo}/${idDocente}`;
-    return this.cachedRequest<any[]>(url, forceRefresh);
-  }
 
   obtenerDias(forceRefresh = false): Observable<any[]> {
     if (forceRefresh || this.diasSubject.value.length === 0) {
@@ -140,8 +132,15 @@ export class HorariosService {
     return this.diasSubject.asObservable();
   }
 
-  obtenerCarreras(idAsignatura: number, forceRefresh = false): Observable<any[]> {
-    const url = `${this.apiUrl}/carrera/${idAsignatura}`;
+
+
+   obtenerCarrerasPeriodo(idPeriodo: number,idUsuario?: number, rolUsuario?: number, forceRefresh = false): Observable<any[]> {
+    const url = `${this.apiUrl}/carrera-periodo/${idPeriodo}`;
+    return this.cachedRequest<any[]>(url, forceRefresh);
+  }
+
+  obtenerDocenteAsignaturaNivel(idPeriodo: number, idCarrera: number, forceRefresh = false): Observable<any[]> {
+    const url = `${this.apiUrl}/docente-asignatura-nivel/${idPeriodo}/${idCarrera}`;
     return this.cachedRequest<any[]>(url, forceRefresh);
   }
 
@@ -268,4 +267,7 @@ export class HorariosService {
 
     return throwError(() => new Error(errorMessage));
   }
+
+  
+  
 }

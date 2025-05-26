@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +9,18 @@ import { Observable } from 'rxjs';
 export class AuthService {
   private apiUrl = 'http://localhost:3000/v1';
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   constructor(private http: HttpClient) { }
   login(correo: string, cedula: string): Observable<any> {
     const body = { correo, cedula };
-    return this.http.post(this.apiUrl+'/login', body);
+    return this.http.post(this.apiUrl + '/login', body);
   }
 
 
@@ -58,15 +67,34 @@ export class AuthService {
 
   cerrarSesion() {
     localStorage.removeItem('token');
+    sessionStorage.clear();
   }
 
 
-   getUsuarioById(id: number): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
+  getUsuarioById(id: number): Observable<any> {
+    const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/usuario/${id}`, { headers });
   }
+
+  getCoordinadorById(id: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/coordinador/${id}`, { headers });
+  }
+  getRolNombre(): string | null {
+    const rol = this.ObtenerIdRol();
+    if (rol === null) return null;
+
+    switch (rol) {
+      case 17: return 'COORDINADOR';
+      case 13: return 'SUPERADMINISTRADOR';
+      case 14: return 'ESTUDIANTE';
+      case 15: return 'DOCENTE';
+      default: return null;
+    }
+  }
+  tieneRol(rolesPermitidos: string[]): boolean {
+    const rolNombre = this.getRolNombre();
+    return rolNombre ? rolesPermitidos.includes(rolNombre) : false;
+  }
+
 }
