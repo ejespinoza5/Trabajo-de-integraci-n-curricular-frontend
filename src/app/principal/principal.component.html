@@ -52,7 +52,8 @@
 
       <nav class="pt-3">
         <ul class="space-y-0.5">
-          <li [ngClass]="{ 'bg-verde-claro text-white': esRutaGestionarAulas() }" *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
+          <li [ngClass]="{ 'bg-verde-claro text-white': esRutaGestionarAulas() }"
+            *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
             <a [routerLink]="['/inicio/gestionar-aulas']" class="flex items-center px-3 py-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
@@ -77,14 +78,14 @@
 
           <li *ngIf="usuarioService.tieneRol(['COORDINADOR', 'SUPERADMINISTRADOR'])">
             <a [routerLink]="['/inicio/generar-horario']" routerLinkActive="bg-verde-claro text-white"
-            [routerLinkActiveOptions]="{ exact: true }" class="flex items-center px-3 py-2 ">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" [ngClass]="{ 'text-white': isActive('/inicio/generar-horario') }">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span *ngIf="sidebarOpen" class="ml-2 whitespace-nowrap text-xs font-bold">GENERAR HORARIOS</span>
-          </a>
+              [routerLinkActiveOptions]="{ exact: true }" class="flex items-center px-3 py-2 ">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" [ngClass]="{ 'text-white': isActive('/inicio/generar-horario') }">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span *ngIf="sidebarOpen" class="ml-2 whitespace-nowrap text-xs font-bold">GENERAR HORARIOS</span>
+            </a>
           </li>
 
 
@@ -123,6 +124,31 @@
               <span *ngIf="sidebarOpen" class="ml-2 whitespace-nowrap text-xs font-bold">VER HORARIOS DOCENTES</span>
             </a>
           </li>
+
+          <li *ngIf="usuarioService.tieneRol(['ESTUDIANTE'])">
+            <a [routerLink]="['/inicio/mi-horario']" routerLinkActive="bg-verde-claro text-white"
+              [routerLinkActiveOptions]="{ exact: true }" class="flex items-center px-3 py-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span *ngIf="sidebarOpen" class="ml-2 whitespace-nowrap text-xs font-bold">MI HORARIO</span>
+            </a>
+          </li>
+          <li *ngIf="usuarioService.tieneRol(['DOCENTE'])">
+            <a [routerLink]="['/inicio/docente-horario']" routerLinkActive="bg-verde-claro text-white"
+              [routerLinkActiveOptions]="{ exact: true }" class="flex items-center px-3 py-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6h16M4 10h16M4 14h10M4 18h10" />
+              </svg>
+              <span *ngIf="sidebarOpen" class="ml-2 whitespace-nowrap text-xs font-bold">HORARIO DOCENTE</span>
+            </a>
+          </li>
+
+
         </ul>
       </nav>
     </aside>

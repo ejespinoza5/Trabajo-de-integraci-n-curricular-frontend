@@ -29,20 +29,15 @@ export class VerHorariosDocentesService {
     });
   }
 
-  //obtener carrera por periodo
-  obtenerCarrerasPorPeriodo(id: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/horarios-carreras-general/${id}`, {
+
+  //obtener docente por periodo
+  obtenerDocentesPorPeriodoYCarrera(idPeriodo: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/horarios-docentes-general/${idPeriodo}`, {
       headers: this.getAuthHeaders()
     });
   }
-  //obtener docente por periodo y carrera
-  obtenerDocentesPorPeriodoYCarrera(idPeriodo: number, idCarrera: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/horarios-docentes-general/${idPeriodo}/${idCarrera}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-  obtenerHorariosPorPeriodoCarreraDocente(idPeriodo: number, idCarrera: number, idDocente: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/horarios-docentes-general/${idPeriodo}/${idCarrera}/${idDocente}`, {
+  obtenerHorariosPorPeriodoCarreraDocente(idPeriodo: number, idDocente: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/horarios-docentes-general/${idPeriodo}/${idDocente}`, {
       headers: this.getAuthHeaders()
     });
   }

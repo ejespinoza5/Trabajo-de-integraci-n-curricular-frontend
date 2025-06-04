@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { Roles } from './roles'; // importa el archivo de roles
+import { Roles } from './roles';
 
 @Injectable({
   providedIn: 'root'

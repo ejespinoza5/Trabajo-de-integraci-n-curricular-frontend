@@ -30,7 +30,9 @@ iniciarSesion() {
       } else if (rol === 17) {
         this.router.navigate(['/inicio/generar-horario']);
       } else if (rol === 14) {
-        this.router.navigate(['/inicio/gestionar-aulas']);
+        this.router.navigate(['/inicio/mi-horario']);
+      } else if (rol === 15) {
+        this.router.navigate(['/inicio/docente-horario']);
       } else {
         this.error = 'Rol no autorizado';
       }

@@ -1,0 +1,167 @@
+/* Estilos para el calendario */
+.calendar-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Personalización de FullCalendar */
+::ng-deep .fc {
+  font-family: inherit;
+}
+
+::ng-deep .fc-header-toolbar {
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+::ng-deep .fc-button-primary {
+  background-color: #3788d8;
+  border-color: #3788d8;
+  font-size: 0.875rem;
+}
+
+::ng-deep .fc-button-primary:hover {
+  background-color: #3788d8;
+  border-color: #3788d8;
+}
+
+::ng-deep .fc-button-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+::ng-deep .fc-event {
+  border-radius: 4px;
+  border: none;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+::ng-deep .fc-event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .fc-event-title {
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+::ng-deep .fc-timegrid-slot-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+::ng-deep .fc-col-header-cell {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #374151;
+}
+
+::ng-deep .fc-daygrid-day-number {
+  font-weight: 500;
+  color: #374151;
+}
+
+::ng-deep .fc-today {
+  background-color: rgba(59, 130, 246, 0.05) !important;
+}
+
+::ng-deep .fc-timegrid-axis {
+  border-right: 1px solid #e2e8f0;
+}
+
+::ng-deep .fc-timegrid-slot {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+::ng-deep .fc-timegrid-slot-minor {
+  border-bottom: 1px solid #f9fafb;
+}
+
+/* Estilos para ng-select */
+::ng-deep .ng-select {
+  min-height: 38px;
+}
+
+::ng-deep .ng-select.ng-select-focused .ng-select-container {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+::ng-deep .ng-select.ng-select-disabled .ng-select-container {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+}
+
+::ng-deep .ng-option {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+}
+
+::ng-deep .ng-option.ng-option-highlighted {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  ::ng-deep .fc-header-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  ::ng-deep .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+
+  ::ng-deep .fc-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  ::ng-deep .fc-event {
+    font-size: 0.625rem;
+  }
+}
+
+/* Animaciones */
+.calendar-container {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Botones de navegación del calendario */
+::ng-deep .fc-button {
+  background-color: #3788d8 !important;
+  border-color: #3788d8 !important;
+  color: white !important;
+}
+
+::ng-deep .fc-button:hover {
+  background-color: #2563EB !important;
+  border-color: #2563EB !important;
+}
+
+::ng-deep .fc-button:disabled {
+  background-color: #3788d8!important;
+  border-color: #3788d8 !important;
+}

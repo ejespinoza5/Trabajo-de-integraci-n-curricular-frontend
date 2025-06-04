@@ -1,49 +1,19 @@
-
 <div class="container mx-auto p-4">
   <div class="bg-white rounded-lg shadow-lg p-6">
-<h1 class=" font-bold mb-6">VER HORARIOS DOCENTES</h1>
-<!-- Mensaje de Error -->
+    <h1 class=" font-bold mb-6">VER HORARIOS DOCENTES</h1>
+    <!-- Mensaje de Error -->
     <div *ngIf="mensajeError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
       {{ mensajeError }}
     </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <!-- Periodo -->
       <div>
         <label class="block font-medium mb-1 text-sm text-gray-700">Periodo:</label>
-        <ng-select
-          [items]="periodos"
-          bindLabel="nombre"
-          bindValue="id"
-          [(ngModel)]="PeriodoSeleccionado"
-          placeholder="Seleccionar periodo"
-          (change)="onPeriodoChange(PeriodoSeleccionado)"
-          [searchable]="true"
-          [clearable]="false"
-          [appendTo]="'body'"
-          class="text-sm">
+        <ng-select [items]="periodos" bindLabel="nombre" bindValue="id" [(ngModel)]="PeriodoSeleccionado"
+          placeholder="Seleccionar periodo" (change)="onPeriodoChange(PeriodoSeleccionado)" [searchable]="true"
+          [clearable]="false" [appendTo]="'body'" class="text-sm">
           <ng-template ng-label-tmp let-item="item">
             <div class="text-sm">{{ item ? item.nombre : 'Seleccionar periodo' }}</div>
-          </ng-template>
-        </ng-select>
-      </div>
-
-      <!-- Carrera -->
-      <div>
-        <label class="block font-medium mb-1 text-sm text-gray-700">Carrera:</label>
-        <ng-select
-          [items]="carreras"
-          bindLabel="nombre"
-          bindValue="id"
-          [(ngModel)]="CarreraSeleccionada"
-          placeholder="Seleccionar carrera"
-          (change)="onCarreraChange()"
-          [searchable]="true"
-          [clearable]="false"
-          [appendTo]="'body'"
-          [disabled]="!PeriodoSeleccionado"
-          class="text-sm">
-          <ng-template ng-label-tmp let-item="item">
-            <div class="text-sm">{{ item ? item.nombre : 'Seleccionar carrera' }}</div>
           </ng-template>
         </ng-select>
       </div>
@@ -51,18 +21,9 @@
       <!-- Docente -->
       <div>
         <label class="block font-medium mb-1 text-sm text-gray-700">Docente:</label>
-        <ng-select
-          [items]="docentes"
-          bindLabel="nombre"
-          bindValue="id"
-          [(ngModel)]="DocenteSeleccionado"
-          placeholder="Seleccionar docente"
-          (change)="onDocenteChange()"
-          [searchable]="true"
-          [clearable]="false"
-          [appendTo]="'body'"
-          [disabled]="!CarreraSeleccionada"
-          class="text-sm">
+        <ng-select [items]="docentes" bindLabel="nombre" bindValue="id" [(ngModel)]="DocenteSeleccionado"
+          placeholder="Seleccionar docente" (change)="onDocenteChange()" [searchable]="true" [clearable]="false"
+          [appendTo]="'body'" class="text-sm">
           <ng-template ng-label-tmp let-item="item">
             <div class="text-sm">{{ item ? item.nombre : 'Seleccionar docente' }}</div>
           </ng-template>
@@ -70,16 +31,13 @@
       </div>
     </div>
 
-     <!-- Leyenda de Materias -->
+    <!-- Leyenda de Materias -->
     <div *ngIf="materiasUnicas.length > 0" class="mb-6">
       <h3 class="text-lg font-semibold mb-3 text-gray-800">Materias:</h3>
       <div class="flex flex-wrap gap-2">
-        <div
-          *ngFor="let materia of materiasUnicas"
+        <div *ngFor="let materia of materiasUnicas"
           class="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm">
-          <div
-            class="w-4 h-4 rounded-full mr-2"
-            [style.background-color]="getColorMateria(materia.id)">
+          <div class="w-4 h-4 rounded-full mr-2" [style.background-color]="getColorMateria(materia.id)">
           </div>
           <span>{{ materia.nombre | uppercase}}</span>
         </div>
@@ -88,20 +46,16 @@
 
     <!-- Calendario -->
     <div class="mt-6">
-      <div *ngIf="horariosFiltrados.length === 0 && PeriodoSeleccionado && CarreraSeleccionada && DocenteSeleccionado"
-           class="text-center py-8 text-gray-500">
+      <div *ngIf="horariosFiltrados.length === 0 && PeriodoSeleccionado && DocenteSeleccionado"
+        class="text-center py-8 text-gray-500">
         <p>No se encontraron horarios para la selección actual.</p>
       </div>
 
-      <div *ngIf="!PeriodoSeleccionado || !CarreraSeleccionada || !DocenteSeleccionado"
-           class="text-center py-8 text-gray-500">
-        <p>Selecciona periodo, carrera y docente para ver los horarios.</p>
+      <div *ngIf="!PeriodoSeleccionado || !DocenteSeleccionado" class="text-center py-8 text-gray-500">
+        <p>Selecciona periodo y docente para ver los horarios.</p>
       </div>
 
-      <full-calendar
-        *ngIf="horariosFiltrados.length > 0"
-        [options]="calendarOptions"
-        class="calendar-container">
+      <full-calendar *ngIf="horariosFiltrados.length > 0" [options]="calendarOptions" class="calendar-container">
       </full-calendar>
     </div>
 
@@ -117,22 +71,17 @@
   </div>
 
 
-    <!-- MODAL DE DETALLE DEL HORARIO -->
-  <div
-    *ngIf="mostrarModal"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  <!-- MODAL DE DETALLE DEL HORARIO -->
+  <div *ngIf="mostrarModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     (click)="cerrarModal()">
 
-    <div
-      class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto"
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto"
       (click)="$event.stopPropagation()">
 
       <!-- Header del Modal -->
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
         <h3 class="text-xl font-semibold text-gray-800">Detalle del Horario</h3>
-        <button
-          (click)="cerrarModal()"
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+        <button (click)="cerrarModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -143,9 +92,7 @@
       <div class="p-6" *ngIf="horarioSeleccionado">
         <!-- Indicador de color de la materia -->
         <div class="flex items-center mb-4">
-          <div
-            class="w-4 h-4 rounded-full mr-3"
-            [style.background-color]="horarioSeleccionado.color">
+          <div class="w-4 h-4 rounded-full mr-3" [style.background-color]="horarioSeleccionado.color">
           </div>
           <h4 class="text-lg font-bold text-gray-800">{{ horarioSeleccionado.asignatura }}</h4>
         </div>
@@ -185,24 +132,25 @@
             </span>
           </div>
 
-          <!-- Créditos (si está disponible) -->
-          <div *ngIf="horarioSeleccionado.creditos !== 'N/A'" class="flex">
-            <span class="font-medium text-gray-600 w-20">Créditos:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.creditos }}</span>
+          <!-- Carrera -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Carrera:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.carrera }}</span>
+          </div>
+          <!-- Nivel -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Nivel:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.curso }}</span>
           </div>
 
-          <!-- Tipo de clase (si está disponible) -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Tipo:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.tipo }}</span>
-          </div>
+         
+
         </div>
       </div>
 
       <!-- Footer del Modal -->
       <div class="flex justify-end p-6 border-t border-gray-200">
-        <button
-          (click)="cerrarModal()"
+        <button (click)="cerrarModal()"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
           Cerrar
         </button>

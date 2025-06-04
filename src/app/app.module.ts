@@ -15,6 +15,8 @@ import { EditarAulaComponent } from './editar-aula/editar-aula.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CoordinadoresComponent } from './coordinadores/coordinadores.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { HorarioEstudianteComponent } from './horario-estudiante/horario-estudiante.component';
+import { HorarioDocenteComponent } from './horario-docente/horario-docente.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     VerHorariosDocentesComponent,
     EditarAulaComponent,
     CoordinadoresComponent,
+    HorarioEstudianteComponent,
+    HorarioDocenteComponent,
   ],
   imports: [
     BrowserModule,

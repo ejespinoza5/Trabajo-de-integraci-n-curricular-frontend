@@ -1,29 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { Periodo, VerHorariosService } from '../ver-horarios.service';
+import { HorarioEstudianteService } from '../horario-estudiante.service';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
-
 @Component({
-  selector: 'app-ver-horarios',
-  templateUrl: './ver-horarios.component.html',
-  styleUrl: './ver-horarios.component.css'
+  selector: 'app-horario-estudiante',
+  templateUrl: './horario-estudiante.component.html',
+  styleUrl: './horario-estudiante.component.css'
 })
-export class VerHorariosComponent implements OnInit {
-  PeriodoSeleccionado: number = 0;
-  CarreraSeleccionada: number = 0;
-  CursoSeleccionado: number = 0;
-  periodos: Periodo[] = [];
-  carreras: any[] = [];
-  cursos: any[] = [];
+export class HorarioEstudianteComponent implements OnInit {
 
   horariosFiltrados: any[] = [];
   materiasUnicas: any[] = [];
   coloresMaterias: { [id: number]: string } = {};
   mensajeError: string = '';
-
   // Variables para el modal
   mostrarModal: boolean = false;
   horarioSeleccionado: any = null;
@@ -49,12 +41,12 @@ export class VerHorariosComponent implements OnInit {
       minute: '2-digit',
       hour12: false
     },
-     buttonText: {
-    today: 'Hoy',
-    month: 'Mes',
-    week: 'Semana',
-    day: 'Día'
-  },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día'
+    },
     eventDataTransform: (event) => {
       return event;
     },
@@ -71,108 +63,27 @@ export class VerHorariosComponent implements OnInit {
     }
   };
 
-  constructor(private verHorariosService: VerHorariosService) { }
-
+  constructor(private verHorariosEstudianteService: HorarioEstudianteService) { }
   ngOnInit(): void {
-    this.cargarPeriodos();
-  }
-
-  cargarPeriodos(): void {
-  this.verHorariosService.obtenerPeriodos().subscribe({
-    next: (data) => {
-      this.periodos = data;
-      if (this.periodos.length > 0) {
-        this.PeriodoSeleccionado = this.periodos[this.periodos.length - 1].id;
-        this.onPeriodoChange(this.PeriodoSeleccionado);
-      }
-    },
-    error: (err) => {
-      console.error('Error al cargar periodos:', err);
-      this.mensajeError = 'Error al cargar los periodos';
-    }
-  });
-}
-
-
-  onPeriodoChange(idPeriodo: number): void {
-    if (!idPeriodo) {
-      this.carreras = [];
-      this.cursos = [];
-      this.CarreraSeleccionada = 0;
-      this.CursoSeleccionado = 0;
-      return;
-    }
-
-    this.verHorariosService.obtenerCarrerasPorPeriodo(idPeriodo).subscribe({
-      next: (data) => {
-        this.carreras = data;
-        this.cursos = [];
-        this.CarreraSeleccionada = 0;
-        this.CursoSeleccionado = 0;
-        this.limpiarCalendario();
-      },
-      error: (err) => {
-        console.error('Error al cargar carreras:', err);
-        this.mensajeError = 'Error al cargar las carreras';
-      }
-    });
-  }
-
-  onCarreraChange(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
-      this.cargarCursos();
-    } else {
-      this.cursos = [];
-      this.CursoSeleccionado = 0;
-      this.limpiarCalendario();
-    }
-  }
-
-  cargarCursos(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
-      this.verHorariosService
-        .obtenerCursosPorPeriodoYCarrera(this.PeriodoSeleccionado, this.CarreraSeleccionada)
-        .subscribe({
-          next: (data) => {
-            this.cursos = data;
-            this.CursoSeleccionado = 0;
-            this.limpiarCalendario();
-          },
-          error: (err) => {
-            console.error('Error al cargar cursos:', err);
-            this.mensajeError = 'Error al cargar los cursos';
-          }
-        });
-    }
-  }
-
-  onCursoChange(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
-      this.cargarHorarios();
-    } else {
-      this.limpiarCalendario();
-    }
+    this.cargarHorarios();
   }
 
   cargarHorarios(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
-      this.mensajeError = '';
+    this.verHorariosEstudianteService
+      .obtenerHorarioEstudiante()
+      .subscribe({
+        next: (data: any[]) => {
+          this.horariosFiltrados = data;
+          this.asignarColoresAMaterias();
+          this.actualizarEventosCalendario();
+        },
+        error: (error) => {
+          console.error('Error al cargar los horarios:', error);
+          this.mensajeError = error?.error?.message || 'Error al cargar los horarios';
+          this.limpiarCalendario();
+        }
 
-      this.verHorariosService
-        .obtenerHorariosPorPeriodoCarreraCurso(this.PeriodoSeleccionado, this.CarreraSeleccionada, this.CursoSeleccionado)
-        .subscribe({
-          next: (data: any[]) => {
-            this.horariosFiltrados = data;
-            this.asignarColoresAMaterias();
-            this.actualizarEventosCalendario();
-          },
-          error: (err) => {
-            console.error('Error al cargar los horarios:', err);
-            this.mensajeError = 'Error al cargar los horarios';
-            this.limpiarCalendario();
-          }
-        });
-    }
+      });
   }
 
   limpiarCalendario(): void {
@@ -318,8 +229,7 @@ export class VerHorariosComponent implements OnInit {
         color: this.getColorMateria(horario.asignatura.id),
         codigo: horario.asignatura.codigo || 'N/A',
         creditos: horario.asignatura.creditos || 'N/A',
-        carrera: horario.carrera.nombre,
-        curso: horario.curso.nombre || 'N/A',
+        tipo: horario.tipo || 'Clase'
       };
       this.mostrarModal = true;
     }
@@ -337,4 +247,5 @@ export class VerHorariosComponent implements OnInit {
     const [hours, minutes] = hora.split(':');
     return `${hours}:${minutes}`;
   }
+
 }

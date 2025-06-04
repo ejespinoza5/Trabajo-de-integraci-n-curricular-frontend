@@ -13,10 +13,8 @@ import esLocale from '@fullcalendar/core/locales/es';
 export class VerHorariosDocentesComponent {
 
   PeriodoSeleccionado: number = 0;
-    CarreraSeleccionada: number = 0;
     DocenteSeleccionado: number = 0;
     periodos: Periodo[] = [];
-    carreras: any[] = [];
     docentes: any[] = [];
 
     horariosFiltrados: any[] = [];
@@ -95,47 +93,34 @@ export class VerHorariosDocentesComponent {
 
   onPeriodoChange(idPeriodo: number): void {
     if (!idPeriodo) {
-      this.carreras = [];
       this.docentes = [];
-      this.CarreraSeleccionada = 0;
       this.DocenteSeleccionado = 0;
       return;
     }
 
-    this.verHorariosDocentesService.obtenerCarrerasPorPeriodo(idPeriodo).subscribe({
+    this.verHorariosDocentesService.obtenerDocentesPorPeriodoYCarrera(idPeriodo).subscribe({
       next: (data) => {
-        this.carreras = data;
-        this.docentes = [];
-        this.CarreraSeleccionada = 0;
+
+        this.docentes = data;
         this.DocenteSeleccionado = 0;
         this.limpiarCalendario();
       },
       error: (err) => {
-        console.error('Error al cargar carreras:', err);
-        this.mensajeError = 'Error al cargar las carreras';
+        console.error('Error al cargar docentes:', err);
+        this.mensajeError = 'Error al cargar docentes';
       }
     });
   }
 
-  onCarreraChange(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
-      this.cargarDocentes();
-    } else {
-      this.docentes = [];
-      this.DocenteSeleccionado = 0;
-      this.limpiarCalendario();
-    }
-  }
 
   cargarDocentes(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
+    if (this.PeriodoSeleccionado) {
       this.verHorariosDocentesService
-        .obtenerDocentesPorPeriodoYCarrera(this.PeriodoSeleccionado, this.CarreraSeleccionada)
+        .obtenerDocentesPorPeriodoYCarrera(this.PeriodoSeleccionado)
         .subscribe({
           next: (data) => {
-            this.docentes = data;
-            this.DocenteSeleccionado = 0;
-            //this.limpiarCalendario();
+             this.docentes = data;
+             this.DocenteSeleccionado = 0;
           },
           error: (err) => {
             console.error('Error al cargar docentes:', err);
@@ -146,7 +131,7 @@ export class VerHorariosDocentesComponent {
   }
 
    onDocenteChange(): void {
-     if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.DocenteSeleccionado) {
+     if (this.PeriodoSeleccionado && this.DocenteSeleccionado) {
        this.cargarHorarios();
      } else {
       this.limpiarCalendario();
@@ -154,11 +139,11 @@ export class VerHorariosDocentesComponent {
    }
 
    cargarHorarios(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.DocenteSeleccionado) {
+    if (this.PeriodoSeleccionado && this.DocenteSeleccionado) {
       this.mensajeError = '';
 
       this.verHorariosDocentesService
-        .obtenerHorariosPorPeriodoCarreraDocente(this.PeriodoSeleccionado, this.CarreraSeleccionada, this.DocenteSeleccionado)
+        .obtenerHorariosPorPeriodoCarreraDocente(this.PeriodoSeleccionado, this.DocenteSeleccionado)
         .subscribe({
           next: (data: any[]) => {
             this.horariosFiltrados = data;
@@ -309,7 +294,9 @@ export class VerHorariosDocentesComponent {
       this.horarioSeleccionado = {
         id: horario.id,
         asignatura: horario.asignatura.nombre,
+        curso: horario.curso.nombre,
         docente: horario.docente.nombre,
+        carrera: horario.carrera.nombre,
         aula: horario.aula.nombre,
         dia: horario.dia.nombre,
         horaInicio: horario.horaInicio,
@@ -317,7 +304,8 @@ export class VerHorariosDocentesComponent {
         color: this.getColorMateria(horario.asignatura.id),
         codigo: horario.asignatura.codigo || 'N/A',
         creditos: horario.asignatura.creditos || 'N/A',
-        tipo: horario.tipo || 'Clase'
+        
+
       };
       this.mostrarModal = true;
     }
