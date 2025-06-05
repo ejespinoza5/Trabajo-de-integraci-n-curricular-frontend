@@ -1,1 +1,143 @@
-<p>horario-docente works!</p>
+
+<div class="container mx-auto p-4">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+<h1 class=" font-bold mb-6">HORARIO DOCENTE</h1>
+<!-- Mensaje de Error -->
+    <div *ngIf="mensajeError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      {{ mensajeError }}
+    </div>
+
+     <!-- Leyenda de Materias -->
+    <div *ngIf="materiasUnicas.length > 0" class="mb-6">
+      <h3 class="text-lg font-semibold mb-3 text-gray-800">Materias:</h3>
+      <div class="flex flex-wrap gap-2">
+        <div
+          *ngFor="let materia of materiasUnicas"
+          class="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm">
+          <div
+            class="w-4 h-4 rounded-full mr-2"
+            [style.background-color]="getColorMateria(materia.id)">
+          </div>
+          <span>{{ materia.nombre | uppercase}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendario -->
+    <div class="mt-6">
+
+
+      <full-calendar
+        *ngIf="horariosFiltrados.length > 0"
+        [options]="calendarOptions"
+        class="calendar-container">
+      </full-calendar>
+    </div>
+
+    <!-- Información adicional -->
+    <div *ngIf="horariosFiltrados.length > 0" class="mt-6 bg-blue-50 p-4 rounded-lg">
+      <h4 class="font-semibold text-blue-800 mb-2">Información:</h4>
+      <ul class="text-sm text-blue-700 space-y-1">
+        <li>• Haz clic en un evento del calendario para ver más detalles</li>
+        <li>• Puedes cambiar entre vista semanal y mensual usando los botones superiores</li>
+        <li>• Total de clases programadas: {{ horariosFiltrados.length }}</li>
+      </ul>
+    </div>
+  </div>
+
+
+    <!-- MODAL DE DETALLE DEL HORARIO -->
+  <div
+    *ngIf="mostrarModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    (click)="cerrarModal()">
+
+    <div
+      class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto"
+      (click)="$event.stopPropagation()">
+
+      <!-- Header del Modal -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold text-gray-800">Detalle del Horario</h3>
+        <button
+          (click)="cerrarModal()"
+          class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Contenido del Modal -->
+      <div class="p-6" *ngIf="horarioSeleccionado">
+        <!-- Indicador de color de la materia -->
+        <div class="flex items-center mb-4">
+          <div
+            class="w-4 h-4 rounded-full mr-3"
+            [style.background-color]="horarioSeleccionado.color">
+          </div>
+          <h4 class="text-lg font-bold text-gray-800">{{ horarioSeleccionado.asignatura }}</h4>
+        </div>
+
+        <!-- Información detallada -->
+        <div class="space-y-4">
+          <!-- Código de materia (si está disponible) -->
+          <div *ngIf="horarioSeleccionado.codigo !== 'N/A'" class="flex">
+            <span class="font-medium text-gray-600 w-20">Código:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.codigo }}</span>
+          </div>
+
+          <!-- Docente -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Docente:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.docente }}</span>
+          </div>
+
+          <!-- Aula -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Aula:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.aula }}</span>
+          </div>
+
+          <!-- Día -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Día:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.dia }}</span>
+          </div>
+
+          <!-- Horario -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Horario:</span>
+            <span class="text-gray-800">
+              {{ formatearHora(horarioSeleccionado.horaInicio) }} -
+              {{ formatearHora(horarioSeleccionado.horaFin) }}
+            </span>
+          </div>
+
+          <!-- Créditos (si está disponible) -->
+          <div *ngIf="horarioSeleccionado.creditos !== 'N/A'" class="flex">
+            <span class="font-medium text-gray-600 w-20">Créditos:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.creditos }}</span>
+          </div>
+
+          <!-- Tipo de clase (si está disponible) -->
+          <div class="flex">
+            <span class="font-medium text-gray-600 w-20">Tipo:</span>
+            <span class="text-gray-800">{{ horarioSeleccionado.tipo }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer del Modal -->
+      <div class="flex justify-end p-6 border-t border-gray-200">
+        <button
+          (click)="cerrarModal()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</div>
