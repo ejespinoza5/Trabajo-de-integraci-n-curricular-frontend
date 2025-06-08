@@ -6,23 +6,20 @@
     <div *ngIf="mensajeError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
       {{ mensajeError }}
     </div>
+    <!-- Mensaje de Éxito -->
+    <div *ngIf="mensajeExito" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+      {{ mensajeExito }}
+    </div>
+
 
     <!-- Filtros -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <!-- Periodo -->
       <div>
         <label class="block font-medium mb-1 text-sm text-gray-700">Periodo:</label>
-        <ng-select
-          [items]="periodos"
-          bindLabel="nombre"
-          bindValue="id"
-          [(ngModel)]="PeriodoSeleccionado"
-          placeholder="Seleccionar periodo"
-          (change)="onPeriodoChange(PeriodoSeleccionado)"
-          [searchable]="true"
-          [clearable]="false"
-          [appendTo]="'body'"
-          class="text-sm">
+        <ng-select [items]="periodos" bindLabel="nombre" bindValue="id" [(ngModel)]="PeriodoSeleccionado"
+          placeholder="Seleccionar periodo" (change)="onPeriodoChange(PeriodoSeleccionado)" [searchable]="true"
+          [clearable]="false" [appendTo]="'body'" class="text-sm">
           <ng-template ng-label-tmp let-item="item">
             <div class="text-sm">{{ item ? item.nombre : 'Seleccionar periodo' }}</div>
           </ng-template>
@@ -32,18 +29,9 @@
       <!-- Carrera -->
       <div>
         <label class="block font-medium mb-1 text-sm text-gray-700">Carrera:</label>
-        <ng-select
-          [items]="carreras"
-          bindLabel="nombre"
-          bindValue="id"
-          [(ngModel)]="CarreraSeleccionada"
-          placeholder="Seleccionar carrera"
-          (change)="onCarreraChange()"
-          [searchable]="true"
-          [clearable]="false"
-          [appendTo]="'body'"
-          [disabled]="!PeriodoSeleccionado"
-          class="text-sm">
+        <ng-select [items]="carreras" bindLabel="nombre" bindValue="id" [(ngModel)]="CarreraSeleccionada"
+          placeholder="Seleccionar carrera" (change)="onCarreraChange()" [searchable]="true" [clearable]="false"
+          [appendTo]="'body'" [disabled]="!PeriodoSeleccionado" class="text-sm">
           <ng-template ng-label-tmp let-item="item">
             <div class="text-sm">{{ item ? item.nombre : 'Seleccionar carrera' }}</div>
           </ng-template>
@@ -53,35 +41,61 @@
       <!-- Cursos -->
       <div>
         <label class="block font-medium mb-1 text-sm text-gray-700">Curso:</label>
-        <ng-select
-          [items]="cursos"
-          bindLabel="nombre"
-          bindValue="id"
-          [(ngModel)]="CursoSeleccionado"
-          placeholder="Seleccionar curso"
-          (change)="onCursoChange()"
-          [searchable]="true"
-          [clearable]="false"
-          [appendTo]="'body'"
-          [disabled]="!CarreraSeleccionada"
-          class="text-sm">
+        <ng-select [items]="cursos" bindLabel="nombre" bindValue="id" [(ngModel)]="CursoSeleccionado"
+          placeholder="Seleccionar curso" (change)="onCursoChange()" [searchable]="true" [clearable]="false"
+          [appendTo]="'body'" [disabled]="!CarreraSeleccionada" class="text-sm">
           <ng-template ng-label-tmp let-item="item">
             <div class="text-sm">{{ item ? item.nombre : 'Seleccionar curso' }}</div>
           </ng-template>
         </ng-select>
       </div>
+
+      <!-- Estado general -->
+      <fieldset *ngIf="PeriodoSeleccionado && CarreraSeleccionada && CursoSeleccionado && usuarioService.tieneRol(['SUPERADMINISTRADOR'])"
+        class="border border-gray-300 p-4 rounded-lg shadow-sm bg-gray-50">
+        <legend class="px-2 text-sm font-semibold text-gray-800 bg-white">Estado:</legend>
+
+        <div class="flex flex-col sm:flex-row sm:justify-between items-center mt-3 w-full gap-2 sm:gap-0">
+          <label
+            class="flex items-center text-sm cursor-pointer hover:bg-white hover:shadow-sm rounded-md p-3 transition-all duration-200 w-full sm:flex-1 justify-center">
+            <input type="radio" name="estado" [(ngModel)]="estadoGeneral" [value]="'PENDIENTE'"
+              (change)="actualizarEstado()"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2" />
+            <span class="ml-3 text-gray-700 font-medium">Pendiente</span>
+          </label>
+
+          <label
+            class="flex items-center text-sm cursor-pointer hover:bg-white hover:shadow-sm rounded-md p-3 transition-all duration-200 w-full sm:flex-1 justify-center">
+            <input type="radio" name="estado" [(ngModel)]="estadoGeneral" [value]="'APROBADO'"
+              (change)="actualizarEstado()"
+              class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 focus:ring-2" />
+            <span class="ml-3 text-gray-700 font-medium">Aprobado</span>
+          </label>
+
+          <label
+            class="flex items-center text-sm cursor-pointer hover:bg-white hover:shadow-sm rounded-md p-3 transition-all duration-200 w-full sm:flex-1 justify-center">
+            <input type="radio" name="estado" [(ngModel)]="estadoGeneral" [value]="'NO APROBADO'"
+              (change)="actualizarEstado()"
+              class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 focus:ring-2" />
+            <span class="ml-3 text-gray-700 font-medium">No Aprobado</span>
+          </label>
+        </div>
+      </fieldset>
+
+
+
+
+
+
     </div>
 
     <!-- Leyenda de Materias -->
     <div *ngIf="materiasUnicas.length > 0" class="mb-6">
       <h3 class="text-lg font-semibold mb-3 text-gray-800">Materias:</h3>
       <div class="flex flex-wrap gap-2">
-        <div
-          *ngFor="let materia of materiasUnicas"
+        <div *ngFor="let materia of materiasUnicas"
           class="flex items-center bg-gray-100 rounded-full px-3 py-1 text-sm">
-          <div
-            class="w-4 h-4 rounded-full mr-2"
-            [style.background-color]="getColorMateria(materia.id)">
+          <div class="w-4 h-4 rounded-full mr-2" [style.background-color]="getColorMateria(materia.id)">
           </div>
           <span>{{ materia.nombre | uppercase}}</span>
         </div>
@@ -91,19 +105,16 @@
     <!-- Calendario -->
     <div class="mt-6">
       <div *ngIf="horariosFiltrados.length === 0 && PeriodoSeleccionado && CarreraSeleccionada && CursoSeleccionado"
-           class="text-center py-8 text-gray-500">
+        class="text-center py-8 text-gray-500">
         <p>No se encontraron horarios para la selección actual.</p>
       </div>
 
       <div *ngIf="!PeriodoSeleccionado || !CarreraSeleccionada || !CursoSeleccionado"
-           class="text-center py-8 text-gray-500">
+        class="text-center py-8 text-gray-500">
         <p>Selecciona periodo, carrera y curso para ver los horarios.</p>
       </div>
 
-      <full-calendar
-        *ngIf="horariosFiltrados.length > 0"
-        [options]="calendarOptions"
-        class="calendar-container">
+      <full-calendar *ngIf="horariosFiltrados.length > 0" [options]="calendarOptions" class="calendar-container">
       </full-calendar>
     </div>
 
@@ -119,21 +130,16 @@
   </div>
 
   <!-- MODAL DE DETALLE DEL HORARIO -->
-  <div
-    *ngIf="mostrarModal"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  <div *ngIf="mostrarModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     (click)="cerrarModal()">
 
-    <div
-      class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto"
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto"
       (click)="$event.stopPropagation()">
 
       <!-- Header del Modal -->
       <div class="flex items-center justify-between p-6 border-b border-gray-200">
         <h3 class="text-xl font-semibold text-gray-800">Detalle del Horario</h3>
-        <button
-          (click)="cerrarModal()"
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+        <button (click)="cerrarModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -144,9 +150,7 @@
       <div class="p-6" *ngIf="horarioSeleccionado">
         <!-- Indicador de color de la materia -->
         <div class="flex items-center mb-4">
-          <div
-            class="w-4 h-4 rounded-full mr-3"
-            [style.background-color]="horarioSeleccionado.color">
+          <div class="w-4 h-4 rounded-full mr-3" [style.background-color]="horarioSeleccionado.color">
           </div>
           <h4 class="text-lg font-bold text-gray-800">{{ horarioSeleccionado.asignatura }}</h4>
         </div>
@@ -208,8 +212,7 @@
 
       <!-- Footer del Modal -->
       <div class="flex justify-end p-6 border-t border-gray-200">
-        <button
-          (click)="cerrarModal()"
+        <button (click)="cerrarModal()"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
           Cerrar
         </button>

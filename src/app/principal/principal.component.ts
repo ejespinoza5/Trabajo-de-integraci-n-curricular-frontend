@@ -14,10 +14,13 @@ export class PrincipalComponent implements OnInit {
   nombreUsuario: string = '';
   apellidoUsuario: string = '';
 
+  ObtenerAnioActual= new Date().getFullYear();
+  
   constructor(public usuarioService: AuthService, private router:Router) {}
   ngOnInit(): void {
     this.ObtenerNombreUsuario();
   }
+
 
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;

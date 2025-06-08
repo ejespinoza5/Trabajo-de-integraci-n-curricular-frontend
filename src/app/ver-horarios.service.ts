@@ -47,5 +47,14 @@ export class VerHorariosService {
     });
   }
 
+  editarEstado(idPeriodo: number, idCarrera: number, idCurso: number, estado: string): Observable<any> {
+    const body = { estado: estado };
+    const headers = this.getAuthHeaders();
 
+    return this.http.put<any>(
+      `${this.apiUrl}/horarios/${idPeriodo}/${idCarrera}/${idCurso}`,
+      body,
+      { headers }
+    );
+  }
 }

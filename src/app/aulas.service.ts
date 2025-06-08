@@ -3,11 +3,19 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 
 export interface Aulas {
+  mensaje: string;
   ID_AULA: number;
   NOMBRE_AULA: string;
   TIPO_AULA: string;
 }
-
+export interface AulaCreatedResponse {
+  id: {
+    mensaje: string;
+    id: number;
+  };
+  nombre: string;
+  tipo: string;
+}
 export interface CrearAula {
   nombre: string;
   tipo: string;
@@ -41,8 +49,8 @@ export class AulasService {
     });
   }
 
-  crearAulas(aula: CrearAula): Observable<Aulas> {
-    return this.http.post<Aulas>(this.apiUrl + '/aulas', aula, {
+  crearAulas(aula: CrearAula): Observable<AulaCreatedResponse> {
+    return this.http.post<AulaCreatedResponse>(this.apiUrl + '/aulas', aula, {
       headers: this.getAuthHeaders()
     });
   }

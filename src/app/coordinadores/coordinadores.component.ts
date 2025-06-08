@@ -66,7 +66,8 @@ searchInput = new Subject<string>();
       cedula_coordinador: this.coordinadorSeleccionado.DOCUMENTO_USUARIOS,
       nombre_coordinador: this.coordinadorSeleccionado.NOMBRES_USUARIOS,
       apellido_coordinador: this.coordinadorSeleccionado.APELLIDOS_USUARIOS,
-      idCarrera: this.carreraSeleccionada
+      idCarrera: this.carreraSeleccionada,
+      correo_coordinador: this.coordinadorSeleccionado.CORREO_USUARIOS || ''
     };
 
     this.coordinadoresService.crearCoordinador(nuevoCoordinador).subscribe({

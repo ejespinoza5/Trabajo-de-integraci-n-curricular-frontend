@@ -7,6 +7,7 @@ export interface Coordinadores {
   DOCUMENTO_USUARIOS: string;
   APELLIDOS_USUARIOS: string;
   NOMBRES_USUARIOS: string;
+  CORREO_USUARIOS: string;
 }
 
 export interface Carreras{
@@ -19,6 +20,7 @@ export interface CoordinadorCrear {
   nombre_coordinador: string;
   apellido_coordinador: string;
   idCarrera: number;
+  correo_coordinador: string;
 }
 
 export interface CoordinadoresTodos {

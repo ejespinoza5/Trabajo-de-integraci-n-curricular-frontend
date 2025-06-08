@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-ver-horarios',
@@ -18,6 +19,9 @@ export class VerHorariosComponent implements OnInit {
   periodos: Periodo[] = [];
   carreras: any[] = [];
   cursos: any[] = [];
+  estados: string[] = ['PENDIENTE', 'APROBADO', 'NO APROBADO'];
+  estadoGeneral: string = '';
+  mensajeExito: string = '';
 
   horariosFiltrados: any[] = [];
   materiasUnicas: any[] = [];
@@ -49,12 +53,12 @@ export class VerHorariosComponent implements OnInit {
       minute: '2-digit',
       hour12: false
     },
-     buttonText: {
-    today: 'Hoy',
-    month: 'Mes',
-    week: 'Semana',
-    day: 'Día'
-  },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día'
+    },
     eventDataTransform: (event) => {
       return event;
     },
@@ -71,27 +75,27 @@ export class VerHorariosComponent implements OnInit {
     }
   };
 
-  constructor(private verHorariosService: VerHorariosService) { }
+  constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService) { }
 
   ngOnInit(): void {
     this.cargarPeriodos();
   }
 
   cargarPeriodos(): void {
-  this.verHorariosService.obtenerPeriodos().subscribe({
-    next: (data) => {
-      this.periodos = data;
-      if (this.periodos.length > 0) {
-        this.PeriodoSeleccionado = this.periodos[this.periodos.length - 1].id;
-        this.onPeriodoChange(this.PeriodoSeleccionado);
+    this.verHorariosService.obtenerPeriodos().subscribe({
+      next: (data) => {
+        this.periodos = data;
+        if (this.periodos.length > 0) {
+          this.PeriodoSeleccionado = this.periodos[this.periodos.length - 1].id;
+          this.onPeriodoChange(this.PeriodoSeleccionado);
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar periodos:', err);
+        this.mensajeError = 'Error al cargar los periodos';
       }
-    },
-    error: (err) => {
-      console.error('Error al cargar periodos:', err);
-      this.mensajeError = 'Error al cargar los periodos';
-    }
-  });
-}
+    });
+  }
 
 
   onPeriodoChange(idPeriodo: number): void {
@@ -124,8 +128,22 @@ export class VerHorariosComponent implements OnInit {
     } else {
       this.cursos = [];
       this.CursoSeleccionado = 0;
+
       this.limpiarCalendario();
+      this.estadoGeneral = '';
     }
+  }
+
+  obtenerEstadoGeneral(horarios: any[]): string {
+    const estados = horarios.map(h => h.estado);
+
+    const todosAprobados = estados.every(e => e === 'APROBADO');
+    const todosNoAprobados = estados.every(e => e === 'NO APROBADO');
+
+    if (todosAprobados) return 'APROBADO';
+    if (todosNoAprobados) return 'NO APROBADO';
+
+    return 'PENDIENTE';
   }
 
   cargarCursos(): void {
@@ -149,10 +167,36 @@ export class VerHorariosComponent implements OnInit {
   onCursoChange(): void {
     if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
       this.cargarHorarios();
+
     } else {
       this.limpiarCalendario();
     }
   }
+
+  actualizarEstado(): void {
+  if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado && this.estadoGeneral) {
+    this.verHorariosService.editarEstado(
+      this.PeriodoSeleccionado,
+      this.CarreraSeleccionada,
+      this.CursoSeleccionado,
+      this.estadoGeneral
+    ).subscribe({
+      next: (response) => {
+        this.mensajeExito = response.mensaje;
+        setTimeout(() => {
+          this.mensajeExito = '';
+        }, 3000);
+      },
+      error: (err) => {
+        this.mensajeError = 'Error al actualizar el estado';
+        setTimeout(() => {
+          this.mensajeError = '';
+        }, 3000);
+      }
+    });
+  }
+}
+
 
   cargarHorarios(): void {
     if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
@@ -165,6 +209,7 @@ export class VerHorariosComponent implements OnInit {
             this.horariosFiltrados = data;
             this.asignarColoresAMaterias();
             this.actualizarEventosCalendario();
+            this.estadoGeneral = this.obtenerEstadoGeneral(this.horariosFiltrados);
           },
           error: (err) => {
             console.error('Error al cargar los horarios:', err);
