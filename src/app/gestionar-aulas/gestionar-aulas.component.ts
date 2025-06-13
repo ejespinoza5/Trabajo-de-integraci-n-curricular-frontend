@@ -62,39 +62,50 @@ export class GestionarAulasComponent implements OnInit {
 }
 
   agregarAulas() {
-    const aulaData = {
-      nombre: this.nuevaAula.nombre,
-      tipo: this.nuevaAula.tipo
-    };
-    this.notificationService.showLoading('Creando aula...');
-    this.aulaService.crearAulas(aulaData).subscribe({
-      next: (response) => {
-        this.notificationService.hideLoading();
-        this.notificationService.showSuccessReport(
-          'Aula Creada',
-          response.id.mensaje,
-          'Continuar'
-        );
-        this.ObtenerAulas();
-      },
-      error: (error) => {
-        this.notificationService.hideLoading();
-        console.error('Error al agregar aula', error);
-        let mensajeError = 'Error al crear el aula';
-
-        if (error.error && error.error.message) {
-          mensajeError = error.error.message;
-        } else if (error.message) {
-          mensajeError = error.message;
-        }
-        this.notificationService.showErrorReport(
-          'Error',
-          mensajeError,
-          'Cerrar'
-        );
-      }
-    });
+  if (!this.nuevaAula.nombre?.trim() || !this.nuevaAula.tipo?.trim()) {
+    this.notificationService.showWarningReport(
+      'Advertencia',
+      'Por favor, complete todos los campos antes de crear el aula.',
+      'Cerrar'
+    );
+    return; // Salir del método para no continuar con la llamada al servicio
   }
+
+  const aulaData = {
+    nombre: this.nuevaAula.nombre,
+    tipo: this.nuevaAula.tipo
+  };
+
+  this.notificationService.showLoading('Creando aula...');
+  this.aulaService.crearAulas(aulaData).subscribe({
+    next: (response) => {
+      this.notificationService.hideLoading();
+      this.notificationService.showSuccessReport(
+        'Aula Creada',
+        response.id.mensaje,
+        'Continuar'
+      );
+      this.ObtenerAulas();
+    },
+    error: (error) => {
+      this.notificationService.hideLoading();
+      console.error('Error al agregar aula', error);
+      let mensajeError = 'Error al crear el aula';
+
+      if (error.error && error.error.message) {
+        mensajeError = error.error.message;
+      } else if (error.message) {
+        mensajeError = error.message;
+      }
+      this.notificationService.showErrorReport(
+        'Error',
+        mensajeError,
+        'Cerrar'
+      );
+    }
+  });
+}
+
 
 
   editarAula(id: string): void {

@@ -89,7 +89,7 @@
           </li>
 
 
-          <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
+          <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR'])">
             <a [routerLink]="['/inicio/generar-reporte']" routerLinkActive="bg-verde-claro text-white"
               [routerLinkActiveOptions]="{ exact: true }" class="flex items-center px-3 py-2 ">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24"

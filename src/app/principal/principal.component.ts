@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { NotificationService } from '../notificacion.service';
 
 @Component({
   selector: 'app-principal',
@@ -16,7 +17,7 @@ export class PrincipalComponent implements OnInit {
 
   ObtenerAnioActual= new Date().getFullYear();
   
-  constructor(public usuarioService: AuthService, private router:Router) {}
+  constructor(public usuarioService: AuthService, private router:Router, private notificationService: NotificationService) {}
   ngOnInit(): void {
     this.ObtenerNombreUsuario();
   }
@@ -45,7 +46,7 @@ export class PrincipalComponent implements OnInit {
         }
       });
     } else {
-      console.log('ID de usuario:', idUsuario); // Verifica si el ID se obtiene correctamente
+      console.log('ID de usuario:', idUsuario); 
       if (!idUsuario) {
         console.error('No se pudo obtener el ID del usuario del token');
         return;
@@ -85,8 +86,48 @@ export class PrincipalComponent implements OnInit {
 
 
   CerrarSesion() {
-    this.usuarioService.cerrarSesion();
-    window.location.href = '/login';
-  }
+  // Mostrar diálogo de confirmación
+  this.notificationService.showConfirm(
+    'Confirmar Cierre de Sesión',
+    '¿Estás seguro de que deseas cerrar la sesión?',
+    'Cerrar Sesión',
+    'Cancelar'
+  ).then((confirmed) => {
+    if (confirmed) {
+      // Usuario confirmó el cierre de sesión
+      this.notificationService.showLoading('Cerrando sesión...');
+      
+      try {
+        this.usuarioService.cerrarSesion();
+        
+        this.notificationService.hideLoading();
+        
+        
+        // Redirigir después de mostrar el mensaje
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1500);
+        
+      } catch (error) {
+        this.notificationService.hideLoading();
+        console.error('Error al cerrar sesión:', error);
+        
+        this.notificationService.showErrorReport(
+          'Error',
+          'Ocurrió un error al cerrar la sesión',
+          'Reintentar'
+        );
+        
+        // En caso de error, redirigir de todas formas por seguridad
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      }
+    }
+    // Si no confirma, no hace nada (se queda en la página actual)
+  }).catch((error) => {
+    console.error('Error en el diálogo de confirmación:', error);
+  });
+}
 
 }

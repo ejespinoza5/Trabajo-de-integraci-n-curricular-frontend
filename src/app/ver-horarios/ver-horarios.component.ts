@@ -6,6 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
 import { AuthService } from '../auth.service';
+import { NotificationService } from '../notificacion.service';
 
 @Component({
   selector: 'app-ver-horarios',
@@ -62,9 +63,7 @@ export class VerHorariosComponent implements OnInit {
     eventDataTransform: (event) => {
       return event;
     },
-    datesSet: (dateInfo) => {
-      this.actualizarEventosParaSemanaActual(dateInfo.start);
-    },
+    // Eliminamos el callback datesSet que causaba el problema
     eventDidMount: (info) => {
       if (info.event.extendedProps['asignaturaId']) {
         info.el.style.backgroundColor = this.getColorMateria(info.event.extendedProps['asignaturaId']);
@@ -75,7 +74,9 @@ export class VerHorariosComponent implements OnInit {
     }
   };
 
-  constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService) { }
+  constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService,
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.cargarPeriodos();
@@ -96,7 +97,6 @@ export class VerHorariosComponent implements OnInit {
       }
     });
   }
-
 
   onPeriodoChange(idPeriodo: number): void {
     if (!idPeriodo) {
@@ -128,7 +128,6 @@ export class VerHorariosComponent implements OnInit {
     } else {
       this.cursos = [];
       this.CursoSeleccionado = 0;
-
       this.limpiarCalendario();
       this.estadoGeneral = '';
     }
@@ -167,14 +166,15 @@ export class VerHorariosComponent implements OnInit {
   onCursoChange(): void {
     if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
       this.cargarHorarios();
-
     } else {
       this.limpiarCalendario();
     }
   }
 
-  actualizarEstado(): void {
+ actualizarEstado(): void {
   if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado && this.estadoGeneral) {
+    this.notificationService.showLoading('Actualizando estado...');
+
     this.verHorariosService.editarEstado(
       this.PeriodoSeleccionado,
       this.CarreraSeleccionada,
@@ -182,43 +182,55 @@ export class VerHorariosComponent implements OnInit {
       this.estadoGeneral
     ).subscribe({
       next: (response) => {
-        this.mensajeExito = response.mensaje;
-        setTimeout(() => {
-          this.mensajeExito = '';
-        }, 3000);
+        this.notificationService.hideLoading();
+        this.notificationService.showSuccess(response.mensaje || 'Estado actualizado correctamente');
       },
       error: (err) => {
-        this.mensajeError = 'Error al actualizar el estado';
-        setTimeout(() => {
-          this.mensajeError = '';
-        }, 3000);
+        this.notificationService.hideLoading();
+        const mensaje = err?.error?.message || 'Error al actualizar el estado';
+        this.notificationService.showError(mensaje);
       }
     });
+  } else {
+    this.notificationService.showWarningReport(
+      'Filtros incompletos',
+      'Por favor, selecciona el periodo, la carrera, el curso y el estado antes de actualizar.',
+      'Entendido'
+    );
   }
 }
 
 
   cargarHorarios(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
-      this.mensajeError = '';
+  if (this.PeriodoSeleccionado && this.CarreraSeleccionada && this.CursoSeleccionado) {
+    this.mensajeError = '';
+    this.notificationService.showLoading('Cargando horarios...');
 
-      this.verHorariosService
-        .obtenerHorariosPorPeriodoCarreraCurso(this.PeriodoSeleccionado, this.CarreraSeleccionada, this.CursoSeleccionado)
-        .subscribe({
-          next: (data: any[]) => {
-            this.horariosFiltrados = data;
-            this.asignarColoresAMaterias();
-            this.actualizarEventosCalendario();
-            this.estadoGeneral = this.obtenerEstadoGeneral(this.horariosFiltrados);
-          },
-          error: (err) => {
-            console.error('Error al cargar los horarios:', err);
-            this.mensajeError = 'Error al cargar los horarios';
-            this.limpiarCalendario();
-          }
-        });
-    }
+    this.verHorariosService
+      .obtenerHorariosPorPeriodoCarreraCurso(
+        this.PeriodoSeleccionado,
+        this.CarreraSeleccionada,
+        this.CursoSeleccionado
+      )
+      .subscribe({
+        next: (data: any[]) => {
+          this.notificationService.hideLoading();
+
+          this.horariosFiltrados = data;
+          this.asignarColoresAMaterias();
+          this.actualizarEventosCalendario();
+          this.estadoGeneral = this.obtenerEstadoGeneral(this.horariosFiltrados);
+        },
+        error: (err) => {
+          this.notificationService.hideLoading();
+          console.error('Error al cargar los horarios:', err);
+          this.mensajeError = 'Error al cargar los horarios';
+          this.limpiarCalendario();
+        }
+      });
   }
+}
+
 
   limpiarCalendario(): void {
     this.horariosFiltrados = [];
@@ -272,25 +284,25 @@ export class VerHorariosComponent implements OnInit {
     return this.coloresMaterias[id] || '#6B7280';
   }
 
+  // MÉTODO CORREGIDO: Usar eventos recurrentes para evitar el corrimiento de días
   actualizarEventosCalendario(): void {
     if (this.horariosFiltrados.length > 0) {
-      this.actualizarEventosParaSemanaActual(new Date());
+      this.actualizarEventosCalendarioRecurrente();
     }
   }
 
-  actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
+  // NUEVO MÉTODO: Usar daysOfWeek para eventos recurrentes
+  actualizarEventosCalendarioRecurrente(): void {
     if (this.horariosFiltrados.length === 0) return;
 
-    const inicioSemana = this.obtenerInicioSemana(fechaReferencia);
-
     const eventos = this.horariosFiltrados.map(horario => {
-      const diaSemana = this.obtenerDiaSemana(horario.dia.nombre);
-      const fechaClase = this.obtenerFechaParaDiaSemana(inicioSemana, diaSemana);
-
+      const diaSemana = this.obtenerDiaSemanaISO(horario.dia.nombre);
+      
       return {
         title: `${horario.asignatura.nombre}\n${horario.docente.nombre}\n${horario.aula.nombre}`,
-        start: `${fechaClase}T${horario.horaInicio}`,
-        end: `${fechaClase}T${horario.horaFin}`,
+        daysOfWeek: [diaSemana], // Usar daysOfWeek para eventos recurrentes
+        startTime: horario.horaInicio,
+        endTime: horario.horaFin,
         backgroundColor: this.getColorMateria(horario.asignatura.id),
         borderColor: this.getColorMateria(horario.asignatura.id),
         extendedProps: {
@@ -307,6 +319,28 @@ export class VerHorariosComponent implements OnInit {
       ...this.calendarOptions,
       events: eventos
     };
+  }
+
+  // NUEVO MÉTODO: Obtener día de la semana para FullCalendar (0=domingo, 1=lunes, etc.)
+  obtenerDiaSemanaISO(nombreDia: string): number {
+    const dias: { [key: string]: number } = {
+      'Domingo': 0,
+      'Lunes': 1,
+      'Martes': 2,
+      'Miércoles': 3,
+      'Miercoles': 3,
+      'Jueves': 4,
+      'Viernes': 5,
+      'Sábado': 6,
+      'Sabado': 6
+    };
+    return dias[nombreDia] ?? 1;
+  }
+
+  // MÉTODOS MANTENIDOS PERO YA NO SE USAN (puedes eliminarlos si quieres)
+  actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
+    // Este método ya no se usa con la nueva implementación
+    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
   }
 
   obtenerInicioSemana(fecha: Date): Date {

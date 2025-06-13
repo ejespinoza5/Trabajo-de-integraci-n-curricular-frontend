@@ -22,7 +22,7 @@ const routes: Routes = [
   children: [
     { path: 'gestionar-aulas', component: GestionarAulasComponent, canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR'] } },
     { path: 'generar-horario', component: GenerarHorariosComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR'] } },
-    { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR'] } },
+    { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR', 'COORDINADOR'] } },
     { path: 'ver-horario', component: VerHorariosComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR'] } },
     { path: 'ver-horario-docente', component: VerHorariosDocentesComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR'] } },
     { path: 'editar-aula/:id', component: EditarAulaComponent, canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR'] } },

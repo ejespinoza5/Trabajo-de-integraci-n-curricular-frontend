@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../auth.service'; // Ajusta la ruta si es necesario
 import { Router } from '@angular/router';
 import { Roles } from '../roles';
+import { NotificationService } from '../notificacion.service';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +16,24 @@ export class LoginComponent {
   cedula: string = '';
   error: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private notificationService: NotificationService) { }
 
 iniciarSesion() {
+  if (!this.correo || !this.cedula) {
+    this.notificationService.showWarningReport(
+      'Campos incompletos',
+      'Por favor ingresa los campos requeridos para iniciar sesión.',
+      'Entendido'
+    );
+    return;
+  }
+
+  this.notificationService.showLoading('Iniciando sesión...');
+
   this.authService.login(this.correo, this.cedula).subscribe({
     next: (respuesta) => {
+      this.notificationService.hideLoading();
+
       const token = respuesta.token;
       this.authService.guardarToken(token);
 
@@ -34,15 +48,22 @@ iniciarSesion() {
       } else if (rol === 15) {
         this.router.navigate(['/inicio/docente-horario']);
       } else {
-        this.error = 'Rol no autorizado';
+        this.notificationService.showWarningReport(
+          'Rol no autorizado',
+          'Tu rol no tiene acceso a esta plataforma.',
+          'Entendido'
+        );
       }
     },
     error: (err) => {
-      this.error = err.error?.mensaje || 'Ocurrió un error inesperado';
+      this.notificationService.hideLoading();
+      const mensaje = err?.error?.mensaje || 'Ocurrió un error inesperado';
+      this.notificationService.showError(mensaje);
       console.error(err);
     }
   });
 }
+
 
 
 

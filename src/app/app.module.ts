@@ -17,6 +17,7 @@ import { CoordinadoresComponent } from './coordinadores/coordinadores.component'
 import { NgSelectModule } from '@ng-select/ng-select';
 import { HorarioEstudianteComponent } from './horario-estudiante/horario-estudiante.component';
 import { HorarioDocenteComponent } from './horario-docente/horario-docente.component';
+import { SafeUrlPipe } from './safe-url.pipe';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { HorarioDocenteComponent } from './horario-docente/horario-docente.compo
     CoordinadoresComponent,
     HorarioEstudianteComponent,
     HorarioDocenteComponent,
+    SafeUrlPipe
   ],
   imports: [
     BrowserModule,

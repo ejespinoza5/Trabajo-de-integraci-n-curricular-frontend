@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
+import { NotificationService } from '../notificacion.service';
 @Component({
   selector: 'app-horario-estudiante',
   templateUrl: './horario-estudiante.component.html',
@@ -63,28 +64,42 @@ export class HorarioEstudianteComponent implements OnInit {
     }
   };
 
-  constructor(private verHorariosEstudianteService: HorarioEstudianteService) { }
+  constructor(private verHorariosEstudianteService: HorarioEstudianteService, private notificationService: NotificationService) { }
   ngOnInit(): void {
     this.cargarHorarios();
   }
 
-  cargarHorarios(): void {
-    this.verHorariosEstudianteService
-      .obtenerHorarioEstudiante()
-      .subscribe({
-        next: (data: any[]) => {
-          this.horariosFiltrados = data;
-          this.asignarColoresAMaterias();
-          this.actualizarEventosCalendario();
-        },
-        error: (error) => {
-          console.error('Error al cargar los horarios:', error);
-          this.mensajeError = error?.error?.message || 'Error al cargar los horarios';
-          this.limpiarCalendario();
-        }
+cargarHorarios(): void {
+  this.mensajeError = '';
+  this.notificationService.showLoading('Cargando horarios...');
 
-      });
-  }
+  this.verHorariosEstudianteService
+    .obtenerHorarioEstudiante()
+    .subscribe({
+      next: (data: any[]) => {
+        this.notificationService.hideLoading();
+
+        this.horariosFiltrados = data;
+        this.asignarColoresAMaterias();
+        this.actualizarEventosCalendario();
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        console.error('Error al cargar los horarios:', error);
+
+        const mensaje = error?.error?.message || 'Error al cargar los horarios';
+        this.mensajeError = mensaje;
+
+        this.notificationService.showErrorReport(
+          'Error',
+          mensaje,
+          'Cerrar'
+        );
+
+        this.limpiarCalendario();
+      }
+    });
+}
 
   limpiarCalendario(): void {
     this.horariosFiltrados = [];
