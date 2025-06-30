@@ -20,17 +20,46 @@ export class GenerarReportesComponent implements OnInit {
     cursos: any[] = [];
     mensajeError: string = '';
 
+    observacion: any;
+
     mostrarModalPDF = false;
     pdfUrl: string = '';
     pdfBlob!: Blob;
     pdfSrc: string | null = null;
 
+    mostrarModalConfiguracion: boolean = false;
+     modoEdicion: boolean = false;
+  guardandoCambios: boolean = false;
+  mensajeExito: string = '';
+
+   observacionEditada: any = {
+    preprof: '',
+    comunitario: '',
+    ingles: ''
+  };
+
+  //Autoridades
+  autoridades: any[] = [];
+autoridadesEditadas: any = {
+  rector: '',
+  vicerrectora: ''
+};
+autoridadesOriginales: any = {};
+modoEdicionAutoridades: boolean = false;
+guardandoCambiosAutoridades: boolean = false;
+mensajeExitoAutoridades: string = '';
+mensajeErrorAutoridades: string = '';
+
+  observacionOriginal: any = {};
     constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService,
-      private reporteService: ReportesService, private notificationService: NotificationService
+      private reporteService: ReportesService, private notificationService: NotificationService,
+      private authService: AuthService
     ) { }
 
      ngOnInit(): void {
     this.cargarPeriodos();
+    this.cargarObservacion();
+    this.cargarAutoridades();
   }
 
   cargarPeriodos(): void {
@@ -166,6 +195,236 @@ descargarPDF() {
 }
 
 
+cargarObservacion(): void {
+  const idCarrera = this.authService.obtenerIdCarrera();
+  if (idCarrera === null) {
+    this.mensajeError = 'No se pudo obtener la carrera del token';
+    return;
+  }
+  this.reporteService.obtenerObservacionesPorCarrera(idCarrera).subscribe({
+    next: (data) => {
+      this.observacion = data;
+    },
+    error: (err) => {
+      console.error('Error al cargar observación:', err);
+      this.mensajeError = 'No se pudo cargar la observación';
+    }
+  });
+}
+
+abrirModalConfiguracion(): void {
+    this.mostrarModalConfiguracion = true;
+    this.inicializarDatosEdicion();
+    this.limpiarMensajes();
+  }
+
+cerrarModalConfiguracion(): void {
+    this.mostrarModalConfiguracion = false;
+    this.modoEdicion = false;
+    this.limpiarMensajes();
+  }
+
+  inicializarDatosEdicion(): void {
+    // Mapear los datos originales al formato de edición
+    this.observacionEditada = {
+      preprof: this.observacion.PRACTICAS_PREPROFESIONALES_HORAS || '',
+      comunitario: this.observacion.SERVICIO_COMUNITARIO_HORAS || '',
+      ingles: this.observacion.INGLES_HORAS || ''
+    };
+    
+    // Crear respaldo
+    this.observacionOriginal = { ...this.observacionEditada };
+  }
+
+  habilitarEdicion(): void {
+    this.modoEdicion = true;
+    this.limpiarMensajes();
+  }
+
+  cancelarEdicion(): void {
+    // Restaurar valores originales
+    this.observacionEditada = { ...this.observacionOriginal };
+    this.modoEdicion = false;
+    this.limpiarMensajes();
+  }
+
+  guardarCambios(): void {
+  this.notificationService.showLoading('Guardando cambios...');
+  this.limpiarMensajes();
+
+  // Llamar al servicio con el ID de observación
+  const idObservacion = this.observacion.id; // Asume que tienes el ID
+  
+  this.reporteService.editarObservaciones(idObservacion, this.observacionEditada)
+    .subscribe({
+      next: (response) => {
+        this.notificationService.hideLoading();
+        this.modoEdicion = false;
+        
+        // Si tu servicio de actualización devuelve un mensaje de éxito
+        this.notificationService.showSuccess(
+          'Cambios Guardados Correctamente.',
+        );
+        
+        // Actualizar los datos originales
+        this.observacion.PRACTICAS_PREPROFESIONALES_HORAS = this.observacionEditada.preprof;
+        this.observacion.SERVICIO_COMUNITARIO_HORAS = this.observacionEditada.comunitario;
+        this.observacion.INGLES_HORAS = this.observacionEditada.ingles;
+        this.observacionOriginal = { ...this.observacionEditada };
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        console.error('Error al guardar observaciones:', error);
+        
+        let mensajeError = 'Error al guardar los cambios';
+        
+        // Manejo específico de errores
+        if (error.status === 403 && error.error && error.error.message) {
+          // Error 403: Forbidden
+          mensajeError = error.error.message;
+        } else if (error.status === 404 && error.error && error.error.message) {
+          // Error 404: Not Found
+          mensajeError = error.error.message;
+        } else if (error.error && error.error.message) {
+          mensajeError = error.error.message;
+        } else if (error.message) {
+          mensajeError = error.message;
+        }
+        
+        this.notificationService.showErrorReport(
+          'Error',
+          mensajeError,
+          'Cerrar'
+        );
+      }
+    });
+}
+
+  esComunitarioConfigurado(): boolean {
+  const horas = this.observacionEditada.comunitario;
+  return horas !== '' && horas !== '0' && parseInt(horas) > 0;
+}
+esPracticasConfigurado(): boolean {
+  const horas = this.observacionEditada.preprof;
+  return horas !== '' && horas !== '0' && parseInt(horas) > 0;
+}
+obtenerTextoEstado(configurado: boolean): string {
+  return configurado ? 'Configurado' : 'No configurado';
+}
+
+obtenerClasesEstado(configurado: boolean): string {
+  return configurado 
+    ? 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800'
+    : 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800';
+}
+
+  limpiarMensajes(): void {
+    this.mensajeExito = '';
+    this.mensajeError = '';
+  }
+
+  // Métodos para manejar las autoridades
+  // Agregar estos métodos a la clase GenerarReportesComponent
+
+cargarAutoridades(): void {
+  this.reporteService.obtenerAutoridades().subscribe({
+    next: (data) => {
+      this.autoridades = data;
+      this.inicializarDatosAutoridades();
+    },
+    error: (err) => {
+      console.error('Error al cargar autoridades:', err);
+      this.mensajeErrorAutoridades = 'No se pudieron cargar las autoridades';
+    }
+  });
+}
+
+inicializarDatosAutoridades(): void {
+  // Mapear los datos de autoridades al formato de edición
+  const rector = this.autoridades.find(auth => auth.ID_AUTORIDAD === 1);
+  const vicerrectora = this.autoridades.find(auth => auth.ID_AUTORIDAD === 2);
+  
+  this.autoridadesEditadas = {
+    rector: rector?.NOMBRE_AUTORIDAD || '',
+    vicerrectora: vicerrectora?.NOMBRE_AUTORIDAD || ''
+  };
+  
+  // Crear respaldo
+  this.autoridadesOriginales = { ...this.autoridadesEditadas };
+}
+
+habilitarEdicionAutoridades(): void {
+  this.modoEdicionAutoridades = true;
+  this.limpiarMensajesAutoridades();
+}
+
+cancelarEdicionAutoridades(): void {
+  // Restaurar valores originales
+  this.autoridadesEditadas = { ...this.autoridadesOriginales };
+  this.modoEdicionAutoridades = false;
+  this.limpiarMensajesAutoridades();
+}
+
+guardarCambiosAutoridades(): void {
+  this.notificationService.showLoading('Actualizando autoridades...');
+  this.limpiarMensajesAutoridades();
+
+  this.reporteService.actualizarAutoridad(this.autoridadesEditadas)
+    .subscribe({
+      next: (response) => {
+        this.notificationService.hideLoading();
+        this.modoEdicionAutoridades = false;
+        
+        // Si tu servicio de actualización devuelve un mensaje de éxito
+        this.notificationService.showSuccess(
+          'Datos de autoridades actualizados correctamente.',
+        );
+        
+        // Actualizar los datos originales
+        this.autoridadesOriginales = { ...this.autoridadesEditadas };
+        
+        // Actualizar el array de autoridades
+        const rectorIndex = this.autoridades.findIndex(auth => auth.ID_AUTORIDAD === 1);
+        const vicerrectoraIndex = this.autoridades.findIndex(auth => auth.ID_AUTORIDAD === 2);
+        
+        if (rectorIndex !== -1) {
+          this.autoridades[rectorIndex].NOMBRE_AUTORIDAD = this.autoridadesEditadas.rector;
+        }
+        if (vicerrectoraIndex !== -1) {
+          this.autoridades[vicerrectoraIndex].NOMBRE_AUTORIDAD = this.autoridadesEditadas.vicerrectora;
+        }
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        console.error('Error al guardar autoridades:', error);
+        
+        let mensajeError = 'Error al guardar las autoridades';
+        
+        // Manejo específico de errores
+        if (error.status === 403 && error.error && error.error.message) {
+          // Error 403: Forbidden
+          mensajeError = error.error.message;
+        } else if (error.status === 404 && error.error && error.error.message) {
+          // Error 404: Not Found
+          mensajeError = error.error.message;
+        } else if (error.error && error.error.message) {
+          mensajeError = error.error.message;
+        } else if (error.message) {
+          mensajeError = error.message;
+        }
+        
+        this.notificationService.showErrorReport(
+          'Error',
+          mensajeError,
+          'Cerrar'
+        );
+      }
+    });
+}
+limpiarMensajesAutoridades(): void {
+  this.mensajeExitoAutoridades = '';
+  this.mensajeErrorAutoridades = '';
+}
 
 
 }

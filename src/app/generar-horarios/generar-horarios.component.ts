@@ -9,7 +9,8 @@ import { FullCalendarComponent } from '@fullcalendar/angular';
 import esLocale from '@fullcalendar/core/locales/es';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { NotificationService } from '../notificacion.service';
-
+import rrulePlugin from '@fullcalendar/rrule';
+import { VerHorariosDocentesService } from '../ver-horarios-docentes.service';
 // Interfaces
 interface HorarioResponse {
   id: number;
@@ -21,12 +22,24 @@ interface HorarioDetalle {
   id?: number;
   docente: { id: number; nombre: string; };
   asignatura: { id: number; nombre: string; };
-  carrera: { id: number; nombre: string; };
-  curso: { id: number; nombre: string; };
+  carrera: {
+    id: number;
+    nombre: string;
+    carreras?: Array<{ id: number; nombre: string; }>; // Para carreras articuladas
+  };
+  curso: {
+    id: number | string;
+    nombre: string;
+    cursos?: Array<{ id: number; nombre: string; }>; // Para cursos articulados
+  };
   aula: { id: number; nombre: string; };
   dia: { id: number; nombre: string; };
   horaInicio: string;
   horaFin: string;
+  fechaInicio: string;
+  fechaFin: string;
+  tipoClase?: string; // ✅ Hacer obligatorio este campo
+  grupoArticulado?: any;
 }
 
 // Clase para manejo de colores optimizada
@@ -100,6 +113,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   aulas: any[] = [];
   dias: any[] = [];
   carreras: any[] = [];
+  carrerasArticuladas: any[] = [];
   docenteAsignaturaNivel: any[] = [];
 
   // Variables de selección con valores por defecto
@@ -116,6 +130,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   AsignaturaSeleccionada = this.DEFAULT_SELECTION;
   horaInicio = '';
   horaFin = '';
+  fechaInicio = '';
+  fechaFin = '';
   mensajeError = '';
 
   // Variables para el modal
@@ -124,6 +140,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   modoEdicion = false;
   editHoraInicio = '';
   editHoraFin = '';
+  editFechaInicio = '';
+  editFechaFin = '';
   editAulaSeleccionada = this.DEFAULT_SELECTION;
   editDiaSeleccionado = this.DEFAULT_SELECTION;
   mensajeModal = '';
@@ -136,9 +154,25 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   // Estado de acordeón
   isAccordionOpen = false;
 
+  // Nuevas propiedades para clases articuladas
+  tiposClase = [
+    { nombre: 'Clase Regular', valor: 'regular' },
+    { nombre: 'Clase Articulada', valor: 'articulada' }
+  ];
+
+
+
+  tipoClaseSeleccionado: string = 'regular';
+  cursosArticulados: Array<{ ID_CURSOS: number, ID_CARRERAS: number, NOMBRE_CARRERAS?: string, NOMBRE_CURSOS?: string }> = [];
+  nuevaCarreraArticulada: number = 0;
+  nuevoCursoArticulado: number = 0;
+  cursosDisponibles: any[] = [];
+  cursos: any[] = [];
+  docentes: any[] = [];
+
   // Configuración del calendario optimizada
   calendarOptions: CalendarOptions = {
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin],
     initialView: 'timeGridWeek',
     headerToolbar: {
       left: 'prev,next today',
@@ -175,7 +209,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     private aulasService: AulasService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private verHorariosDocentesService: VerHorariosDocentesService
   ) {
     this.setupSearchDebounce();
   }
@@ -200,6 +235,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+
 
   // Getter para acceder a la API del calendario
   get calendarApi(): Calendar | null {
@@ -244,34 +281,43 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       });
 
     this.cargarTodosLosHorarios();
+
+    this.horariosService.obtenerCursos()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => this.cursos = data,
+        error: (err) => this.handleError('Error al cargar cursos', err)
+      });
   }
 
   // Método optimizado para cargar horarios
   cargarTodosLosHorarios(): void {
-  this.notificationService.showLoading('Cargando horarios...');
+    this.notificationService.showLoading('Cargando horarios...');
 
-  this.horariosService.obtenerTodosHorarios()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (data: HorarioDetalle[]) => {
-        this.notificationService.hideLoading();
+    // ✅ SOLUCIÓN: Forzar actualización del cache
+    this.horariosService.obtenerTodosHorarios(true) // ✅ Pasar true para forzar refresh
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: HorarioDetalle[]) => {
+          this.notificationService.hideLoading();
 
-        this.todosLosHorarios = data;
-        this.assignColorsToSchedules(data);
 
-        if (this.PeriodoSeleccionado > 0) {
-          this.filtrarHorariosPorPeriodo(this.PeriodoSeleccionado);
-        } else {
-          this.horariosFiltrados = [...this.todosLosHorarios];
-          this.actualizarEventosCalendario();
+          this.todosLosHorarios = data;
+          this.assignColorsToSchedules(data);
+
+          if (this.PeriodoSeleccionado > 0) {
+            this.filtrarHorariosPorPeriodo(this.PeriodoSeleccionado);
+          } else {
+            this.horariosFiltrados = [...this.todosLosHorarios];
+            this.actualizarEventosCalendario();
+          }
+        },
+        error: (err) => {
+          this.notificationService.hideLoading();
+          this.handleError('Error al cargar los horarios', err);
         }
-      },
-      error: (err) => {
-        this.notificationService.hideLoading();
-        this.handleError('Error al cargar los horarios', err);
-      }
-    });
-}
+      });
+  }
 
 
   // Método optimizado para asignar colores
@@ -288,7 +334,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // Filtrar horarios optimizado
   filtrarHorariosPorPeriodo(idPeriodo: number): void {
-    this.horariosService.obtenerHorariosPorPeriodo(idPeriodo)
+    // ✅ SOLUCIÓN: Forzar actualización del cache
+    this.horariosService.obtenerHorariosPorPeriodoAgrupados(idPeriodo, true)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data: HorarioDetalle[]) => {
@@ -298,31 +345,56 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
         error: (err) => this.handleError('Error al filtrar horarios por periodo', err)
       });
   }
+  private combinarFechaHora(fecha: string, hora: string): string {
+    const fechaObj = new Date(fecha);
+    const [horas, minutos] = hora.split(':');
+    fechaObj.setHours(parseInt(horas), parseInt(minutos), 0, 0);
+    return fechaObj.toISOString();
+  }
 
   // Actualización de eventos optimizada
   actualizarEventosCalendario(): void {
-    const eventos: EventInput[] = this.horariosFiltrados.map(horario => ({
-      id: `horario-${horario.id}`,
-      title: `${horario.asignatura.nombre}\n${horario.aula.nombre}`,
-      startTime: horario.horaInicio,
-      endTime: horario.horaFin,
-      daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
-      extendedProps: {
-        horarioId: horario.id,
-        asignaturaId: horario.asignatura.id,
-        docente: horario.docente.nombre,
-        aula: horario.aula.nombre,
-        carrera: horario.carrera.nombre,
-        curso: horario.curso.nombre
+    const eventos: EventInput[] = this.horariosFiltrados.map(horario => {
+      const fechaInicio = new Date(horario.fechaInicio);
+      const fechaFin = new Date(horario.fechaFin);
+      fechaFin.setDate(fechaFin.getDate() + 1);
+
+      // ✅ SOLUCIÓN: Manejar tanto cursos simples como múltiples
+      let cursoNombre: string;
+      if (horario.curso.cursos && horario.curso.cursos.length > 0) {
+        // Es una clase articulada con múltiples cursos
+        cursoNombre = horario.curso.nombre; // Ya viene formateado del backend
+      } else {
+        // Es una clase regular
+        cursoNombre = horario.curso.nombre;
       }
-    }));
+
+      return {
+        id: `horario-${horario.id}`,
+        title: `${horario.asignatura.nombre}\n${horario.aula.nombre}\n${cursoNombre}`, // ✅ Agregar curso al título
+        daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
+        startTime: horario.horaInicio,
+        endTime: horario.horaFin,
+        startRecur: fechaInicio,
+        endRecur: fechaFin,
+        extendedProps: {
+          horarioId: horario.id,
+          asignaturaId: horario.asignatura.id,
+          docente: horario.docente.nombre,
+          aula: horario.aula.nombre,
+          carrera: horario.carrera.nombre,
+          curso: cursoNombre,
+          tipoClase: horario.tipoClase || 'REGULAR', // ✅ Incluir tipo de clase
+          cursosArticulados: horario.curso.cursos || null // ✅ Incluir cursos articulados
+        }
+      };
+    });
 
     this.ngZone.run(() => {
       if (this.calendarApi) {
         this.calendarApi.removeAllEvents();
         this.calendarApi.addEventSource(eventos);
 
-        // Optimizar el refresco del calendario
         requestAnimationFrame(() => {
           this.calendarApi?.refetchEvents();
           this.calendarApi?.render();
@@ -349,16 +421,35 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     return diaId === 7 ? 0 : diaId;
   }
 
+
   // Handlers de cambio optimizados
   onPeriodoChange(idPeriodo: number): void {
     this.PeriodoSeleccionado = idPeriodo;
     this.resetSelections();
+    this.limpiarFormulario();
 
     this.horariosService.obtenerCarrerasPeriodo(idPeriodo)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => this.carreras = data,
         error: (err) => this.handleError('Error al cargar carreras', err)
+    });
+
+    this.horariosService.obtenerCarrerasPeriodoArticulado(idPeriodo)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => this.carrerasArticuladas = data,
+        error: (err) => this.handleError('Error al cargar carreras', err)
+    });
+
+
+    this.horariosService.obtenerDocentePeriodo(idPeriodo)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.docentes = data;
+        },
+        error: (err) => this.handleError('Error al cargar docentes', err)
       });
 
     this.filtrarHorariosPorPeriodo(idPeriodo);
@@ -442,7 +533,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     }
 
     const horarioData = this.buildHorarioData();
-
     this.notificationService.showLoading('Asignando horario...');
 
     this.horariosService.asignarHorario(horarioData)
@@ -458,14 +548,16 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
               'Continuar'
             );
 
-            this.obtenerDetalleHorario(res.id);
+            // ✅ SOLUCIÓN: Recargar todos los horarios en lugar de solo obtener el detalle
+            this.cargarTodosLosHorarios(); // Esto forzará la actualización completa
+
             this.limpiarFormulario();
+
             this.isAccordionOpen = false;
           }
         },
         error: (err) => {
           this.notificationService.hideLoading();
-
           let mensaje = 'Error desconocido al asignar el horario';
 
           if (err.error?.output?.payload?.message) {
@@ -488,8 +580,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       this.PeriodoSeleccionado,
       this.DocenteSeleccionado,
       this.AsignaturaSeleccionada,
-      this.CarreraSeleccionada,
-      this.NivelSeleccionado,
       this.DiaSeleccionado,
       this.AulaSeleccionada
     ];
@@ -499,29 +589,48 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    return true;
+    // Validación específica para tipo de clase
+    if (this.tipoClaseSeleccionado === 'regular') {
+      return this.CarreraSeleccionada > 0 && this.NivelSeleccionado > 0;
+    } else if (this.tipoClaseSeleccionado === 'articulada') {
+      return this.cursosArticulados.length > 0;
+    }
+
+    return false;
   }
 
   private buildHorarioData(): any {
-    return {
+    let horarioData: any = {
       ID_PERIODO: this.PeriodoSeleccionado,
       ID_DOCENTE: this.DocenteSeleccionado,
       ID_ASIGNATURA: this.AsignaturaSeleccionada,
-      ID_CARRERAS: this.CarreraSeleccionada,
-      ID_CURSOS: this.NivelSeleccionado,
       ID_DIA: this.DiaSeleccionado,
       ID_AULA: this.AulaSeleccionada,
       HORA_INICIO: this.horaInicio,
-      HORA_FIN: this.horaFin
+      HORA_FIN: this.horaFin,
+      FECHA_INICIO: this.fechaInicio,
+      FECHA_FIN: this.fechaFin
     };
+
+    if (this.tipoClaseSeleccionado === 'regular') {
+      horarioData.ID_CARRERAS = this.CarreraSeleccionada;
+      horarioData.ID_CURSOS = this.NivelSeleccionado;
+    } else if (this.tipoClaseSeleccionado === 'articulada') {
+      horarioData.cursosArticulados = this.cursosArticulados;
+    }
+
+    return horarioData;
   }
 
   // Limpiar formulario
   limpiarFormulario(): void {
     this.AulaSeleccionada = this.DEFAULT_SELECTION;
     this.DiaSeleccionado = this.DEFAULT_SELECTION;
-    this.horaInicio = '';
-    this.horaFin = '';
+    this.cursosArticulados = [];
+    this.CarreraSeleccionada = this.DEFAULT_SELECTION;
+    this.DocenteAsignaturaSeleccionada = null;
+    this.docentes = [];
+    this.DocenteSeleccionado = 0;
   }
 
   // Obtener detalle de horario
@@ -531,11 +640,23 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (detalle: HorarioDetalle) => {
           detalle.id = idHorario;
-          this.todosLosHorarios = [...this.todosLosHorarios, detalle];
+
+          // ✅ SOLUCIÓN: Verificar si ya existe antes de agregar
+          const existeIndex = this.todosLosHorarios.findIndex(h => h.id === idHorario);
+          if (existeIndex >= 0) {
+            this.todosLosHorarios[existeIndex] = detalle;
+          } else {
+            this.todosLosHorarios = [...this.todosLosHorarios, detalle];
+          }
 
           if (this.PeriodoSeleccionado > 0) {
-            this.horariosFiltrados = [...this.horariosFiltrados, detalle];
-            // Asignar color a la nueva materia
+            const existeFiltradoIndex = this.horariosFiltrados.findIndex(h => h.id === idHorario);
+            if (existeFiltradoIndex >= 0) {
+              this.horariosFiltrados[existeFiltradoIndex] = detalle;
+            } else {
+              this.horariosFiltrados = [...this.horariosFiltrados, detalle];
+            }
+
             this.colorManager.getColorForSubject(detalle.asignatura.id);
             this.actualizarEventosCalendario();
           }
@@ -547,6 +668,11 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   // Formatear hora optimizado
   formatHora = (hora: string): string => {
     return hora ? hora.substring(0, 5) : '';
+  };
+
+  // Formatear fecha optimizado
+  formatFecha = (fecha: string): string => {
+    return fecha ? fecha.split('T')[0] : '';
   };
 
   // Getter optimizado para materias únicas
@@ -569,19 +695,33 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // MÉTODOS PARA EL MODAL (continuarían igual pero con optimizaciones similares)
 
-  abrirModalDetalleHorario(horarioId: number): void {
-    const horario = this.horariosFiltrados.find(h => h.id === horarioId);
+ abrirModalDetalleHorario(horarioId: number): void {
+  const horario = this.horariosFiltrados.find(h => h.id === horarioId);
 
-    if (horario) {
-      this.horarioSeleccionado = { ...horario };
-      this.modoEdicion = false;
-      this.editHoraInicio = this.formatHora(horario.horaInicio);
-      this.editHoraFin = this.formatHora(horario.horaFin);
-      this.editAulaSeleccionada = horario.aula.id;
-      this.editDiaSeleccionado = horario.dia.id;
-      this.modalVisible = true;
+  if (horario) {
+    this.horarioSeleccionado = { ...horario };
+    this.modoEdicion = false;
+    this.editHoraInicio = this.formatHora(horario.horaInicio);
+    this.editHoraFin = this.formatHora(horario.horaFin);
+    this.editAulaSeleccionada = horario.aula.id;
+    this.editDiaSeleccionado = horario.dia.id;
+    this.editFechaFin = this.formatFecha(horario.fechaFin);
+    this.editFechaInicio = this.formatFecha(horario.fechaInicio);
+
+    // ✅ CORRECCIÓN: Preservar el tipo de clase correctamente
+    if (!horario.tipoClase) {
+      // Si no tiene tipoClase definido, determinarlo por los cursos
+      if (horario.curso.cursos && horario.curso.cursos.length > 0) {
+        this.horarioSeleccionado.tipoClase = 'articulada';
+      } else {
+        this.horarioSeleccionado.tipoClase = 'regular';
+      }
     }
+
+    this.modalVisible = true;
   }
+}
+
 
   cerrarModal(): void {
     this.modalVisible = false;
@@ -603,6 +743,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       this.editHoraFin = this.formatHora(this.horarioSeleccionado.horaFin);
       this.editAulaSeleccionada = this.horarioSeleccionado.aula.id;
       this.editDiaSeleccionado = this.horarioSeleccionado.dia.id;
+      this.editFechaFin = this.formatFecha(this.horarioSeleccionado.fechaFin);
+      this.editFechaInicio = this.formatFecha(this.horarioSeleccionado.fechaInicio);
     }
 
     this.modoEdicion = false;
@@ -614,7 +756,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   // las mismas optimizaciones de manejo de errores y subscripciones
 
   // Guarda los cambios en un horario
-  guardarCambiosHorario(): void {
+guardarCambiosHorario(): void {
   if (!this.horarioSeleccionado || !this.horarioSeleccionado.id) {
     this.notificationService.showErrorReport(
       'Error',
@@ -659,9 +801,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   const aulaSeleccionada = this.aulas.find(a => Number(a.ID_AULA) === aulaId);
   const diaSeleccionado = this.dias.find(d => Number(d.ID_DIA) === diaId);
 
-  console.log('Aula encontrada:', aulaSeleccionada);
-  console.log('Día encontrado:', diaSeleccionado);
-
   // Verificar si encontramos el aula y el día antes de continuar
   if (!aulaSeleccionada || !diaSeleccionado) {
     this.notificationService.showErrorReport(
@@ -672,18 +811,34 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     return;
   }
 
-  const horarioActualizado = {
+  // ✅ CORRECCIÓN: Construir datos según el tipo de horario
+  let horarioActualizado: any = {
     ID_HORARIO: Number(this.horarioSeleccionado.id),
     ID_PERIODO: this.PeriodoSeleccionado,
     ID_DOCENTE: this.horarioSeleccionado.docente.id,
     ID_ASIGNATURA: this.horarioSeleccionado.asignatura.id,
-    ID_CARRERAS: this.horarioSeleccionado.carrera.id,
-    ID_CURSOS: this.horarioSeleccionado.curso.id,
     ID_AULA: aulaId,
     ID_DIA: diaId,
-    HORA_INICIO: formatearHora(this.editHoraInicio),
-    HORA_FIN: formatearHora(this.editHoraFin)
+    HORA_INICIO: this.formatHora(this.editHoraInicio),
+    HORA_FIN: this.formatHora(this.editHoraFin),
+    FECHA_INICIO: this.formatFecha(this.editFechaInicio),
+    FECHA_FIN: this.formatFecha(this.editFechaFin),
   };
+
+  // ✅ CORRECCIÓN: Preservar el tipo de horario original
+  if (this.horarioSeleccionado.tipoClase === 'articulada' ||
+      (this.horarioSeleccionado.curso.cursos && this.horarioSeleccionado.curso.cursos.length > 0)) {
+    // Es un horario articulado - preservar los cursos articulados
+    horarioActualizado.cursosArticulados = this.horarioSeleccionado.curso.cursos?.map(curso => ({
+      ID_CARRERAS: curso.id, // Ajustar según tu estructura
+      ID_CURSOS: curso.id
+    })) || [];
+    // NO enviar ID_CARRERAS ni ID_CURSOS individuales
+  } else {
+    // Es un horario regular - enviar carrera y curso individuales
+    horarioActualizado.ID_CARRERAS = this.horarioSeleccionado.carrera.id;
+    horarioActualizado.ID_CURSOS = this.horarioSeleccionado.curso.id;
+  }
 
   // Mostrar loading
   this.notificationService.showLoading('Actualizando horario...');
@@ -692,7 +847,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     next: (response) => {
       this.notificationService.hideLoading();
 
-      // Crear el objeto actualizado
       if (!this.horarioSeleccionado?.docente) {
         this.notificationService.showErrorReport(
           'Error',
@@ -702,11 +856,13 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
         return;
       }
 
+      // ✅ CORRECCIÓN: Preservar toda la información original del horario
       const horarioDetalleActualizado: HorarioDetalle = {
-        ...this.horarioSeleccionado,
-        docente: this.horarioSeleccionado.docente,
+        ...this.horarioSeleccionado, // Mantener toda la información original
         horaInicio: formatearHora(this.editHoraInicio),
         horaFin: formatearHora(this.editHoraFin),
+        fechaInicio: this.editFechaInicio,
+        fechaFin: this.editFechaFin,
         aula: {
           id: aulaId,
           nombre: aulaSeleccionada.NOMBRE_AULA
@@ -715,6 +871,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
           id: diaId,
           nombre: diaSeleccionado.NOMBRE_DIA
         }
+        // NO modificar: curso, carrera, tipoClase - se mantienen del original
       };
 
       this.ngZone.run(() => {
@@ -738,18 +895,15 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     error: (error) => {
       this.notificationService.hideLoading();
       console.error('Error en la actualización:', error);
-      
+
       let mensajeError = 'Error al actualizar el horario';
 
       // Manejo específico de errores del backend
       if (error.status === 403 && error.error && error.error.message) {
-        // Error 403: Forbidden
         mensajeError = error.error.message;
       } else if (error.status === 404 && error.error && error.error.message) {
-        // Error 404: Not Found
         mensajeError = error.error.message;
       } else if (error.status === 409 && error.error && error.error.message) {
-        // Error 409: Conflict (horarios solapados, etc.)
         mensajeError = error.error.message;
       } else if (error.error) {
         if (error.error.message) {
@@ -772,20 +926,15 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // Actualiza el horario en todas las listas
   private actualizarHorarioEnListas(horarioActualizado: HorarioDetalle): void {
-    // Actualizar en las listas de datos
-    this.horariosFiltrados = this.horariosFiltrados.map(h =>
-      h.id === horarioActualizado.id ? horarioActualizado : h
-    );
+    // ✅ SOLUCIÓN: Mejorar la actualización de listas
+    const actualizarLista = (lista: HorarioDetalle[]) =>
+      lista.map(h => h.id === horarioActualizado.id ? horarioActualizado : h);
 
-    this.todosLosHorarios = this.todosLosHorarios.map(h =>
-      h.id === horarioActualizado.id ? horarioActualizado : h
-    );
-
+    this.horariosFiltrados = actualizarLista(this.horariosFiltrados);
+    this.todosLosHorarios = actualizarLista(this.todosLosHorarios);
     this.horarioSeleccionado = horarioActualizado;
 
-    // Forzar actualización del calendario usando ngZone para asegurar la detección de cambios
     this.ngZone.run(() => {
-      // Eliminar específicamente el evento antiguo y agregar el nuevo
       if (this.calendarApi) {
         const eventoId = `horario-${horarioActualizado.id}`;
         const eventoExistente = this.calendarApi.getEventById(eventoId);
@@ -794,10 +943,17 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
           eventoExistente.remove();
         }
 
-        // Crear y agregar el nuevo evento
+        // ✅ Manejar curso múltiple en la actualización
+        let cursoNombre: string;
+        if (horarioActualizado.curso.cursos && horarioActualizado.curso.cursos.length > 0) {
+          cursoNombre = horarioActualizado.curso.nombre;
+        } else {
+          cursoNombre = horarioActualizado.curso.nombre;
+        }
+
         const nuevoEvento = {
           id: eventoId,
-          title: `${horarioActualizado.asignatura.nombre}\n${horarioActualizado.aula.nombre}`,
+          title: `${horarioActualizado.asignatura.nombre}\n${horarioActualizado.aula.nombre}\n${cursoNombre}`,
           startTime: horarioActualizado.horaInicio,
           endTime: horarioActualizado.horaFin,
           daysOfWeek: [this.convertirDiaAFullCalendar(horarioActualizado.dia.id)],
@@ -807,7 +963,9 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
             docente: horarioActualizado.docente.nombre,
             aula: horarioActualizado.aula.nombre,
             carrera: horarioActualizado.carrera.nombre,
-            curso: horarioActualizado.curso.nombre
+            curso: cursoNombre,
+            tipoClase: horarioActualizado.tipoClase || 'REGULAR',
+            cursosArticulados: horarioActualizado.curso.cursos || null
           }
         };
 
@@ -876,6 +1034,129 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  //metodos para clases articuladas y regulares
+  onTipoClaseChange(tipo: string) {
+    this.tipoClaseSeleccionado = tipo;
+
+    if (tipo === 'articulada') {
+      this.CarreraSeleccionada = this.DEFAULT_SELECTION;
+      this.cursosArticulados = [];
+    } else {
+      this.cursosArticulados = [];
+      this.nuevaCarreraArticulada = 0;
+      this.nuevoCursoArticulado = 0;
+    }
+
+  }
+
+  onNuevaCarreraArticuladaChange(carreraId: number) {
+    this.nuevaCarreraArticulada = carreraId;
+    this.nuevoCursoArticulado = 0;
+
+    if (carreraId) {
+      this.cursosDisponibles = this.cursos;
+    } else {
+      this.cursosDisponibles = [];
+    }
+  }
+
+agregarCursoArticulado() {
+  if (this.nuevaCarreraArticulada && this.nuevoCursoArticulado) {
+    const yaExiste = this.cursosArticulados.some(curso =>
+      curso.ID_CARRERAS === this.nuevaCarreraArticulada &&
+      curso.ID_CURSOS === this.nuevoCursoArticulado
+    );
+
+    if (!yaExiste) {
+      // Buscar los objetos completos para obtener los nombres
+      const carreraSeleccionada = this.carrerasArticuladas.find(c => c.ID_CARRERAS === this.nuevaCarreraArticulada);
+      const cursoSeleccionado = this.cursosDisponibles.find(c => c.ID_CURSOS === this.nuevoCursoArticulado);
+
+      this.cursosArticulados.push({
+        ID_CARRERAS: this.nuevaCarreraArticulada,
+        ID_CURSOS: this.nuevoCursoArticulado,
+        NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
+        NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
+      });
+
+      this.nuevaCarreraArticulada = 0;
+      this.nuevoCursoArticulado = 0;
+      this.cursosDisponibles = [];
+    } else {
+      this.notificationService.showWarning('Esta combinación ya está agregada');
+    }
+  }
+}
+
+  eliminarCursoArticulado(index: number) {
+    this.cursosArticulados.splice(index, 1);
+  }
+
+  getCarreraNombre(carreraId: number): string {
+    const carrera = this.carrerasArticuladas.find(c => c.ID_CARRERAS === carreraId);
+    return carrera ? carrera.NOMBRE_CARRERAS : 'N/A';
+  }
+
+  getCursoNombre(cursoId: number): string {
+    const curso = this.cursos.find(c => c.ID_CURSOS === cursoId);
+    return curso ? curso.NOMBRE_CURSOS : 'N/A';
+  }
+
+  cargarDocenteAsignaturaNivel() {
+    if (this.PeriodoSeleccionado > 0) {
+      let parametros: any = {
+        periodo: this.PeriodoSeleccionado
+      };
+
+      if (this.tipoClaseSeleccionado === 'regular' && this.CarreraSeleccionada > 0) {
+        parametros.carrera = this.CarreraSeleccionada;
+      } else if (this.tipoClaseSeleccionado === 'articulada' && this.cursosArticulados.length > 0) {
+        parametros.cursosArticulados = this.cursosArticulados;
+      }
+
+      this.horariosService.obtenerDocenteAsignaturaNivel(this.PeriodoSeleccionado, parametros.carrera || null)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (data) => this.docenteAsignaturaNivel = data,
+          error: (err) => this.handleError('Error al cargar combinaciones', err)
+        });
+    }
+  }
+
+  // Tipo/Interfaz
+  DocenteAsignaturaSeleccionada: {
+    ID_DOCENTE: number;
+    DOCENTE: string;
+    ID_ASIGNATURA: number;
+    ASIGNATURA: string;
+  } | null = null;
+
+
+
+  // Método para cargar datos (reemplaza tu método actual)
+  cargarDocentesConAsignaturas(idPeriodo: number) {
+    this.horariosService.obtenerDocentePeriodo(idPeriodo).subscribe({
+      next: (data) => {
+        // Tu JSON ya viene con la estructura correcta
+        this.docentes = data;
+      },
+      error: (error) => {
+
+      }
+    });
+  }
+
+  // Método cuando cambia la selección
+  onDocenteAsignaturaChange(seleccionado: any) {
+    if (seleccionado) {
+      this.DocenteSeleccionado = seleccionado.ID_DOCENTE;
+      this.AsignaturaSeleccionada = seleccionado.ID_ASIGNATURA;
+    }
+  }
+
+
+
 
 
 }

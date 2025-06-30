@@ -16,7 +16,7 @@ export class PrincipalComponent implements OnInit {
   apellidoUsuario: string = '';
 
   ObtenerAnioActual= new Date().getFullYear();
-  
+
   constructor(public usuarioService: AuthService, private router:Router, private notificationService: NotificationService) {}
   ngOnInit(): void {
     this.ObtenerNombreUsuario();
@@ -46,7 +46,7 @@ export class PrincipalComponent implements OnInit {
         }
       });
     } else {
-      console.log('ID de usuario:', idUsuario); 
+      console.log('ID de usuario:', idUsuario);
       if (!idUsuario) {
         console.error('No se pudo obtener el ID del usuario del token');
         return;
@@ -85,49 +85,72 @@ export class PrincipalComponent implements OnInit {
   }
 
 
-  CerrarSesion() {
-  // Mostrar diálogo de confirmación
-  this.notificationService.showConfirm(
-    'Confirmar Cierre de Sesión',
-    '¿Estás seguro de que deseas cerrar la sesión?',
-    'Cerrar Sesión',
-    'Cancelar'
-  ).then((confirmed) => {
-    if (confirmed) {
-      // Usuario confirmó el cierre de sesión
-      this.notificationService.showLoading('Cerrando sesión...');
-      
-      try {
-        this.usuarioService.cerrarSesion();
-        
-        this.notificationService.hideLoading();
-        
-        
-        // Redirigir después de mostrar el mensaje
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 1500);
-        
-      } catch (error) {
-        this.notificationService.hideLoading();
-        console.error('Error al cerrar sesión:', error);
-        
-        this.notificationService.showErrorReport(
-          'Error',
-          'Ocurrió un error al cerrar la sesión',
-          'Reintentar'
-        );
-        
-        // En caso de error, redirigir de todas formas por seguridad
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
-      }
+async CerrarSesion() {
+  try {
+    // Mostrar diálogo de confirmación
+    const confirmed = await this.notificationService.showConfirm(
+      'Confirmar Cierre de Sesión',
+      '¿Estás seguro de que deseas cerrar la sesión?',
+      'Cerrar Sesión',
+      'Cancelar'
+    );
+
+    if (!confirmed) {
+      return; // Usuario canceló, salir de la función
     }
-    // Si no confirma, no hace nada (se queda en la página actual)
-  }).catch((error) => {
+
+    // Usuario confirmó el cierre de sesión
+    this.notificationService.showLoading('Cerrando sesión...');
+
+    try {
+      // Llamar al servicio de cierre de sesión y esperar a que termine
+      await this.usuarioService.cerrarSesion();
+
+      // Ocultar loading
+      this.notificationService.hideLoading();
+
+
+
+      // Redirigir inmediatamente después del mensaje
+      this.redirigirALogin();
+
+    } catch (error) {
+      this.notificationService.hideLoading();
+      console.error('Error al cerrar sesión:', error);
+
+
+
+      // Limpiar datos locales manualmente en caso de error del servicio
+      this.limpiarDatosLocales();
+
+      // Redirigir de todas formas por seguridad
+      this.redirigirALogin();
+    }
+
+  } catch (error) {
     console.error('Error en el diálogo de confirmación:', error);
-  });
+    this.redirigirALogin();
+  }
+}
+
+private redirigirALogin() {
+  if (this.router) {
+    this.router.navigate(['/login']).then(() => {
+      window.location.reload();
+    });
+  } else {
+    window.location.replace('/login');
+  }
+}
+
+
+private limpiarDatosLocales() {
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch (error) {
+    console.error('Error limpiando datos locales:', error);
+  }
 }
 
 }

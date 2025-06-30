@@ -138,11 +138,21 @@ export class HorariosService {
     const url = `${this.apiUrl}/carrera-periodo/${idPeriodo}`;
     return this.cachedRequest<any[]>(url, forceRefresh);
   }
+  obtenerCarrerasPeriodoArticulado(idPeriodo: number, forceRefresh = false): Observable<any[]> {
+    const url = `${this.apiUrl}/carrera-periodo-articulada/${idPeriodo}`;
+    return this.cachedRequest<any[]>(url, forceRefresh);
+  }
 
   obtenerDocenteAsignaturaNivel(idPeriodo: number, idCarrera: number, forceRefresh = false): Observable<any[]> {
     const url = `${this.apiUrl}/docente-asignatura-nivel/${idPeriodo}/${idCarrera}`;
     return this.cachedRequest<any[]>(url, forceRefresh);
   }
+
+  obtenerDocentePeriodo(idPeriodo: number,  forceRefresh = false): Observable<any[]> {
+    const url = `${this.apiUrl}/docentes/${idPeriodo}`;
+    return this.cachedRequest<any[]>(url, forceRefresh);
+  }
+
 
   obtenerNiveles(idAsignatura: number, forceRefresh = false): Observable<any[]> {
     const url = `${this.apiUrl}/nivel/${idAsignatura}`;
@@ -190,10 +200,20 @@ export class HorariosService {
   }
 
   obtenerTodosHorarios(forceRefresh = false): Observable<any[]> {
-    const url = `${this.apiUrl}/horarios-completo`;
+    const url = `${this.apiUrl}/horarios-agrupados`;
     return this.cachedRequest<any[]>(url, forceRefresh);
   }
 
+  obtenerHorariosPorPeriodoAgrupados(idPeriodo: number, forceRefresh = false): Observable<any[]> {
+    const url = `${this.apiUrl}/horarios-agrupados/${idPeriodo}`;
+    return this.cachedRequest<any[]>(url, forceRefresh);
+  }
+
+
+  obtenerCursos(forceRefresh = false): Observable<any[]> {
+    const url = `${this.apiUrl}/cursos`;
+    return this.cachedRequest<any[]>(url, forceRefresh);
+  }
   actualizarHorario(horarioData: any): Observable<any> {
     return this.http.put<any>(
       `${this.apiUrl}/horarios/${horarioData.ID_HORARIO}`,
@@ -268,6 +288,6 @@ export class HorariosService {
     return throwError(() => new Error(errorMessage));
   }
 
-  
-  
+
+
 }

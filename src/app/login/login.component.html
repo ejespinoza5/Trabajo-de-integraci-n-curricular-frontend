@@ -1,66 +1,60 @@
-<form (ngSubmit)="iniciarSesion()" class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
-  <div class="relative py-3 sm:max-w-xl sm:mx-auto">
-    <div
-  class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-sky-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl transition-transform duration-700 ease-in-out hover:scale-105">
-</div>
+<form (ngSubmit)="iniciarSesion()" class="relative min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12 overflow-hidden">
 
+  <!-- Imagen de fondo semitransparente -->
+  <div class="absolute inset-0">
+    <img src="https://lh3.googleusercontent.com/p/AF1QipMCbidIFZUrlTMtljgp1qztn7bcfbQgaWPyQFyt=s680-w680-h510-rw"
+         alt="Fondo ISTLA"
+         class="w-full h-full object-cover opacity-1" />
+    <div class="absolute inset-0 bg-white bg-opacity-30 backdrop-blur-sm"></div>
+  </div>
+
+  <div class="relative py-3 sm:max-w-xl sm:mx-auto z-10">
+    <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-sky-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl transition-transform duration-700 ease-in-out hover:scale-105">
+    </div>
 
     <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
-
       <div class="max-w-md mx-auto">
         <div class="text-center mb-6">
           <img src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png"
-     alt="ISTLA Logo"
-     class="mx-auto mb-4 w-30 h-30 object-contain transition-transform duration-300 hover:scale-110">
+               alt="ISTLA Logo"
+               class="mx-auto mb-4 w-30 h-30 object-contain transition-transform duration-300 hover:scale-110">
+        </div>
 
-        </div>
-        <div>
-          <!-- <h1 class="text-2xl font-semibold text-center">Iniciar Sesión</h1> -->
-        </div>
         <div class="divide-y divide-gray-200">
           <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
             <div class="relative">
-              <input
-                autocomplete="off"
-                id="usuario"
-                name="usuario"
-                type="text"
-                class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-cyan-600"
-                placeholder="Usuario"
-                [(ngModel)]="correo"
-                required
-              />
-              <label for="usuario" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
+              <input autocomplete="off" id="usuario" name="usuario" type="text"
+                     class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-cyan-600"
+                     placeholder="Usuario" [(ngModel)]="correo" required />
+              <label for="usuario"
+                     class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
                 Correo electrónico
               </label>
             </div>
+
             <div class="relative">
-              <input
-                autocomplete="off"
-                id="cedula"
-                name="cedula"
-                type="password"
-                class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-cyan-600"
-                placeholder="Contraseña"
-                [(ngModel)]="cedula"
-                required
-              />
-              <label for="cedula" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
+              <input autocomplete="off" id="cedula" name="cedula" type="password"
+                     class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-cyan-600"
+                     placeholder="Contraseña" [(ngModel)]="cedula" required />
+              <label for="cedula"
+                     class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
                 Contraseña
               </label>
             </div>
+
             <div class="relative">
-              <button type="submit" class="bg-cyan-500 text-white rounded-md px-4 py-2 w-full hover:bg-cyan-600 transition-all">
+              <button type="submit"
+                      class="bg-cyan-500 text-white rounded-md px-4 py-2 w-full hover:bg-cyan-600 transition-all">
                 Iniciar Sesión
               </button>
             </div>
+
             <div class="relative text-red-500 text-sm text-center mt-2" *ngIf="error">
               {{ error }}
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </form>

@@ -16,13 +16,11 @@
   </div>
 
   <!-- Accordion Content -->
- <div
-  class="border-x border-b border-gray-300 rounded-b-lg overflow-hidden transition-all duration-300 ease-in-out"
-  [ngClass]="{
+  <div class="border-x border-b border-gray-300 rounded-b-lg overflow-hidden transition-all duration-300 ease-in-out"
+    [ngClass]="{
     'max-h-0 opacity-0': !isAccordionOpen,
     'max-h-[1000px] opacity-100': isAccordionOpen
-  }"
->
+  }">
     <div class="p-4 bg-white">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <!-- Periodo -->
@@ -38,8 +36,20 @@
           </ng-select>
         </div>
 
-        <!-- Carrera -->
+        <!-- Tipo de Clase -->
         <div>
+          <label class="block font-medium mb-1 text-xs">Tipo de Clase:</label>
+          <ng-select [items]="tiposClase" bindLabel="nombre" bindValue="valor" [(ngModel)]="tipoClaseSeleccionado"
+            placeholder="Seleccionar tipo" (change)="onTipoClaseChange(tipoClaseSeleccionado)" [searchable]="false"
+            [clearable]="false" class="text-xs">
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs">{{ item ? item.nombre : 'Seleccionar tipo' }}</div>
+            </ng-template>
+          </ng-select>
+        </div>
+
+        <!-- Carrera (Solo para clases regulares) -->
+        <div *ngIf="tipoClaseSeleccionado === 'regular'">
           <label class="block font-medium mb-1 text-xs">Carrera:</label>
           <ng-select [items]="carreras" bindLabel="NOMBRE_CARRERAS" bindValue="ID_CARRERAS"
             [(ngModel)]="CarreraSeleccionada" placeholder="Seleccionar carrera"
@@ -51,8 +61,66 @@
           </ng-select>
         </div>
 
-        <!-- Docente-Asignatura-Nivel Combinado - MOVIDO A COLUMNA COMPLETA -->
-        <div class="md:col-span-2">
+
+
+        <!-- Cursos Articulados (Solo para clases articuladas) -->
+        <div *ngIf="tipoClaseSeleccionado === 'articulada'" class="md:col-span-2">
+          <label class="block font-medium mb-1 text-xs">Cursos Articulados:</label>
+
+          <!-- Lista de cursos articulados seleccionados -->
+          <div *ngIf="cursosArticulados.length > 0" class="mb-3">
+            <div class="text-xs font-medium mb-2">Cursos seleccionados:</div>
+            <div class="space-y-2">
+              <div *ngFor="let curso of cursosArticulados; let i = index"
+                class="flex items-center justify-between bg-gray-100 p-2 rounded text-xs">
+                <span>
+                  <strong>Carrera:</strong> {{ getCarreraNombre(curso.ID_CARRERAS) }} -
+                  <strong>Curso:</strong> {{ getCursoNombre(curso.ID_CURSOS) }}
+                  <button (click)="eliminarCursoArticulado(i)" class="text-red-500 hover:text-red-700 ml-2">
+                  <i class="fas fa-times"></i> Eliminar
+                </button>
+                </span>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Selector para agregar nuevos cursos articulados -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end">
+            <div>
+              <label class="block font-medium mb-1 text-xs">Carrera:</label>
+              <ng-select [items]="carrerasArticuladas" bindLabel="NOMBRE_CARRERAS" bindValue="ID_CARRERAS"
+                [(ngModel)]="nuevaCarreraArticulada" placeholder="Seleccionar carrera"
+                (change)="onNuevaCarreraArticuladaChange(nuevaCarreraArticulada)" [searchable]="true" [clearable]="true"
+                class="text-xs">
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="text-xs">{{ item ? item.NOMBRE_CARRERAS : 'Seleccionar carrera' }}</div>
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <div>
+              <label class="block font-medium mb-1 text-xs">Curso:</label>
+              <ng-select [items]="cursosDisponibles" bindLabel="NOMBRE_CURSOS" bindValue="ID_CURSOS"
+                [(ngModel)]="nuevoCursoArticulado" placeholder="Seleccionar curso" [searchable]="true"
+                [clearable]="true" [disabled]="!nuevaCarreraArticulada" class="text-xs">
+                <ng-template ng-label-tmp let-item="item">
+                  <div class="text-xs">{{ item ? item.NOMBRE_CURSOS : 'Seleccionar curso' }}</div>
+                </ng-template>
+              </ng-select>
+            </div>
+
+            <div>
+              <button (click)="agregarCursoArticulado()" [disabled]="!nuevaCarreraArticulada || !nuevoCursoArticulado"
+                class="bg-verde-claro text-white text-xs px-3 py-2 rounded hover:bg-green-600 transition-all duration-300 disabled:bg-gray-400">
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Docente - Asignatura - Nivel Combinado (Solo para clases regulares) -->
+        <div *ngIf="tipoClaseSeleccionado === 'regular'" class="md:col-span-2">
           <label class="block font-medium mb-1 text-xs">Docente - Asignatura - Nivel:</label>
           <ng-select [items]="docenteAsignaturaNivel" [(ngModel)]="CombinacionSeleccionada"
             placeholder="Seleccionar docente, asignatura y nivel"
@@ -81,6 +149,44 @@
           </ng-select>
         </div>
 
+        <!-- Docente (Solo para clases articuladas) -->
+        <div *ngIf="tipoClaseSeleccionado === 'articulada'" class="md:col-span-2">
+          <label class="block font-medium mb-1 text-xs">Docente - Asignatura:</label>
+          <ng-select [items]="docentes" [(ngModel)]="DocenteAsignaturaSeleccionada"
+            placeholder="Seleccionar docente y asignatura"
+            (change)="onDocenteAsignaturaChange(DocenteAsignaturaSeleccionada)" [searchable]="true" [clearable]="false"
+            [appendTo]="'body'" [typeahead]="searchInput" [groupBy]="'DOCENTE'" [virtualScroll]="true"
+            [searchFn]="customSearchFn" class="text-xs">
+
+            <!-- Etiqueta cuando está seleccionado -->
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs truncate">
+                {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) : 'Seleccionar docente y
+                asignatura' }}
+              </div>
+            </ng-template>
+
+            <!-- Opciones desplegables -->
+            <ng-template ng-option-tmp let-item="item">
+              <div class="text-xs py-1">
+                <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
+                <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
+              </div>
+            </ng-template>
+
+            <!-- Cabecera de resultados -->
+            <ng-template ng-header-tmp>
+              <div class="text-xs font-semibold p-1">Seleccionar docente y asignatura</div>
+            </ng-template>
+
+            <!-- Si no hay resultados -->
+            <ng-template ng-notfound-tmp>
+              <div class="text-xs p-2">No se encontraron resultados</div>
+            </ng-template>
+          </ng-select>
+        </div>
+
+
         <!-- Aula -->
         <div>
           <label class="block font-medium mb-1 text-xs">Aula:</label>
@@ -90,7 +196,6 @@
               <div class="text-xs">{{ item ? item.NOMBRE_AULA : 'Seleccionar aula' }}</div>
             </ng-template>
           </ng-select>
-
         </div>
 
         <!-- Día -->
@@ -119,8 +224,20 @@
           </div>
 
           <div>
+            <label for="fechaInicio" class="block text-xs font-medium mb-1">Fecha inicio:</label>
+            <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="fechaInicio"
+              class="p-1 border border-gray-300 rounded text-xs w-24">
+          </div>
+
+          <div>
+            <label for="fechaFin" class="block text-xs font-medium mb-1">Fecha fin:</label>
+            <input type="date" id="fechaFin" name="fechaFin" [(ngModel)]="fechaFin"
+              class="p-1 border border-gray-300 rounded text-xs w-24">
+          </div>
+
+          <div>
             <button (click)="asignarHorario()"
-              class="bg-azul-botones text-white text-xs px-2 py-1 rounded hover:bg-blue-700 transition-all duration-300">
+              class="bg-azul-botones text-white text-xs px-2 py-1 rounded hover:bg-blue-700 transition-all duration-300 disabled:bg-gray-400">
               Aceptar
             </button>
           </div>
@@ -141,16 +258,16 @@
   </div>
 
   <!-- Leyenda de materias y sus colores -->
- <div class="mt-6 legend-container" *ngIf="materiasUnicas && materiasUnicas.length > 0">
-  <h3 class="text-lg font-bold mb-2">Materias</h3>
-  <div class="flex flex-wrap gap-2">
-    <div *ngFor="let materia of materiasUnicas" class="flex items-center px-3 py-1 rounded materia-item"
-      [ngStyle]="{'background-color': materia.color}">
-      <span class="mr-2 w-3 h-3 rounded-full" [ngStyle]="{'background-color': materia.color}"></span>
-      <span>{{ materia.nombre }}</span>
+  <div class="mt-6 legend-container" *ngIf="materiasUnicas && materiasUnicas.length > 0">
+    <h3 class="text-lg font-bold mb-2">Materias</h3>
+    <div class="flex flex-wrap gap-2">
+      <div *ngFor="let materia of materiasUnicas" class="flex items-center px-3 py-1 rounded materia-item"
+        [ngStyle]="{'background-color': materia.color}">
+        <span class="mr-2 w-3 h-3 rounded-full" [ngStyle]="{'background-color': materia.color}"></span>
+        <span>{{ materia.nombre }}</span>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- Mensaje cuando no hay horarios -->
   <div *ngIf="!horariosFiltrados || horariosFiltrados.length === 0" class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
@@ -275,6 +392,20 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Hora fin:</label>
             <input type="time" [(ngModel)]="editHoraFin" name="editHoraFin"
+              class="w-full p-2 border border-gray-300 rounded text-sm">
+          </div>
+
+          <!-- Fecha Inicio -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha inicio:</label>
+            <input type="date" [(ngModel)]="editFechaInicio" name="editFechaInicio"
+              class="w-full p-2 border border-gray-300 rounded text-sm">
+          </div>
+
+          <!-- Fecha Fin -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha fin:</label>
+            <input type="date" [(ngModel)]="editFechaFin" name="editFechaFin"
               class="w-full p-2 border border-gray-300 rounded text-sm">
           </div>
         </div>

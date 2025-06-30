@@ -57,6 +57,27 @@ export class AuthService {
     }
   }
 
+  obtenerIdCarrera(): number | null {
+  if (this.ObtenerIdRol() === 17) {
+    const token = this.obtenerToken();
+    if (!token) return null;
+
+    try {
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) return null;
+
+      const payload = JSON.parse(atob(tokenParts[1]));
+      return payload.carrera;
+    } catch (error) {
+      console.error('Error al decodificar el token', error);
+      return null;
+    }
+  }
+
+  return null; // En caso de que el rol no sea 17
+}
+
+
   guardarToken(token: string) {
     localStorage.setItem('token', token);
   }
