@@ -16,8 +16,11 @@
   <div class="mb-4">
     <label class="block mb-1">Tipo:</label>
     <select [(ngModel)]="aula.tipo" class="w-full border p-2 rounded">
-      <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
-    </select>
+  <option value="0" disabled>Selecciona un tipo</option>
+  <option *ngFor="let tipo of tipos" [value]="tipo.ID_TIPO">
+    {{ tipo.NOMBRE_TIPO }}
+  </option>
+</select>
   </div>
   <div class="flex justify-end gap-4">
     <button (click)="guardarCambios()" class="bg-azul-botones text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>

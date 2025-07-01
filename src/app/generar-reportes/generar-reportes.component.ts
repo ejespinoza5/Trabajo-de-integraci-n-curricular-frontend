@@ -180,7 +180,62 @@ cargarCursos(): void {
     }
   });
 }
+generarExcel() {
+  if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
+    this.notificationService.showWarningReport(
+      'Filtros incompletos',
+      'Por favor, selecciona el periodo, la carrera y el curso antes de generar el Excel.',
+      'Entendido'
+    );
+    return;
+  }
 
+  const datos = {
+    idPeriodo: this.PeriodoSeleccionado,
+    idCarrera: this.CarreraSeleccionada,
+    idCurso: this.CursoSeleccionado
+  };
+
+  this.notificationService.showLoading('Generando Excel...');
+
+  this.reporteService.crearReporteExcel(datos).subscribe({
+    next: (blob: Blob) => {
+      this.notificationService.hideLoading();
+
+      // Crear URL para descargar el archivo
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte-${this.PeriodoSeleccionado}-${this.CarreraSeleccionada}-${this.CursoSeleccionado}.xlsx`;
+      link.click();
+      
+      // Limpiar la URL creada
+      window.URL.revokeObjectURL(url);
+
+      this.notificationService.showSuccess(
+        'El archivo Excel se descargó correctamente.'
+      );
+    },
+    error: (error) => {
+      this.notificationService.hideLoading();
+      console.error('Error al generar el Excel', error);
+
+      let mensajeError = 'Error al generar el Excel';
+
+      if (error.error?.message) {
+        mensajeError = error.error.message;
+      } else if (error.message) {
+        mensajeError = error.message;
+      }
+
+      this.notificationService.showErrorReport(
+        'Error',
+        mensajeError,
+        'Cerrar'
+      );
+    }
+  });
+}
 
 cerrarModal() {
   this.mostrarModalPDF = false;

@@ -171,7 +171,7 @@ export class NotificationService {
     Report.failure(title, message, buttonText);
   }
 
-  showWarningReport(title: string, message: string, buttonText: string = 'Okay') {
+  showWarningReport(title: string, message: string, buttonText: string = 'Cerrar') {
     Report.warning(title, message, buttonText);
   }
 

@@ -2,46 +2,58 @@
 
 <!-- Formulario para agregar aula en línea -->
 <div class="max-w-4xl mx-auto mb-6 p-6 bg-white rounded-lg shadow-md">
-  <div class="grid grid-cols-3 gap-6 items-end">
 
-<!-- Campo de Nombre -->
-<div class="col-span-1">
-  <label class="block font-semibold mb-2 text-sm">Nombre:</label>
-  <input
-    [(ngModel)]="nuevaAula.nombre"
-    placeholder="Nombre"
-    class="w-full p-2 border border-gray-300 rounded text-sm" />
-</div>
+  <!-- Campos del formulario -->
+  <div class="grid grid-cols-2 gap-6 mb-6">
+    <!-- Campo de Nombre -->
+    <div class="col-span-1">
+      <label class="block font-semibold mb-2 text-sm w-fit">Nombre:</label>
+      <input [(ngModel)]="nuevaAula.nombre" placeholder="Nombre del aula"
+        class="w-full h-[36px] px-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500" />
+    </div>
 
-<!-- Campo de Tipo -->
-<div class="col-span-1">
-  <label class="block font-semibold mb-2 text-sm">Tipo:</label>
-  <ng-select
-    [items]="tipos"
-    [(ngModel)]="nuevaAula.tipo"
-    placeholder="Selecciona un tipo"
-    [searchable]="true"
-    [clearable]="false"
-    [appendTo]="'body'"
-    [ngClass]="'custom-ng-select'"
-    class="text-sm">
-    <ng-template ng-label-tmp let-item="item">
-      <div class="text-sm">{{ item || 'Selecciona un tipo' }}</div>
-    </ng-template>
-    <ng-template ng-option-tmp let-item="item">
-      <div class="text-sm py-1">{{ item }}</div>
-    </ng-template>
-  </ng-select>
-</div>
-    <!-- Botón para agregar aula -->
-    <div class="col-span-1 flex justify-end">
-      <button (click)="agregarAulas()" class="bg-azul-botones text-white px-4 py-2 rounded hover:bg-blue-600">
-        Agregar Aula
-      </button>
+    <!-- Campo de Tipo -->
+    <div class="col-span-1">
+      <label class="block font-semibold mb-2 text-sm w-fit">Tipo:</label>
+      <div class="custom-ng-select">
+        <ng-select [items]="tiposAula" [(ngModel)]="nuevaAula.tipo" bindLabel="NOMBRE_TIPO" bindValue="ID_TIPO"
+          placeholder="Selecciona un tipo de aula" [searchable]="true" [clearable]="false" [appendTo]="'body'">
+
+          <ng-template ng-label-tmp let-item="item">
+            <div class="text-sm">{{ item?.NOMBRE_TIPO || 'Selecciona un tipo de aula' }}</div>
+          </ng-template>
+
+          <ng-template ng-option-tmp let-item="item">
+            <div class="text-sm py-1">{{ item.NOMBRE_TIPO }}</div>
+          </ng-template>
+        </ng-select>
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- Resto del código permanece igual -->
+  <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+    <!-- Botón Configurar Tipos -->
+    <button (click)="abrirModal()"
+      class="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md text-sm font-medium hover:bg-gray-700 transition-colors duration-200">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      Configurar Tipos
+    </button>
+
+    <!-- Botón Agregar Aula -->
+    <button (click)="agregarAulas()"
+      class="flex items-center gap-2 bg-azul-botones text-white px-6 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors duration-200 shadow-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Agregar Aula
+    </button>
+  </div>
+</div>
 
 <hr class="my-6">
 
@@ -61,10 +73,12 @@
     <tbody>
       <tr *ngFor="let aula of aulas" class="border-t">
         <td class="px-4 py-3 text-gray-800">{{ aula.NOMBRE_AULA }}</td>
-        <td class="px-4 py-3 text-gray-800">{{ aula.TIPO_AULA }}</td>
+        <td class="px-4 py-3 text-gray-800">{{ aula.NOMBRE_TIPO }}</td>
         <td class="px-4 py-3 text-center">
-          <button (click)="editarAula(aula.ID_AULA.toString())" class="bg-azul-botones text-white px-4 py-2 rounded-md hover:bg-blue-600">Editar</button>
-          <button (click)="eliminarAula(aula.ID_AULA)" class="bg-rosado-oscuro text-white px-4 py-2 rounded-md hover:bg-rosado-oscuro-hover ml-2">Eliminar</button>
+          <button (click)="editarAula(aula.ID_AULA.toString())"
+            class="bg-azul-botones text-white px-4 py-2 rounded-md hover:bg-blue-600">Editar</button>
+          <button (click)="eliminarAula(aula.ID_AULA)"
+            class="bg-rosado-oscuro text-white px-4 py-2 rounded-md hover:bg-rosado-oscuro-hover ml-2">Eliminar</button>
         </td>
       </tr>
     </tbody>
@@ -74,7 +88,80 @@
 
 <!-- Botones de paginación -->
 <div class="flex justify-center items-center mt-4 gap-2">
-  <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Anterior</button>
+  <button (click)="cambiarPagina(-1)" [disabled]="paginaActual === 1"
+    class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Anterior</button>
   <span class="px-4 py-2">Página {{ paginaActual }} de {{ totalPaginas }}</span>
-  <button (click)="cambiarPagina(1)" [disabled]="paginaActual === totalPaginas" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Siguiente</button>
+  <button (click)="cambiarPagina(1)" [disabled]="paginaActual === totalPaginas"
+    class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Siguiente</button>
+</div>
+
+
+<!-- Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" *ngIf="mostrarModal">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg">
+
+    <!-- Header con el mismo estilo -->
+    <div class="flex justify-between items-center p-6 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+        <h2 class="text-xl font-bold text-gray-800">Gestión de Tipos de Aula</h2>
+      </div>
+
+      <!-- Botón Cerrar con el mismo estilo -->
+      <button (click)="cerrarModal()"
+        class="text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full p-2 transition-colors duration-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del modal -->
+    <div class="p-6">
+      <!-- Formulario para crear/editar -->
+      <form (ngSubmit)="guardarTipoAula()" class="space-y-4 mb-6">
+        <input type="text" [(ngModel)]="nuevoTipo.nombre" name="nombre" placeholder="Nombre tipo de aula"
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          required>
+
+        <div class="flex justify-end gap-3">
+          <button type="button" (click)="cerrarModal()"
+            class="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 hover:border-gray-400 transition-colors duration-200">
+            Cerrar
+          </button>
+          <button type="submit"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200">
+            Guardar
+          </button>
+        </div>
+      </form>
+
+      <!-- Separador -->
+      <div class="border-t border-gray-200 mb-6"></div>
+
+      <!-- Lista de tipos de aula -->
+      <div class="space-y-2">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Tipos de Aula Existentes</h3>
+        <ul class="divide-y divide-gray-200 border border-gray-200 rounded-lg">
+          <li *ngFor="let tipo of tiposAula"
+            class="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors duration-150">
+            <span class="text-gray-800 font-medium">{{ tipo.NOMBRE_TIPO }}</span>
+            <div class="flex gap-2">
+              <button (click)="editar(tipo)"
+                class="px-3 py-1 bg-yellow-500 text-white text-sm rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1 transition-colors duration-200">
+                Editar
+              </button>
+              <button (click)="eliminar(tipo.ID_TIPO)"
+                class="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 transition-colors duration-200">
+                Eliminar
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>

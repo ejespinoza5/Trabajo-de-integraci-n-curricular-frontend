@@ -25,6 +25,15 @@ export class ReportesService {
     });
   }
 
+  
+  crearReporteExcel(coordinador: any): Observable<Blob> {
+    return this.http.post(this.apiUrl + '/generar-excel', coordinador, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
+
+
   obtenerObservacionesPorCarrera(idCarrera: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/observaciones/${idCarrera}`, {
       headers: this.getAuthHeaders()

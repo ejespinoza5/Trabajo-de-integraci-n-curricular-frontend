@@ -6,7 +6,12 @@ export interface Aulas {
   mensaje: string;
   ID_AULA: number;
   NOMBRE_AULA: string;
-  TIPO_AULA: string;
+  TIPO_AULA:number;
+  NOMBRE_TIPO: string;
+}
+export interface TipoAula {
+  ID_TIPO: number;
+  NOMBRE_TIPO: string;
 }
 export interface AulaCreatedResponse {
   id: {
@@ -21,6 +26,10 @@ export interface CrearAula {
   tipo: string;
 }
 
+export interface Aulas {
+  id: number;
+  nombre: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -68,10 +77,34 @@ export class AulasService {
     });
   }
 
+   obtenerTipoAulas(): Observable<Aulas[]> {
+    return this.http.get<Aulas[]>(this.apiUrl + '/tipos-aula', {
+      headers: this.getAuthHeaders()
+    });
+  }
 
+  obtenerTiposAulasId(id: number): Observable<Aulas> {
+    return this.http.get<Aulas>(`${this.apiUrl}/tipos-aula/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
+  crearTipoAula(datos: { nombre: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tipos-aula`, datos, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
+  actualizarTipoAulas(id: number, datos: { nombre: string }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/tipos-aula/${id}`, datos, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
-
+  eliminarTipoAulas(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/tipos-aula/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 
 }
