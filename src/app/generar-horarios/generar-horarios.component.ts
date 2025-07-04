@@ -710,7 +710,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     this.editDiaSeleccionado = horario.dia.id;
     this.editFechaFin = this.formatFecha(horario.fechaFin);
     this.editFechaInicio = this.formatFecha(horario.fechaInicio);
-    this.editDocenteSeleccionado = Number(horario.docente.id); // Asegura que sea number
+    this.editDocenteSeleccionado = Number(horario.docente.id);
 
     // ✅ CORRECCIÓN: Preservar el tipo de clase correctamente
     if (!horario.tipoClase) {
@@ -1170,14 +1170,10 @@ agregarCursoArticulado() {
   }
 
   // Devuelve una lista de docentes únicos (por ID) para evitar duplicados en el select
-  get docentesUnicos(): any[] {
-    const map = new Map<number, any>();
-    this.docentes.forEach(doc => {
-      if (!map.has(doc.ID_DOCENTE)) {
-        map.set(doc.ID_DOCENTE, doc);
-      }
-    });
-    return Array.from(map.values());
-  }
-
+  // En tu componente
+get docentesUnicos() {
+  return this.docentes.filter((docente, index, self) =>
+    index === self.findIndex(d => d.ID_DOCENTE === docente.ID_DOCENTE)
+  );
+}
 }

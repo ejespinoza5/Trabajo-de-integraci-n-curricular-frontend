@@ -77,8 +77,8 @@
                   <strong>Carrera:</strong> {{ getCarreraNombre(curso.ID_CARRERAS) }} -
                   <strong>Curso:</strong> {{ getCursoNombre(curso.ID_CURSOS) }}
                   <button (click)="eliminarCursoArticulado(i)" class="text-red-500 hover:text-red-700 ml-2">
-                  <i class="fas fa-times"></i> Eliminar
-                </button>
+                    <i class="fas fa-times"></i> Eliminar
+                  </button>
                 </span>
 
               </div>
@@ -122,84 +122,71 @@
         <!-- Docente - Asignatura - Nivel Combinado (Solo para clases regulares) -->
         <div *ngIf="tipoClaseSeleccionado === 'regular'" class="md:col-span-2">
           <label class="block font-medium mb-1 text-xs">Docente - Asignatura - Nivel:</label>
-          <ng-select [items]="docenteAsignaturaNivel"
-           [searchFn]="customSearchFn"
-           bindValue="ID_COMBINACION"
-           [(ngModel)]="CombinacionSeleccionada"
-           placeholder="Seleccionar docente, asignatura y nivel"
-           (change)="onCombinacionChange(CombinacionSeleccionada)"
-           [searchable]="true"
-           [clearable]="false"
-           [appendTo]="'body'"
-           [groupBy]="'DOCENTE'"
-           [virtualScroll]="true"
-           class="text-xs">
+          <ng-select [items]="docenteAsignaturaNivel" [searchFn]="customSearchFn" bindValue="ID_COMBINACION"
+            [(ngModel)]="CombinacionSeleccionada" placeholder="Seleccionar docente, asignatura y nivel"
+            (change)="onCombinacionChange(CombinacionSeleccionada)" [searchable]="true" [clearable]="false"
+            [appendTo]="'body'" [groupBy]="'DOCENTE'" [virtualScroll]="true" class="text-xs">
 
-  <ng-template ng-label-tmp let-item="item">
-    <div class="text-xs truncate">
-      {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) + ' - ' + (item.NIVEL | uppercase) : 'Seleccionar docente, asignatura y nivel' }}
-    </div>
-  </ng-template>
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs truncate">
+                {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) + ' - ' + (item.NIVEL |
+                uppercase) : 'Seleccionar docente, asignatura y nivel' }}
+              </div>
+            </ng-template>
 
-  <ng-template ng-option-tmp let-item="item">
-    <div class="text-xs py-1">
-      <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
-      <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
-      <div><strong>Nivel:</strong> {{ item.NIVEL | uppercase }}</div>
-    </div>
-  </ng-template>
+            <ng-template ng-option-tmp let-item="item">
+              <div class="text-xs py-1">
+                <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
+                <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
+                <div><strong>Nivel:</strong> {{ item.NIVEL | uppercase }}</div>
+              </div>
+            </ng-template>
 
-  <ng-template ng-header-tmp>
-    <div class="text-xs font-semibold p-1">Seleccionar docente, asignatura y nivel</div>
-  </ng-template>
+            <ng-template ng-header-tmp>
+              <div class="text-xs font-semibold p-1">Seleccionar docente, asignatura y nivel</div>
+            </ng-template>
 
-  <ng-template ng-notfound-tmp>
-    <div class="text-xs p-2">No se encontraron resultados</div>
-  </ng-template>
-</ng-select>
+            <ng-template ng-notfound-tmp>
+              <div class="text-xs p-2">No se encontraron resultados</div>
+            </ng-template>
+          </ng-select>
         </div>
 
         <!-- Docente (Solo para clases articuladas) -->
         <div *ngIf="tipoClaseSeleccionado === 'articulada'" class="md:col-span-2">
           <label class="block font-medium mb-1 text-xs">Docente - Asignatura:</label>
-          <ng-select [items]="docentes"
-           [(ngModel)]="DocenteAsignaturaSeleccionada"
-           placeholder="Seleccionar docente y asignatura"
-           (change)="onDocenteAsignaturaChange(DocenteAsignaturaSeleccionada)"
-           [searchable]="true"
-           [clearable]="false"
-           [appendTo]="'body'"
-           [groupBy]="'DOCENTE'"
-           [virtualScroll]="true"
-           bindLabel="SEARCH_TEXT"
-           [searchFn]="customSearchFn"
-           class="text-xs">
+          <ng-select [items]="docentes" [(ngModel)]="DocenteAsignaturaSeleccionada"
+            placeholder="Seleccionar docente y asignatura"
+            (change)="onDocenteAsignaturaChange(DocenteAsignaturaSeleccionada)" [searchable]="true" [clearable]="false"
+            [appendTo]="'body'" [groupBy]="'DOCENTE'" [virtualScroll]="true" bindLabel="SEARCH_TEXT"
+            [searchFn]="customSearchFn" class="text-xs">
 
-  <!-- Etiqueta cuando está seleccionado -->
-  <ng-template ng-label-tmp let-item="item">
-    <div class="text-xs truncate">
-      {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) : 'Seleccionar docente y asignatura' }}
-    </div>
-  </ng-template>
+            <!-- Etiqueta cuando está seleccionado -->
+            <ng-template ng-label-tmp let-item="item">
+              <div class="text-xs truncate">
+                {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) : 'Seleccionar docente y
+                asignatura' }}
+              </div>
+            </ng-template>
 
-  <!-- Opciones desplegables -->
-  <ng-template ng-option-tmp let-item="item">
-    <div class="text-xs py-1">
-      <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
-      <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
-    </div>
-  </ng-template>
+            <!-- Opciones desplegables -->
+            <ng-template ng-option-tmp let-item="item">
+              <div class="text-xs py-1">
+                <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
+                <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
+              </div>
+            </ng-template>
 
-  <!-- Cabecera de resultados -->
-  <ng-template ng-header-tmp>
-    <div class="text-xs font-semibold p-1">Seleccionar docente y asignatura</div>
-  </ng-template>
+            <!-- Cabecera de resultados -->
+            <ng-template ng-header-tmp>
+              <div class="text-xs font-semibold p-1">Seleccionar docente y asignatura</div>
+            </ng-template>
 
-  <!-- Si no hay resultados -->
-  <ng-template ng-notfound-tmp>
-    <div class="text-xs p-2">No se encontraron resultados</div>
-  </ng-template>
-</ng-select>
+            <!-- Si no hay resultados -->
+            <ng-template ng-notfound-tmp>
+              <div class="text-xs p-2">No se encontraron resultados</div>
+            </ng-template>
+          </ng-select>
         </div>
 
 
@@ -382,17 +369,14 @@
           <!-- Docente -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Docente:</label>
-            <ng-select [items]="docentesUnicos" bindLabel="DOCENTE" bindValue="ID_DOCENTE"
-              [(ngModel)]="editDocenteSeleccionado" name="editDocente"
-              placeholder="Seleccionar docente" [searchable]="true" [clearable]="false" class="text-sm">
-              <ng-template ng-label-tmp let-item="item">
-                <div class="text-xs">{{ item ? item.DOCENTE : 'Seleccionar docente' }}</div>
-              </ng-template>
-              <ng-template ng-option-tmp let-item="item">
-                <div class="text-xs">{{ item.DOCENTE }}</div>
-              </ng-template>
-            </ng-select>
+            <select [(ngModel)]="editDocenteSeleccionado" name="editDocente"
+              class="w-full p-2 border border-gray-300 rounded text-sm">
+              <option *ngFor="let docente of docentesUnicos" [value]="docente.ID_DOCENTE">
+                {{ docente.DOCENTE }}
+              </option>
+            </select>
           </div>
+
           <!-- Día -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Día:</label>
