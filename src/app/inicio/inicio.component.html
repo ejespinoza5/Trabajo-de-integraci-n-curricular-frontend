@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Horarios - ISTLA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'verde-claro': '#22c55e',
+                        'rosado-oscuro': '#dc2626',
+                        'rosado-oscuro-hover': '#b91c1c'
+                    },
+                    fontFamily: {
+                        'montserrat': ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-green-50 font-montserrat min-h-screen">
+    
+
+    <!-- Hero Section -->
+    <section class="py-16 px-6">
+        <div class="container mx-auto text-center">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    Bienvenido al Sistema de 
+                    <span class="bg-gradient-to-r from-verde-claro to-blue-600 bg-clip-text text-transparent">
+                        Gestión de Horarios
+                    </span>
+                </h2>
+                
+                <!-- Logo institucional grande -->
+                <div >
+                    <div class="w-32 h-46 mx-auto bg-white rounded-3xl shadow-2xl flex items-center justify-center p-6 transform hover:scale-105 transition-all duration-300">
+                        <img src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png" 
+                             alt="Logo Instituto Los Andes" class="w-full h-full object-contain">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grid de Opciones -->
+    <section class="py-16 px-6 bg-white/50 backdrop-blur-sm">
+        <div class="container mx-auto">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">
+                Opciones del Sistema
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                
+                <!-- Gestionar Aulas -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/gestionar-aulas')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Gestionar Aulas</h4>
+                        <p class="text-gray-600 text-sm">Administra y configura las aulas disponibles</p>
+                    </div>
+                </div>
+
+                <!-- Coordinadores -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/coordinadores')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20h5v-2a4 4 0 00-5-3.87M12 4a4 4 0 110 8 4 4 0 010-8z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Coordinadores</h4>
+                        <p class="text-gray-600 text-sm">Gestiona los coordinadores del sistema</p>
+                    </div>
+                </div>
+
+                <!-- Generar Horarios -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/generar-horario')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-verde-claro to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Generar Horarios</h4>
+                        <p class="text-gray-600 text-sm">Crea y configura horarios académicos</p>
+                    </div>
+                </div>
+
+                <!-- Generar Reportes -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/generar-reporte')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Generar Reportes</h4>
+                        <p class="text-gray-600 text-sm">Genera reportes detallados del sistema</p>
+                    </div>
+                </div>
+
+                <!-- Ver Horarios -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/ver-horario')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-teal-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Ver Horarios</h4>
+                        <p class="text-gray-600 text-sm">Consulta horarios por curso y carrera</p>
+                    </div>
+                </div>
+
+                <!-- Ver Horarios Docentes -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/ver-horario-docente')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Ver Horarios Docentes</h4>
+                        <p class="text-gray-600 text-sm">Consulta horarios de profesores</p>
+                    </div>
+                </div>
+
+                <!-- Mi Horario (Estudiante) -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/mi-horario')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Mi Horario</h4>
+                        <p class="text-gray-600 text-sm">Consulta tu horario personal</p>
+                    </div>
+                </div>
+
+                <!-- Horario Docente -->
+                <div class="group cursor-pointer" onclick="navegarA('/inicio/docente-horario')">
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 text-center transform hover:-translate-y-2 border border-gray-100">
+                        <div class="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h10" />
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-3">Horario Docente</h4>
+                        <p class="text-gray-600 text-sm">Consulta tu horario como docente</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Estadísticas -->
+    <section class="py-16 px-6">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 transform hover:scale-105 transition-all duration-300">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">120+</h3>
+                        <p class="text-gray-600">Aulas Gestionadas</p>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 transform hover:scale-105 transition-all duration-300">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-verde-claro to-emerald-600 rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">85+</h3>
+                        <p class="text-gray-600">Docentes Activos</p>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 transform hover:scale-105 transition-all duration-300">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-2">2,450+</h3>
+                        <p class="text-gray-600">Estudiantes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <script>
+        function navegarA(ruta) {
+            console.log('Navegando a:', ruta);
+            // Aquí iría la lógica de navegación de Angular
+            // En Angular usarías: this.router.navigate([ruta]);
+        }
+    </script>
+</body>
+</html>

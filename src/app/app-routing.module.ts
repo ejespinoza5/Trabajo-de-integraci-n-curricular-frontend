@@ -12,6 +12,7 @@ import { EditarAulaComponent } from './editar-aula/editar-aula.component';
 import { CoordinadoresComponent } from './coordinadores/coordinadores.component';
 import { HorarioEstudianteComponent } from './horario-estudiante/horario-estudiante.component';
 import { HorarioDocenteComponent } from './horario-docente/horario-docente.component';
+import { InicioComponent } from './inicio/inicio.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
  {
   path: 'inicio',component: PrincipalComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR','ESTUDIANTE','DOCENTE'] } ,
   children: [
+    { path: 'bienvenida', component: InicioComponent,canActivate: [AuthGuard] },
     { path: 'gestionar-aulas', component: GestionarAulasComponent, canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR'] } },
     { path: 'generar-horario', component: GenerarHorariosComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR'] } },
     { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR', 'COORDINADOR'] } },

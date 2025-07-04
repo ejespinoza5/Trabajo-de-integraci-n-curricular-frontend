@@ -144,6 +144,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   editFechaFin = '';
   editAulaSeleccionada = this.DEFAULT_SELECTION;
   editDiaSeleccionado = this.DEFAULT_SELECTION;
+  editDocenteSeleccionado = this.DEFAULT_SELECTION;
   mensajeModal = '';
   tipoMensajeModal: 'error' | 'success' | '' = '';
 
@@ -479,6 +480,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       item.NIVEL?.toLowerCase().includes(searchTerm);
   };
 
+
+
   // Manejo de combinación optimizado
   onCombinacionChange(combinacion: any): void {
     this.resetCombinationSelections();
@@ -707,6 +710,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     this.editDiaSeleccionado = horario.dia.id;
     this.editFechaFin = this.formatFecha(horario.fechaFin);
     this.editFechaInicio = this.formatFecha(horario.fechaInicio);
+    this.editDocenteSeleccionado = Number(horario.docente.id); // Asegura que sea number
 
     // ✅ CORRECCIÓN: Preservar el tipo de clase correctamente
     if (!horario.tipoClase) {
@@ -739,6 +743,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   cancelarEdicion(): void {
     if (this.horarioSeleccionado) {
+      this.editDocenteSeleccionado = this.horarioSeleccionado.docente.id;
       this.editHoraInicio = this.formatHora(this.horarioSeleccionado.horaInicio);
       this.editHoraFin = this.formatHora(this.horarioSeleccionado.horaFin);
       this.editAulaSeleccionada = this.horarioSeleccionado.aula.id;
@@ -797,6 +802,8 @@ guardarCambiosHorario(): void {
   // Convertir los IDs a números para asegurar que sean del tipo correcto
   const aulaId = Number(this.editAulaSeleccionada);
   const diaId = Number(this.editDiaSeleccionado);
+    const docenteId = Number(this.editDocenteSeleccionado);
+
 
   const aulaSeleccionada = this.aulas.find(a => Number(a.ID_AULA) === aulaId);
   const diaSeleccionado = this.dias.find(d => Number(d.ID_DIA) === diaId);
@@ -815,7 +822,7 @@ guardarCambiosHorario(): void {
   let horarioActualizado: any = {
     ID_HORARIO: Number(this.horarioSeleccionado.id),
     ID_PERIODO: this.PeriodoSeleccionado,
-    ID_DOCENTE: this.horarioSeleccionado.docente.id,
+    ID_DOCENTE: docenteId,
     ID_ASIGNATURA: this.horarioSeleccionado.asignatura.id,
     ID_AULA: aulaId,
     ID_DIA: diaId,
@@ -834,7 +841,7 @@ guardarCambiosHorario(): void {
         ID_CARRERAS: carrera.id,                             // ✅ ID de cada carrera (4, 5)
         ID_ASIGNATURA: this.horarioSeleccionado!.asignatura.id // ✅ Usar ! para asegurar que no es null
       })) || [];
-      
+
     } else {
       // Es un horario regular - enviar carrera y curso individuales
       horarioActualizado.ID_CARRERAS = this.horarioSeleccionado!.carrera.id;
@@ -1162,8 +1169,15 @@ agregarCursoArticulado() {
     }
   }
 
-
-
-
+  // Devuelve una lista de docentes únicos (por ID) para evitar duplicados en el select
+  get docentesUnicos(): any[] {
+    const map = new Map<number, any>();
+    this.docentes.forEach(doc => {
+      if (!map.has(doc.ID_DOCENTE)) {
+        map.set(doc.ID_DOCENTE, doc);
+      }
+    });
+    return Array.from(map.values());
+  }
 
 }

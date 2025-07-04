@@ -40,13 +40,13 @@ iniciarSesion() {
       const rol = this.authService.ObtenerIdRol();
 
       if (rol === 13) {
-        this.router.navigate(['/inicio/gestionar-aulas']);
+        this.router.navigate(['/inicio/bienvenida']);
       } else if (rol === 17) {
-        this.router.navigate(['/inicio/generar-horario']);
+        this.router.navigate(['/inicio/bienvenida']);
       } else if (rol === 14) {
-        this.router.navigate(['/inicio/mi-horario']);
+        this.router.navigate(['/inicio/bienvenida']);
       } else if (rol === 15) {
-        this.router.navigate(['/inicio/docente-horario']);
+        this.router.navigate(['/inicio/bienvenid']);
       } else {
         this.notificationService.showWarningReport(
           'Rol no autorizado',
