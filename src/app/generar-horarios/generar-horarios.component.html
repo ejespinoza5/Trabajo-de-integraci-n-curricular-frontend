@@ -367,15 +367,7 @@
         <!-- Campos editables -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Docente -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Docente:</label>
-            <select [(ngModel)]="editDocenteSeleccionado" name="editDocente"
-              class="w-full p-2 border border-gray-300 rounded text-sm">
-              <option *ngFor="let docente of docentesUnicos" [value]="docente.ID_DOCENTE">
-                {{ docente.DOCENTE }}
-              </option>
-            </select>
-          </div>
+          
 
           <!-- Día -->
           <div>
