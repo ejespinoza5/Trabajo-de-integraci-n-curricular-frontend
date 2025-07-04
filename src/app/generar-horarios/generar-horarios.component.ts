@@ -579,26 +579,91 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
 
   private validateHorarioData(): boolean {
-    const requiredFields = [
-      this.PeriodoSeleccionado,
-      this.DocenteSeleccionado,
-      this.AsignaturaSeleccionada,
-      this.DiaSeleccionado,
-      this.AulaSeleccionada
-    ];
+    // Log de depuración para ver los valores actuales
+    console.log('DEBUG validateHorarioData:', {
+      PeriodoSeleccionado: this.PeriodoSeleccionado,
+      DiaSeleccionado: this.DiaSeleccionado,
+      AulaSeleccionada: this.AulaSeleccionada,
+      horaInicio: this.horaInicio,
+      horaFin: this.horaFin,
+      fechaInicio: this.fechaInicio,
+      fechaFin: this.fechaFin,
+      tipoClaseSeleccionado: this.tipoClaseSeleccionado,
+      CarreraSeleccionada: this.CarreraSeleccionada,
+      NivelSeleccionado: this.NivelSeleccionado,
+      DocenteSeleccionado: this.DocenteSeleccionado,
+      AsignaturaSeleccionada: this.AsignaturaSeleccionada,
+      cursosArticulados: this.cursosArticulados
+    });
 
-    if (requiredFields.some(field => !field) || !this.horaInicio || !this.horaFin) {
-      this.mensajeError = 'Debe completar todos los campos obligatorios';
+    // Forzar actualización de valores si hay selección individual
+    if (this.tipoClaseSeleccionado === 'regular' && this.DocenteAsignaturaSeleccionada) {
+      if (this.DocenteSeleccionado === 0) {
+        this.DocenteSeleccionado = this.DocenteAsignaturaSeleccionada.ID_DOCENTE;
+      }
+      if (this.AsignaturaSeleccionada === 0) {
+        this.AsignaturaSeleccionada = this.DocenteAsignaturaSeleccionada.ID_ASIGNATURA;
+      }
+    }
+
+    // Validar campos básicos
+    if (!this.PeriodoSeleccionado || this.PeriodoSeleccionado <= 0) {
+      this.mensajeError = 'Debe seleccionar un periodo';
+      return false;
+    }
+    if (!this.DiaSeleccionado || this.DiaSeleccionado <= 0) {
+      this.mensajeError = 'Debe seleccionar un día';
+      return false;
+    }
+    if (!this.AulaSeleccionada || this.AulaSeleccionada <= 0) {
+      this.mensajeError = 'Debe seleccionar un aula';
+      return false;
+    }
+    if (!this.horaInicio || !this.horaFin) {
+      this.mensajeError = 'Debe completar los horarios';
+      return false;
+    }
+    if (!this.fechaInicio || !this.fechaFin) {
+      this.mensajeError = 'Debe completar las fechas';
       return false;
     }
 
     // Validación específica para tipo de clase
     if (this.tipoClaseSeleccionado === 'regular') {
-      return this.CarreraSeleccionada > 0 && this.NivelSeleccionado > 0;
+      if (!this.CarreraSeleccionada || this.CarreraSeleccionada <= 0) {
+        this.mensajeError = 'Debe seleccionar una carrera';
+        return false;
+      }
+      if (!this.NivelSeleccionado || this.NivelSeleccionado <= 0) {
+        this.mensajeError = 'Debe seleccionar un nivel/curso';
+        return false;
+      }
+      if (!this.DocenteSeleccionado || this.DocenteSeleccionado <= 0) {
+        this.mensajeError = 'Debe seleccionar un docente';
+        return false;
+      }
+      if (!this.AsignaturaSeleccionada || this.AsignaturaSeleccionada <= 0) {
+        this.mensajeError = 'Debe seleccionar una asignatura';
+        return false;
+      }
+      return true;
     } else if (this.tipoClaseSeleccionado === 'articulada') {
-      return this.cursosArticulados.length > 0;
+      if (!this.cursosArticulados || this.cursosArticulados.length === 0) {
+        this.mensajeError = 'Debe agregar al menos un curso articulado';
+        return false;
+      }
+      if (!this.DocenteSeleccionado || this.DocenteSeleccionado <= 0) {
+        this.mensajeError = 'Debe seleccionar un docente';
+        return false;
+      }
+      if (!this.AsignaturaSeleccionada || this.AsignaturaSeleccionada <= 0) {
+        this.mensajeError = 'Debe seleccionar una asignatura';
+        return false;
+      }
+      return true;
     }
 
+    this.mensajeError = 'Debe seleccionar un tipo de clase válido';
     return false;
   }
 
