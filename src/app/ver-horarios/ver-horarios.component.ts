@@ -291,35 +291,43 @@ export class VerHorariosComponent implements OnInit {
     }
   }
 
-  // NUEVO MÉTODO: Usar daysOfWeek para eventos recurrentes
-  actualizarEventosCalendarioRecurrente(): void {
-    if (this.horariosFiltrados.length === 0) return;
+// MÉTODO MODIFICADO: Usar eventos recurrentes con fechas específicas
+actualizarEventosCalendarioRecurrente(): void {
+  if (this.horariosFiltrados.length === 0) return;
 
-    const eventos = this.horariosFiltrados.map(horario => {
-      const diaSemana = this.obtenerDiaSemanaISO(horario.dia.nombre);
-      
-      return {
-        title: `${horario.asignatura.nombre}\n${horario.docente.nombre}\n${horario.aula.nombre}`,
-        daysOfWeek: [diaSemana], // Usar daysOfWeek para eventos recurrentes
-        startTime: horario.horaInicio,
-        endTime: horario.horaFin,
-        backgroundColor: this.getColorMateria(horario.asignatura.id),
-        borderColor: this.getColorMateria(horario.asignatura.id),
-        extendedProps: {
-          horarioId: horario.id,
-          asignaturaId: horario.asignatura.id,
-          aula: horario.aula.nombre,
-          docente: horario.docente.nombre,
-          asignatura: horario.asignatura.nombre
-        }
-      };
-    });
+  const eventos = this.horariosFiltrados.map(horario => {
+    const diaSemana = this.obtenerDiaSemanaISO(horario.dia.nombre);
 
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      events: eventos
+    // Convertir las fechas del horario a formato Date
+    const fechaInicio = new Date(horario.fechaInicio);
+    const fechaFin = new Date(horario.fechaFin);
+
+    return {
+      title: `${horario.asignatura.nombre}\n${horario.docente.nombre}\n${horario.aula.nombre}`,
+      daysOfWeek: [diaSemana], // Usar daysOfWeek para eventos recurrentes
+      startTime: horario.horaInicio,
+      endTime: horario.horaFin,
+      startRecur: fechaInicio.toISOString().split('T')[0], // Fecha de inicio de recurrencia
+      endRecur: fechaFin.toISOString().split('T')[0], // Fecha de fin de recurrencia
+      backgroundColor: this.getColorMateria(horario.asignatura.id),
+      borderColor: this.getColorMateria(horario.asignatura.id),
+      extendedProps: {
+        horarioId: horario.id,
+        asignaturaId: horario.asignatura.id,
+        aula: horario.aula.nombre,
+        docente: horario.docente.nombre,
+        asignatura: horario.asignatura.nombre,
+        fechaInicio: horario.fechaInicio,
+        fechaFin: horario.fechaFin
+      }
     };
-  }
+  });
+
+  this.calendarOptions = {
+    ...this.calendarOptions,
+    events: eventos
+  };
+}
 
   // NUEVO MÉTODO: Obtener día de la semana para FullCalendar (0=domingo, 1=lunes, etc.)
   obtenerDiaSemanaISO(nombreDia: string): number {

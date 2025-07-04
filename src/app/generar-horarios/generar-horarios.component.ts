@@ -825,20 +825,21 @@ guardarCambiosHorario(): void {
     FECHA_FIN: this.formatFecha(this.editFechaFin),
   };
 
-  // ✅ CORRECCIÓN: Preservar el tipo de horario original
-  if (this.horarioSeleccionado.tipoClase === 'articulada' ||
-      (this.horarioSeleccionado.curso.cursos && this.horarioSeleccionado.curso.cursos.length > 0)) {
-    // Es un horario articulado - preservar los cursos articulados
-    horarioActualizado.cursosArticulados = this.horarioSeleccionado.curso.cursos?.map(curso => ({
-      ID_CARRERAS: curso.id, // Ajustar según tu estructura
-      ID_CURSOS: curso.id
-    })) || [];
-    // NO enviar ID_CARRERAS ni ID_CURSOS individuales
-  } else {
-    // Es un horario regular - enviar carrera y curso individuales
-    horarioActualizado.ID_CARRERAS = this.horarioSeleccionado.carrera.id;
-    horarioActualizado.ID_CURSOS = this.horarioSeleccionado.curso.id;
-  }
+    // ✅ CORRECCIÓN: Preservar el tipo de horario original
+    if (this.horarioSeleccionado.tipoClase === 'ARTICULADA' ||
+        (this.horarioSeleccionado.carrera.carreras && this.horarioSeleccionado.carrera.carreras.length > 0)) {
+      // Es un horario articulado - preservar los cursos articulados CORRECTAMENTE
+      horarioActualizado.cursosArticulados = this.horarioSeleccionado.carrera.carreras?.map(carrera => ({
+        ID_CURSOS: this.horarioSeleccionado!.curso.id,        // ✅ Usar ! para asegurar que no es null
+        ID_CARRERAS: carrera.id,                             // ✅ ID de cada carrera (4, 5)
+        ID_ASIGNATURA: this.horarioSeleccionado!.asignatura.id // ✅ Usar ! para asegurar que no es null
+      })) || [];
+      
+    } else {
+      // Es un horario regular - enviar carrera y curso individuales
+      horarioActualizado.ID_CARRERAS = this.horarioSeleccionado!.carrera.id;
+      horarioActualizado.ID_CURSOS = this.horarioSeleccionado!.curso.id;
+    }
 
   // Mostrar loading
   this.notificationService.showLoading('Actualizando horario...');
@@ -856,9 +857,9 @@ guardarCambiosHorario(): void {
         return;
       }
 
-      // ✅ CORRECCIÓN: Preservar toda la información original del horario
-      const horarioDetalleActualizado: HorarioDetalle = {
-        ...this.horarioSeleccionado, // Mantener toda la información original
+            // ...dentro de guardarCambiosHorario()...
+            const horarioDetalleActualizado: HorarioDetalle = {
+        ...this.horarioSeleccionado,
         horaInicio: formatearHora(this.editHoraInicio),
         horaFin: formatearHora(this.editHoraFin),
         fechaInicio: this.editFechaInicio,
@@ -870,8 +871,14 @@ guardarCambiosHorario(): void {
         dia: {
           id: diaId,
           nombre: diaSeleccionado.NOMBRE_DIA
-        }
-        // NO modificar: curso, carrera, tipoClase - se mantienen del original
+        },
+        // ✅ FORZAR el tipo de clase según la estructura
+        tipoClase: (this.horarioSeleccionado.carrera.carreras && this.horarioSeleccionado.carrera.carreras.length > 0)
+                    ? 'ARTICULADA'  // ✅ Usar el mismo formato que viene del backend
+                    : 'regular',
+        // ✅ NO sobrescribir curso ni carrera para articulados
+        curso: this.horarioSeleccionado.curso,
+        carrera: this.horarioSeleccionado.carrera
       };
 
       this.ngZone.run(() => {

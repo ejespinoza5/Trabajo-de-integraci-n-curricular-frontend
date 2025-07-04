@@ -71,92 +71,151 @@
   </div>
 
 
-  <!-- MODAL DE DETALLE DEL HORARIO -->
-  <div *ngIf="mostrarModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-    (click)="cerrarModal()">
+<!-- MODAL DE DETALLE DEL HORARIO MEJORADO -->
+<div *ngIf="mostrarModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  (click)="cerrarModal()">
 
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto"
-      (click)="$event.stopPropagation()">
+  <div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-screen overflow-y-auto"
+    (click)="$event.stopPropagation()">
 
-      <!-- Header del Modal -->
-      <div class="flex items-center justify-between p-6 border-b border-gray-200">
-        <h3 class="text-xl font-semibold text-gray-800">Detalle del Horario</h3>
-        <button (click)="cerrarModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+    <!-- Header del Modal -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-gray-800">Detalle del Horario</h3>
+      <button (click)="cerrarModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Contenido del Modal -->
+    <div class="p-6" *ngIf="horarioSeleccionado">
+      <!-- Indicador de color de la materia -->
+      <div class="flex items-center mb-6">
+        <div class="w-4 h-4 rounded-full mr-3" [style.background-color]="horarioSeleccionado.color">
+        </div>
+        <h4 class="text-lg font-bold text-gray-800">{{ horarioSeleccionado.asignatura }}</h4>
       </div>
 
-      <!-- Contenido del Modal -->
-      <div class="p-6" *ngIf="horarioSeleccionado">
-        <!-- Indicador de color de la materia -->
-        <div class="flex items-center mb-4">
-          <div class="w-4 h-4 rounded-full mr-3" [style.background-color]="horarioSeleccionado.color">
-          </div>
-          <h4 class="text-lg font-bold text-gray-800">{{ horarioSeleccionado.asignatura }}</h4>
+      <!-- Información detallada -->
+      <div class="space-y-4">
+        <!-- Código de materia (si está disponible) -->
+        <div *ngIf="horarioSeleccionado.codigo !== 'N/A'" class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Código:</span>
+          <span class="text-gray-800 col-span-2">{{ horarioSeleccionado.codigo }}</span>
         </div>
 
-        <!-- Información detallada -->
-        <div class="space-y-4">
-          <!-- Código de materia (si está disponible) -->
-          <div *ngIf="horarioSeleccionado.codigo !== 'N/A'" class="flex">
-            <span class="font-medium text-gray-600 w-20">Código:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.codigo }}</span>
-          </div>
+        <!-- Docente -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Docente:</span>
+          <span class="text-gray-800 col-span-2">{{ horarioSeleccionado.docente }}</span>
+        </div>
 
-          <!-- Docente -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Docente:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.docente }}</span>
-          </div>
+        <!-- Aula -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Aula:</span>
+          <span class="text-gray-800 col-span-2">{{ horarioSeleccionado.aula }}</span>
+        </div>
 
-          <!-- Aula -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Aula:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.aula }}</span>
-          </div>
+        <!-- Día -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Día:</span>
+          <span class="text-gray-800 col-span-2">{{ horarioSeleccionado.dia }}</span>
+        </div>
 
-          <!-- Día -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Día:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.dia }}</span>
-          </div>
+        <!-- Horario -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Horario:</span>
+          <span class="text-gray-800 col-span-2">
+            {{ formatearHora(horarioSeleccionado.horaInicio) }} -
+            {{ formatearHora(horarioSeleccionado.horaFin) }}
+          </span>
+        </div>
 
-          <!-- Horario -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Horario:</span>
-            <span class="text-gray-800">
-              {{ formatearHora(horarioSeleccionado.horaInicio) }} -
-              {{ formatearHora(horarioSeleccionado.horaFin) }}
+        <!-- Período de vigencia -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Fecha inicio - fin:</span>
+          <span class="text-gray-800 col-span-2">
+            {{ horarioSeleccionado.fechaInicio }} - {{ horarioSeleccionado.fechaFin }}
+          </span>
+        </div>
+
+        <!-- Carrera mejorada -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Carrera:</span>
+          <div class="col-span-2">
+            <!-- Si es una carrera múltiple (articulada) -->
+            <div *ngIf="horarioSeleccionado.carrera?.esMultiple; else carreraSimple">
+              <div class="mb-2">
+                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                  Articulada
+                </span>
+              </div>
+              <div class="space-y-1">
+                <div *ngFor="let carrera of horarioSeleccionado.carrera.lista"
+                     class="text-sm text-gray-700 pl-2 border-l-2 border-blue-300">
+                  {{ carrera.nombre }}
+                </div>
+              </div>
+            </div>
+            <!-- Si es una carrera simple -->
+            <ng-template #carreraSimple>
+              <span class="text-gray-800">{{ horarioSeleccionado.carrera?.nombre || 'Sin carrera' }}</span>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Curso/Nivel mejorado -->
+        <div class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Nivel:</span>
+          <div class="col-span-2">
+            <!-- Si es un curso múltiple (articulado) -->
+            <div *ngIf="horarioSeleccionado.curso?.esMultiple; else cursoSimple">
+              <div class="mb-2">
+                <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                  Articulado
+                </span>
+              </div>
+              <div class="space-y-1">
+                <div *ngFor="let curso of horarioSeleccionado.curso.lista"
+                     class="text-sm text-gray-700 pl-2 border-l-2 border-green-300">
+                  {{ curso.nombre }}
+                </div>
+              </div>
+            </div>
+            <!-- Si es un curso simple -->
+            <ng-template #cursoSimple>
+              <span class="text-gray-800">{{ horarioSeleccionado.curso?.nombre || 'Sin curso' }}</span>
+            </ng-template>
+          </div>
+        </div>
+
+        <!-- Tipo de clase -->
+        <div *ngIf="horarioSeleccionado.tipoClase === 'ARTICULADA'" class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Tipo:</span>
+          <div class="col-span-2">
+            <span class="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+              Clase Articulada
             </span>
           </div>
+        </div>
 
-          <!-- Carrera -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Carrera:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.carrera }}</span>
-          </div>
-          <!-- Nivel -->
-          <div class="flex">
-            <span class="font-medium text-gray-600 w-20">Nivel:</span>
-            <span class="text-gray-800">{{ horarioSeleccionado.curso }}</span>
-          </div>
-
-         
-
+        <!-- Créditos (si está disponible) -->
+        <div *ngIf="horarioSeleccionado.creditos !== 'N/A'" class="grid grid-cols-3 gap-2">
+          <span class="font-medium text-gray-600">Créditos:</span>
+          <span class="text-gray-800 col-span-2">{{ horarioSeleccionado.creditos }}</span>
         </div>
       </div>
+    </div>
 
-      <!-- Footer del Modal -->
-      <div class="flex justify-end p-6 border-t border-gray-200">
-        <button (click)="cerrarModal()"
-          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-          Cerrar
-        </button>
-      </div>
+    <!-- Footer del Modal -->
+    <div class="flex justify-end p-6 border-t border-gray-200">
+      <button (click)="cerrarModal()"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
+        Cerrar
+      </button>
     </div>
   </div>
-
+</div>
 
 </div>

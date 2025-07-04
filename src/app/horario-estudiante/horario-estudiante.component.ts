@@ -159,37 +159,42 @@ cargarHorarios(): void {
     }
   }
 
-  actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
-    if (this.horariosFiltrados.length === 0) return;
+actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
+  if (this.horariosFiltrados.length === 0) return;
 
-    const inicioSemana = this.obtenerInicioSemana(fechaReferencia);
+  const eventos = this.horariosFiltrados.map(horario => {
+    const diaSemana = this.obtenerDiaSemana(horario.dia.nombre);
 
-    const eventos = this.horariosFiltrados.map(horario => {
-      const diaSemana = this.obtenerDiaSemana(horario.dia.nombre);
-      const fechaClase = this.obtenerFechaParaDiaSemana(inicioSemana, diaSemana);
+    // Convertir las fechas del horario a formato Date
+    const fechaInicio = new Date(horario.fechaInicio);
+    const fechaFin = new Date(horario.fechaFin);
 
-      return {
-        title: `${horario.asignatura.nombre}\n${horario.docente.nombre}\n${horario.aula.nombre}`,
-        start: `${fechaClase}T${horario.horaInicio}`,
-        end: `${fechaClase}T${horario.horaFin}`,
-        backgroundColor: this.getColorMateria(horario.asignatura.id),
-        borderColor: this.getColorMateria(horario.asignatura.id),
-        extendedProps: {
-          horarioId: horario.id,
-          asignaturaId: horario.asignatura.id,
-          aula: horario.aula.nombre,
-          docente: horario.docente.nombre,
-          asignatura: horario.asignatura.nombre
-        }
-      };
-    });
-
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      events: eventos
+    return {
+      title: `${horario.asignatura.nombre}\n${horario.docente.nombre}\n${horario.aula.nombre}`,
+      daysOfWeek: [diaSemana], // Usar daysOfWeek para eventos recurrentes
+      startTime: horario.horaInicio,
+      endTime: horario.horaFin,
+      startRecur: fechaInicio.toISOString().split('T')[0], // Fecha de inicio de recurrencia
+      endRecur: fechaFin.toISOString().split('T')[0], // Fecha de fin de recurrencia
+      backgroundColor: this.getColorMateria(horario.asignatura.id),
+      borderColor: this.getColorMateria(horario.asignatura.id),
+      extendedProps: {
+        horarioId: horario.id,
+        asignaturaId: horario.asignatura.id,
+        aula: horario.aula.nombre,
+        docente: horario.docente.nombre,
+        asignatura: horario.asignatura.nombre,
+        fechaInicio: horario.fechaInicio,
+        fechaFin: horario.fechaFin
+      }
     };
-  }
+  });
 
+  this.calendarOptions = {
+    ...this.calendarOptions,
+    events: eventos
+  };
+}
   obtenerInicioSemana(fecha: Date): Date {
     const fechaCopia = new Date(fecha);
     const dia = fechaCopia.getDay();

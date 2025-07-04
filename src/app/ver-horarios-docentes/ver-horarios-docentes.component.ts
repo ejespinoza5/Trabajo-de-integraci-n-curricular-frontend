@@ -23,7 +23,7 @@ export class VerHorariosDocentesComponent {
   materiasUnicas: any[] = [];
   coloresMaterias: { [id: number]: string } = {};
   mensajeError: string = '';
-  
+
   // Variables para el modal
   mostrarModal: boolean = false;
   horarioSeleccionado: any = null;
@@ -58,7 +58,6 @@ export class VerHorariosDocentesComponent {
     eventDataTransform: (event) => {
       return event;
     },
-    // Eliminamos el callback datesSet que causaba el problema
     eventDidMount: (info) => {
       if (info.event.extendedProps['asignaturaId']) {
         info.el.style.backgroundColor = this.getColorMateria(info.event.extendedProps['asignaturaId']);
@@ -138,38 +137,37 @@ export class VerHorariosDocentesComponent {
     }
   }
 
- cargarHorarios(): void {
-  if (!this.PeriodoSeleccionado || !this.DocenteSeleccionado) {
-    this.notificationService.showWarningReport(
-      'Filtros incompletos',
-      'Por favor, selecciona el periodo y el docente antes de continuar.',
-      'Entendido'
-    );
-    return;
+  cargarHorarios(): void {
+    if (!this.PeriodoSeleccionado || !this.DocenteSeleccionado) {
+      this.notificationService.showWarningReport(
+        'Filtros incompletos',
+        'Por favor, selecciona el periodo y el docente antes de continuar.',
+        'Entendido'
+      );
+      return;
+    }
+
+    this.mensajeError = '';
+    this.notificationService.showLoading('Cargando horarios...');
+
+    this.verHorariosDocentesService
+      .obtenerHorariosPorPeriodoCarreraDocente(this.PeriodoSeleccionado, this.DocenteSeleccionado)
+      .subscribe({
+        next: (data: any[]) => {
+          this.notificationService.hideLoading();
+
+          this.horariosFiltrados = data;
+          this.asignarColoresAMaterias();
+          this.actualizarEventosCalendario();
+        },
+        error: (err) => {
+          this.notificationService.hideLoading();
+          console.error('Error al cargar los horarios:', err);
+          this.mensajeError = 'Error al cargar los horarios';
+          this.limpiarCalendario();
+        }
+      });
   }
-
-  this.mensajeError = '';
-  this.notificationService.showLoading('Cargando horarios...');
-
-  this.verHorariosDocentesService
-    .obtenerHorariosPorPeriodoCarreraDocente(this.PeriodoSeleccionado, this.DocenteSeleccionado)
-    .subscribe({
-      next: (data: any[]) => {
-        this.notificationService.hideLoading();
-
-        this.horariosFiltrados = data;
-        this.asignarColoresAMaterias();
-        this.actualizarEventosCalendario();
-      },
-      error: (err) => {
-        this.notificationService.hideLoading();
-        console.error('Error al cargar los horarios:', err);
-        this.mensajeError = 'Error al cargar los horarios';
-        this.limpiarCalendario();
-      }
-    });
-}
-
 
   limpiarCalendario(): void {
     this.horariosFiltrados = [];
@@ -223,33 +221,49 @@ export class VerHorariosDocentesComponent {
     return this.coloresMaterias[id] || '#6B7280';
   }
 
-  // MÉTODO CORREGIDO: Usar eventos recurrentes para evitar el corrimiento de días
+  // MÉTODO ACTUALIZADO: Usar eventos con fechas específicas respetando fechaInicio y fechaFin
   actualizarEventosCalendario(): void {
     if (this.horariosFiltrados.length > 0) {
-      this.actualizarEventosCalendarioRecurrente();
+      this.actualizarEventosConFechasEspecificas();
     }
   }
 
-  // NUEVO MÉTODO: Usar daysOfWeek para eventos recurrentes
-  actualizarEventosCalendarioRecurrente(): void {
+  // NUEVO MÉTODO: Crear eventos respetando fechaInicio y fechaFin
+  actualizarEventosConFechasEspecificas(): void {
     if (this.horariosFiltrados.length === 0) return;
 
     const eventos = this.horariosFiltrados.map(horario => {
       const diaSemana = this.obtenerDiaSemanaISO(horario.dia.nombre);
-      
+
+      // Convertir fechas ISO a Date objects
+      const fechaInicio = new Date(horario.fechaInicio);
+      const fechaFin = new Date(horario.fechaFin);
+
+      // Formatear fechas para FullCalendar (YYYY-MM-DD)
+      const startDate = this.formatearFechaParaCalendar(fechaInicio);
+      const endDate = this.formatearFechaParaCalendar(fechaFin);
+
       return {
-        title: `${horario.asignatura.nombre}\n${horario.docente.nombre}\n${horario.aula.nombre}`,
-        daysOfWeek: [diaSemana], // Usar daysOfWeek para eventos recurrentes
+        title: this.generarTituloEvento(horario),
+        daysOfWeek: [diaSemana],
         startTime: horario.horaInicio,
         endTime: horario.horaFin,
+        startRecur: startDate, // Fecha de inicio del evento recurrente
+        endRecur: endDate,     // Fecha de fin del evento recurrente
         backgroundColor: this.getColorMateria(horario.asignatura.id),
         borderColor: this.getColorMateria(horario.asignatura.id),
         extendedProps: {
           horarioId: horario.id,
           asignaturaId: horario.asignatura.id,
-          aula: horario.aula.nombre,
-          docente: horario.docente.nombre,
-          asignatura: horario.asignatura.nombre
+          aula: horario.aula?.nombre || 'Sin aula',
+          docente: horario.docente?.nombre || 'Sin docente',
+          asignatura: horario.asignatura?.nombre || 'Sin asignatura',
+          curso: horario.curso?.nombre || 'Sin curso',
+          carrera: horario.carrera?.nombre || 'Sin carrera',
+          tipoClase: horario.tipoClase,
+          grupoArticulado: horario.grupoArticulado,
+          fechaInicio: horario.fechaInicio,
+          fechaFin: horario.fechaFin
         }
       };
     });
@@ -260,7 +274,43 @@ export class VerHorariosDocentesComponent {
     };
   }
 
-  // NUEVO MÉTODO: Obtener día de la semana para FullCalendar (0=domingo, 1=lunes, etc.)
+  // NUEVO MÉTODO: Generar título del evento considerando clases articuladas
+  generarTituloEvento(horario: any): string {
+    const asignatura = horario.asignatura?.nombre || 'Sin asignatura';
+    const docente = horario.docente?.nombre || 'Sin docente';
+    const aula = horario.aula?.nombre || 'Sin aula';
+
+    let titulo = `${asignatura}\n${docente}\n${aula}`;
+
+    // Agregar información de carreras (tanto articuladas como regulares)
+    const infoCarreras = this.obtenerInfoCarreras(horario.carrera);
+    if (infoCarreras) {
+      titulo += `\n${infoCarreras}`;
+    }
+
+    // Agregar información de cursos (tanto articulados como regulares)
+    const infoCursos = this.obtenerInfoCursos(horario.curso);
+    if (infoCursos) {
+      titulo += `\n${infoCursos}`;
+    }
+
+    // Si es una clase articulada, agregar indicador
+    if (horario.tipoClase === 'ARTICULADA') {
+      titulo += `\n[ARTICULADA]`;
+      if (horario.grupoArticulado) {
+        titulo += ` Grupo ${horario.grupoArticulado}`;
+      }
+    }
+
+    return titulo;
+  }
+
+  // NUEVO MÉTODO: Formatear fecha para FullCalendar
+  formatearFechaParaCalendar(fecha: Date): string {
+    return fecha.toISOString().split('T')[0];
+  }
+
+  // MÉTODO ACTUALIZADO: Obtener día de la semana para FullCalendar
   obtenerDiaSemanaISO(nombreDia: string): number {
     const dias: { [key: string]: number } = {
       'Domingo': 0,
@@ -276,9 +326,106 @@ export class VerHorariosDocentesComponent {
     return dias[nombreDia] ?? 1;
   }
 
-  // MÉTODOS MANTENIDOS PERO YA NO SE USAN (puedes eliminarlos si quieres)
+abrirModalDetalleHorario(horarioId: number): void {
+  const horario = this.horariosFiltrados.find(h => h.id === horarioId);
+  if (horario) {
+    this.horarioSeleccionado = {
+      id: horario.id,
+      asignatura: horario.asignatura?.nombre || 'Sin asignatura',
+      curso: this.obtenerDetallesCurso(horario.curso),
+      docente: horario.docente?.nombre || 'Sin docente',
+      carrera: this.obtenerDetallesCarrera(horario.carrera),
+      aula: horario.aula?.nombre || 'Sin aula',
+      dia: horario.dia?.nombre || 'Sin día',
+      horaInicio: horario.horaInicio,
+      horaFin: horario.horaFin,
+      fechaInicio: this.formatearFechaParaMostrar(horario.fechaInicio),
+      fechaFin: this.formatearFechaParaMostrar(horario.fechaFin),
+      tipoClase: horario.tipoClase,
+      grupoArticulado: horario.grupoArticulado,
+      color: this.getColorMateria(horario.asignatura?.id || 0),
+      codigo: horario.asignatura?.codigo || 'N/A',
+      creditos: horario.asignatura?.creditos || 'N/A',
+      // Información adicional para clases articuladas
+      esArticulada: horario.tipoClase === 'ARTICULADA'
+    };
+    this.mostrarModal = true;
+  }
+}
+
+  // NUEVO MÉTODO: Obtener detalles completos de la carrera para el modal
+  obtenerDetallesCarrera(carrera: any): any {
+    if (!carrera) return { nombre: 'Sin carrera', lista: [] };
+
+    // Si es una carrera múltiple (articulada)
+    if (carrera.carreras && carrera.carreras.length > 0) {
+      return {
+        nombre: carrera.nombre, // Nombre completo concatenado
+        lista: carrera.carreras, // Array de carreras individuales
+        esMultiple: true
+      };
+    }
+
+    // Si es una carrera única
+    return {
+      nombre: carrera.nombre,
+      lista: [carrera],
+      esMultiple: false
+    };
+  }
+
+  // NUEVO MÉTODO: Obtener detalles completos del curso para el modal
+  obtenerDetallesCurso(curso: any): any {
+    if (!curso) return { nombre: 'Sin curso', lista: [] };
+
+    // Si es un curso múltiple (articulado)
+    if (curso.cursos && curso.cursos.length > 0) {
+      return {
+        nombre: curso.nombre, // Nombre completo concatenado
+        lista: curso.cursos, // Array de cursos individuales
+        esMultiple: true
+      };
+    }
+
+    // Si es un curso único
+    return {
+      nombre: curso.nombre,
+      lista: [curso],
+      esMultiple: false
+    };
+  }
+
+  // NUEVO MÉTODO: Formatear fecha para mostrar en el modal
+  formatearFechaParaMostrar(fechaISO: string): string {
+    if (!fechaISO) return 'N/A';
+
+    const fecha = new Date(fechaISO);
+    return fecha.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  // Método para cerrar el modal
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.horarioSeleccionado = null;
+  }
+
+  // Método para formatear la hora
+  formatearHora(hora: string): string {
+    if (!hora) return '';
+    const [hours, minutes] = hora.split(':');
+    return `${hours}:${minutes}`;
+  }
+
+  // MÉTODOS HEREDADOS (mantenidos por compatibilidad, pero ya no se usan)
+  actualizarEventosCalendarioRecurrente(): void {
+    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
+  }
+
   actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
-    // Este método ya no se usa con la nueva implementación
     console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
   }
 
@@ -321,38 +468,33 @@ export class VerHorariosDocentesComponent {
     return fecha.toISOString().split('T')[0];
   }
 
-  // Método mejorado para abrir el modal
-  abrirModalDetalleHorario(horarioId: number): void {
-    const horario = this.horariosFiltrados.find(h => h.id === horarioId);
-    if (horario) {
-      this.horarioSeleccionado = {
-        id: horario.id,
-        asignatura: horario.asignatura.nombre,
-        curso: horario.curso.nombre,
-        docente: horario.docente.nombre,
-        carrera: horario.carrera.nombre,
-        aula: horario.aula.nombre,
-        dia: horario.dia.nombre,
-        horaInicio: horario.horaInicio,
-        horaFin: horario.horaFin,
-        color: this.getColorMateria(horario.asignatura.id),
-        codigo: horario.asignatura.codigo || 'N/A',
-        creditos: horario.asignatura.creditos || 'N/A'
-      };
-      this.mostrarModal = true;
-    }
+  // OPCIÓN 1: Agrega estos métodos a tu clase VerHorariosDocentesComponent
+
+// NUEVO MÉTODO: Obtener información de carreras para el título del evento
+obtenerInfoCarreras(carrera: any): string {
+  if (!carrera) return '';
+
+  // Si es una carrera múltiple (articulada)
+  if (carrera.carreras && carrera.carreras.length > 0) {
+    return carrera.carreras.map((c: any) => c.nombre).join(', ');
   }
 
-  // Método para cerrar el modal
-  cerrarModal(): void {
-    this.mostrarModal = false;
-    this.horarioSeleccionado = null;
+  // Si es una carrera única
+  return carrera.nombre || '';
+}
+
+// NUEVO MÉTODO: Obtener información de cursos para el título del evento
+obtenerInfoCursos(curso: any): string {
+  if (!curso) return '';
+
+  // Si es un curso múltiple (articulado)
+  if (curso.cursos && curso.cursos.length > 0) {
+    return curso.cursos.map((c: any) => c.nombre).join(', ');
   }
 
-  // Método para formatear la hora
-  formatearHora(hora: string): string {
-    if (!hora) return '';
-    const [hours, minutes] = hora.split(':');
-    return `${hours}:${minutes}`;
-  }
+  // Si es un curso único
+  return curso.nombre || '';
+}
+
+
 }

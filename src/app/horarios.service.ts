@@ -233,17 +233,25 @@ export class HorariosService {
     );
   }
 
-  eliminarHorario(idHorario: number): Observable<any> {
+   eliminarHorario(idHorario: number, fechaExcepcion?: string): Observable<any> {
     // First get the horario details to know which period to invalidate
     return this.obtenerDetalleHorario(idHorario).pipe(
       switchMap(horarioDetalle => {
         // Now we have the horario details with period information
         const idPeriodo = horarioDetalle.ID_PERIODO;
-
+  
+        // Prepare options for DELETE
+        const options: any = {
+          headers: this.getAuthHeaders()
+        };
+        if (fechaExcepcion) {
+          options.body = { fechaExcepcion };
+        }
+  
         // Proceed with deletion
         return this.http.delete<any>(
           `${this.apiUrl}/horarios/${idHorario}`,
-          { headers: this.getAuthHeaders() }
+          options
         ).pipe(
           takeUntil(this.cancelRequestsSubject),
           tap(() => {
@@ -258,7 +266,7 @@ export class HorariosService {
                 }
               });
             }
-
+  
             // Clear cache for the specific horario detail
             const detailUrl = `${this.apiUrl}/horarios-completo/${idHorario}`;
             this.cacheMap.delete(detailUrl);
