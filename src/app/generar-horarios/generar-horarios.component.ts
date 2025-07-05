@@ -40,6 +40,7 @@ interface HorarioDetalle {
   fechaFin: string;
   tipoClase?: string; // ✅ Hacer obligatorio este campo
   grupoArticulado?: any;
+
 }
 
 // Clase para manejo de colores optimizada
@@ -144,9 +145,13 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   editFechaFin = '';
   editAulaSeleccionada = this.DEFAULT_SELECTION;
   editDiaSeleccionado = this.DEFAULT_SELECTION;
-  editDocenteSeleccionado = this.DEFAULT_SELECTION;
+    editDocenteSeleccionado: number = this.DEFAULT_SELECTION;
   mensajeModal = '';
   tipoMensajeModal: 'error' | 'success' | '' = '';
+
+  docenteOriginal: number = 0;
+mostrarObservacion: boolean = false;
+observacion: string = '';
 
   // Arrays de horarios
   todosLosHorarios: HorarioDetalle[] = [];
@@ -229,6 +234,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDatosIniciales();
+    this.initializeSelectedDocente();
   }
 
 
@@ -763,7 +769,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // MÉTODOS PARA EL MODAL (continuarían igual pero con optimizaciones similares)
 
- abrirModalDetalleHorario(horarioId: number): void {
+abrirModalDetalleHorario(horarioId: number): void {
+
   const horario = this.horariosFiltrados.find(h => h.id === horarioId);
 
   if (horario) {
@@ -776,10 +783,15 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     this.editFechaFin = this.formatFecha(horario.fechaFin);
     this.editFechaInicio = this.formatFecha(horario.fechaInicio);
     this.editDocenteSeleccionado = Number(horario.docente.id);
+    this.onEditModalOpen(horario.docente.id);
 
-    // ✅ CORRECCIÓN: Preservar el tipo de clase correctamente
+    // ✅ NUEVO: Guardar docente original y resetear observación
+    this.docenteOriginal = Number(horario.docente.id);
+    this.mostrarObservacion = false;
+    this.observacion = '';
+      console.log('editDocenteSeleccionado:', this.editDocenteSeleccionado);
+    // Código existente para tipoClase...
     if (!horario.tipoClase) {
-      // Si no tiene tipoClase definido, determinarlo por los cursos
       if (horario.curso.cursos && horario.curso.cursos.length > 0) {
         this.horarioSeleccionado.tipoClase = 'articulada';
       } else {
@@ -815,6 +827,10 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       this.editDiaSeleccionado = this.horarioSeleccionado.dia.id;
       this.editFechaFin = this.formatFecha(this.horarioSeleccionado.fechaFin);
       this.editFechaInicio = this.formatFecha(this.horarioSeleccionado.fechaInicio);
+
+      // ✅ NUEVO: Resetear observación
+    this.mostrarObservacion = false;
+    this.observacion = '';
     }
 
     this.modoEdicion = false;
@@ -833,6 +849,16 @@ guardarCambiosHorario(): void {
       'No se puede actualizar el horario',
       'Cerrar'
     );
+    return;
+  }
+
+  if (this.mostrarObservacion && this.observacion.trim().length < 10) {
+    this.notificationService.showErrorReport(
+      'Error',
+      'La observación debe tener al menos 10 caracteres.',
+      'Cerrar'
+    );
+    this.mostrarErrorObservacion = true;
     return;
   }
 
@@ -896,6 +922,9 @@ guardarCambiosHorario(): void {
     FECHA_INICIO: this.formatFecha(this.editFechaInicio),
     FECHA_FIN: this.formatFecha(this.editFechaFin),
   };
+  if (this.mostrarObservacion && this.observacion.trim()) {
+    horarioActualizado.observacion = this.observacion.trim();
+  }
 
     // ✅ CORRECCIÓN: Preservar el tipo de horario original
     if (this.horarioSeleccionado.tipoClase === 'ARTICULADA' ||
@@ -1237,8 +1266,117 @@ agregarCursoArticulado() {
   // Devuelve una lista de docentes únicos (por ID) para evitar duplicados en el select
   // En tu componente
 get docentesUnicos() {
-  return this.docentes.filter((docente, index, self) =>
-    index === self.findIndex(d => d.ID_DOCENTE === docente.ID_DOCENTE)
-  );
+  const lista = this.docentes
+    .map(docente => ({
+      ...docente,
+      ID_DOCENTE: Number(docente.ID_DOCENTE)
+    }))
+    .filter((docente, index, self) =>
+      index === self.findIndex(d => d.ID_DOCENTE === docente.ID_DOCENTE)
+    );
+  return lista;
 }
+
+onDocenteEditChange(nuevoDocenteId: any): void {
+  const nuevoDocente = Number(nuevoDocenteId);
+  const docenteOriginal = Number(this.docenteOriginal);
+
+  this.editDocenteSeleccionado = nuevoDocente;
+
+  if (nuevoDocente !== docenteOriginal) {
+    this.mostrarObservacion = true;
+    // Resetear error cuando se muestra el campo
+    this.mostrarErrorObservacion = false;
+  } else {
+    this.mostrarObservacion = false;
+    this.observacion = '';
+    this.mostrarErrorObservacion = false;
+  }
+}
+mostrarErrorObservacion: boolean = false;
+
+validarObservacion(): boolean {
+  if (this.mostrarObservacion) {
+    const observacionValida = !!(this.observacion && this.observacion.trim().length > 0);
+    this.mostrarErrorObservacion = !observacionValida;
+    return observacionValida;
+  }
+  this.mostrarErrorObservacion = false;
+  return true;
+}
+
+searchTerm: string = '';
+  isDropdownOpen: boolean = false;
+  selectedDocente: any = null;
+  docentesFiltrados: any[] = [];
+
+ toggleDropdown(show: boolean) {
+    this.isDropdownOpen = show;
+    if (show) {
+      // Cuando se abre, limpiar el término de búsqueda para permitir búsqueda
+      this.searchTerm = '';
+      this.docentesFiltrados = [...this.docentesUnicos];
+    } else {
+      // Cuando se cierra, mostrar el docente seleccionado
+      if (this.selectedDocente) {
+        this.searchTerm = this.selectedDocente.DOCENTE;
+      } else {
+        this.searchTerm = '';
+      }
+    }
+  }
+  onInputFocus() {
+    this.toggleDropdown(true);
+    // Limpiar el campo para permitir búsqueda
+    this.searchTerm = '';
+    this.docentesFiltrados = [...this.docentesUnicos];
+  }
+  onSearchChange() {
+    if (!this.searchTerm.trim()) {
+      this.docentesFiltrados = [...this.docentesUnicos];
+    } else {
+      this.docentesFiltrados = this.docentesUnicos.filter(docente =>
+        docente.DOCENTE.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
+
+  // Seleccionar un docente
+  selectDocente(docente: any) {
+    this.selectedDocente = docente;
+    this.editDocenteSeleccionado = docente?.ID_DOCENTE || null;
+    this.searchTerm = docente?.DOCENTE || '';
+    this.isDropdownOpen = false;
+
+    // Llamar a tu función existente si es necesario
+    if (this.onDocenteEditChange) {
+      this.onDocenteEditChange(this.editDocenteSeleccionado);
+    }
+  }
+  initializeSelectedDocente() {
+    if (this.editDocenteSeleccionado) {
+      this.selectedDocente = this.docentesUnicos.find(
+        d => d.ID_DOCENTE === this.editDocenteSeleccionado
+      );
+      this.searchTerm = this.selectedDocente?.DOCENTE || '';
+    } else {
+      this.selectedDocente = null;
+      this.searchTerm = '';
+    }
+    this.docentesFiltrados = [...this.docentesUnicos];
+    this.isDropdownOpen = false;
+  }
+  onInputBlur() {
+    // Pequeño delay para permitir que el click en una opción funcione
+    setTimeout(() => {
+      if (!this.isDropdownOpen) {
+        this.searchTerm = this.selectedDocente?.DOCENTE || '';
+      }
+    }, 200);
+  }
+   onEditModalOpen(docenteId: any) {
+    this.editDocenteSeleccionado = docenteId;
+    this.initializeSelectedDocente();
+  }
+
 }

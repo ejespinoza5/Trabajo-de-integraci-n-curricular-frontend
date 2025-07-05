@@ -122,8 +122,8 @@
         <!-- Docente - Asignatura - Nivel Combinado (Solo para clases regulares) -->
         <div *ngIf="tipoClaseSeleccionado === 'regular'" class="md:col-span-2">
           <label class="block font-medium mb-1 text-xs">Docente - Asignatura - Nivel:</label>
-          <ng-select [items]="docenteAsignaturaNivel" [searchFn]="customSearchFn" 
-            [(ngModel)]="CombinacionSeleccionada" placeholder="Seleccionar docente, asignatura y nivel"
+          <ng-select [items]="docenteAsignaturaNivel" [searchFn]="customSearchFn" [(ngModel)]="CombinacionSeleccionada"
+            placeholder="Seleccionar docente, asignatura y nivel"
             (change)="onCombinacionChange(CombinacionSeleccionada)" [searchable]="true" [clearable]="false"
             [appendTo]="'body'" [groupBy]="'DOCENTE'" [virtualScroll]="true" class="text-xs">
 
@@ -367,32 +367,101 @@
         <!-- Campos editables -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Docente -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Docente:</label>
-            <select [(ngModel)]="editDocenteSeleccionado" name="editDocente"
-              class="w-full p-2 border border-gray-300 rounded text-sm">
-              <option *ngFor="let docente of docentesUnicos" [value]="docente.ID_DOCENTE">
-                {{ docente.DOCENTE }}
-              </option>
-            </select>
+          <!-- HTML Template -->
+<div class="custom-select-container">
+  <label class="block text-sm font-medium text-gray-700 mb-1">Docente:</label>
+
+  <div class="relative w-full">
+    <!-- Input de búsqueda que simula el select -->
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (focus)="onInputFocus()"
+      (blur)="onInputBlur()"
+      (input)="onSearchChange()"
+      [placeholder]="'Seleccionar docente...'"
+      class="w-full p-2 border border-gray-300 rounded text-sm"
+      autocomplete="off">
+
+    <!-- Flecha del dropdown -->
+    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+      <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </div>
+
+    <!-- Dropdown con opciones -->
+    <div *ngIf="isDropdownOpen"
+         class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+
+      <!-- Opción vacía -->
+      <div class="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm text-gray-500"
+           (click)="selectDocente(null)">
+        Seleccionar docente...
+      </div>
+
+      <!-- Lista de docentes filtrados -->
+      <div *ngFor="let docente of docentesFiltrados"
+           class="px-3 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+           [class.bg-blue-50]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE"
+           (click)="selectDocente(docente)">
+        {{ docente.DOCENTE }}
+      </div>
+
+      <!-- Mensaje cuando no hay resultados -->
+      <div *ngIf="docentesFiltrados.length === 0 && searchTerm"
+           class="px-3 py-2 text-sm text-gray-500">
+        No se encontraron docentes
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Click fuera del componente para cerrar -->
+<div *ngIf="isDropdownOpen"
+     class="fixed inset-0 z-0"
+     (click)="toggleDropdown(false)">
+</div>
+
+          <div *ngIf="mostrarObservacion" class="mt-3">
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="observacion">
+              Observación <span class="text-red-600">*</span> (requerida por cambio de docente):
+            </label>
+            <textarea [(ngModel)]="observacion" name="observacion" id="observacion" rows="3"
+              placeholder="Explique el motivo del cambio de docente..."
+              class="w-full p-2 border border-gray-300 rounded text-sm resize-none" maxlength="500" required></textarea>
+            <small class="text-gray-500">{{ observacion.length }}/500 caracteres</small>
           </div>
+
 
           <!-- Día -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Día:</label>
-            <select [(ngModel)]="editDiaSeleccionado" name="editDia"
+            <ng-select [items]="dias" bindLabel="NOMBRE_DIA" bindValue="ID_DIA" [(ngModel)]="editDiaSeleccionado"
+              name="editDia" placeholder="Seleccionar día" [searchable]="true" [clearable]="false"
               class="w-full p-2 border border-gray-300 rounded text-sm">
-              <option *ngFor="let dia of dias" [value]="dia.ID_DIA">{{ dia.NOMBRE_DIA }}</option>
-            </select>
+              <ng-template ng-label-tmp let-item="item">
+                <div class="text-xs">{{ item ? item.NOMBRE_DIA : 'Seleccionar día' }}</div>
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item">
+                <div class="text-xs">{{ item.NOMBRE_DIA }}</div>
+              </ng-template>
+            </ng-select>
           </div>
 
           <!-- Aula -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Aula:</label>
-            <select [(ngModel)]="editAulaSeleccionada" name="editAula"
+            <ng-select [items]="aulas" bindLabel="NOMBRE_AULA" bindValue="ID_AULA" [(ngModel)]="editAulaSeleccionada"
+              name="editAula" placeholder="Seleccionar aula" [searchable]="true" [clearable]="false"
               class="w-full p-2 border border-gray-300 rounded text-sm">
-              <option *ngFor="let aula of aulas" [value]="aula.ID_AULA">{{ aula.NOMBRE_AULA }}</option>
-            </select>
+              <ng-template ng-label-tmp let-item="item">
+                <div class="text-xs">{{ item ? item.NOMBRE_AULA : 'Seleccionar aula' }}</div>
+              </ng-template>
+              <ng-template ng-option-tmp let-item="item">
+                <div class="text-xs">{{ item.NOMBRE_AULA }}</div>
+              </ng-template>
+            </ng-select>
           </div>
 
           <!-- Hora Inicio -->

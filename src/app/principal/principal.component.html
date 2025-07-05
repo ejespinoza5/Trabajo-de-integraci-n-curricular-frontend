@@ -32,7 +32,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-3">
                         <div class="w-12 h-12 flex items-center justify-center">
-                            <img src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png" 
+                            <img src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png"
                                  alt="Logo Instituto Los Andes" class="h-10 w-10 object-contain">
                         </div>
                         <div class="hidden md:block">
@@ -56,9 +56,9 @@
                             <p class="text-xs text-gray-600">{{ObtenerNombreRol()}}</p>
                         </div>
                     </div>
-                    
+
                     <!-- Botón cerrar sesión -->
-                    <button class="bg-rosado-oscuro hover:bg-rosado-oscuro-hover text-white px-4 py-2 text-xs rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5" 
+                    <button class="bg-rosado-oscuro hover:bg-rosado-oscuro-hover text-white px-4 py-2 text-xs rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                             (click)="CerrarSesion()">
                         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -73,7 +73,7 @@
             <!-- Sidebar mejorado -->
             <aside class="bg-white shadow-xl relative transition-all duration-300 flex-shrink-0 border-r border-gray-200"
                    [ngClass]="{'w-64': sidebarOpen, 'w-16': !sidebarOpen}">
-                
+
                 <!-- Botón toggle mejorado -->
                 <div class="absolute -right-4 top-1/2 transform -translate-y-1/2 z-20">
                     <div class="bg-verde-claro hover:bg-green-600 text-white h-8 w-8 flex items-center justify-center rounded-full cursor-pointer shadow-lg transition-all duration-200 hover:shadow-xl"
@@ -92,12 +92,12 @@
                     <div *ngIf="sidebarOpen" class="px-4 mb-6">
                         <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Menú Principal</h2>
                     </div>
-                    
+
                     <ul class="space-y-1 px-3">
                         <!-- INICIO -->
                         <li>
-                            <a [routerLink]="['/inicio/bienvenida']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
+                            <a [routerLink]="['/inicio/bienvenida']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
@@ -105,13 +105,13 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                     </svg>
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">INICIO</span>
+                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Inicio</span>
                             </a>
                         </li>
 
                         <!-- Gestionar Aulas -->
                         <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/gestionar-aulas']" 
+                            <a [routerLink]="['/inicio/gestionar-aulas']"
                                [ngClass]="{ 'bg-verde-claro text-white shadow-lg': esRutaGestionarAulas(), 'hover:bg-gray-100': !esRutaGestionarAulas() }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -126,9 +126,9 @@
 
                         <!-- Coordinadores -->
                         <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/coordinadores']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/coordinadores']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,9 +141,9 @@
 
                         <!-- Generar Horarios -->
                         <li *ngIf="usuarioService.tieneRol(['COORDINADOR', 'SUPERADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/generar-horario']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/generar-horario']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -156,9 +156,9 @@
 
                         <!-- Generar Reportes -->
                         <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR'])">
-                            <a [routerLink]="['/inicio/generar-reporte']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/generar-reporte']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -171,9 +171,9 @@
 
                         <!-- Ver Horarios -->
                         <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/ver-horario']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/ver-horario']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -186,9 +186,9 @@
 
                         <!-- Ver Horarios Docentes -->
                         <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR'])">
-                            <a [routerLink]="['/inicio/ver-horario-docente']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/ver-horario-docente']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -201,9 +201,9 @@
 
                         <!-- Mi Horario (Estudiante) -->
                         <li *ngIf="usuarioService.tieneRol(['ESTUDIANTE'])">
-                            <a [routerLink]="['/inicio/mi-horario']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/mi-horario']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -216,9 +216,9 @@
 
                         <!-- Horario Docente -->
                         <li *ngIf="usuarioService.tieneRol(['DOCENTE'])">
-                            <a [routerLink]="['/inicio/docente-horario']" 
-                               routerLinkActive="bg-verde-claro text-white shadow-lg" 
-                               [routerLinkActiveOptions]="{ exact: true }" 
+                            <a [routerLink]="['/inicio/docente-horario']"
+                               routerLinkActive="bg-verde-claro text-white shadow-lg"
+                               [routerLinkActiveOptions]="{ exact: true }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
                                 <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -290,3 +290,57 @@
 
 
 
+
+
+
+/* Estilos adicionales para el componente */
+.custom-select-container {
+  position: relative;
+}
+
+/* Estilo para el input cuando está enfocado */
+.custom-select-container input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Animación suave para el dropdown */
+.custom-select-container .absolute {
+  animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilo para las opciones seleccionadas */
+.bg-blue-50 {
+  background-color: #eff6ff !important;
+  color: #1d4ed8;
+}
+
+/* Scrollbar personalizada para el dropdown */
+.custom-select-container .overflow-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-select-container .overflow-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-select-container .overflow-auto::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.custom-select-container .overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
