@@ -1875,4 +1875,9 @@ searchTerm: string = '';
     this.initializeSelectedDocente();
   }
 
+  // Devuelve el color de una materia por su id (para usar en la plantilla)
+  getColorMateria(id: number | undefined): string {
+    if (!id) return '#3B82F6';
+    return this.colorManager.getColorForSubject(id);
+  }
 }

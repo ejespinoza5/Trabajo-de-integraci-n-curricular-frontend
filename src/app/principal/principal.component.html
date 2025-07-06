@@ -28,17 +28,11 @@
         <!-- Header Mejorado -->
         <header class="bg-white shadow-lg border-b border-gray-200 flex-shrink-0">
             <div class="flex items-center justify-between px-6 py-4">
-                <!-- Logo y título -->
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 flex items-center justify-center">
-                            <img src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png"
-                                 alt="Logo Instituto Los Andes" class="h-10 w-10 object-contain">
-                        </div>
-                        <div class="hidden md:block">
-                            <h1 class="text-lg font-bold text-gray-800">ISTLA</h1>
-                            <p class="text-xs text-gray-600">Sistema de Horarios</p>
-                        </div>
+                <!-- Logo Mejorado -->
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center">
+                        <img src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png"
+                             alt="Logo Instituto Los Andes" class="h-14 w-auto object-contain">
                     </div>
                 </div>
 
@@ -72,7 +66,7 @@
         <div class="flex flex-1 overflow-hidden">
             <!-- Sidebar mejorado -->
             <aside class="bg-white shadow-xl relative transition-all duration-300 flex-shrink-0 border-r border-gray-200"
-                   [ngClass]="{'w-64': sidebarOpen, 'w-16': !sidebarOpen}">
+                   [ngClass]="{'w-64': sidebarOpen, 'w-20': !sidebarOpen}">
 
                 <!-- Botón toggle mejorado -->
                 <div class="absolute -right-4 top-1/2 transform -translate-y-1/2 z-20">
@@ -93,142 +87,182 @@
                         <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Menú Principal</h2>
                     </div>
 
-                    <ul class="space-y-1 px-3">
-                        <!-- INICIO -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/bienvenida']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                    </svg>
+                    <!-- Tooltip container para cuando el sidebar está cerrado -->
+                    <div class="relative">
+                        <ul class="space-y-1 px-3">
+                            <!-- INICIO -->
+                            <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/bienvenida']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Inicio</span>
+                                </a>
+                                <!-- Tooltip para cuando el sidebar está cerrado -->
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Inicio
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Inicio</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Gestionar Aulas -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/gestionar-aulas']"
-                               [ngClass]="{ 'bg-verde-claro text-white shadow-lg': esRutaGestionarAulas(), 'hover:bg-gray-100': !esRutaGestionarAulas() }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                                     [ngClass]="{ 'bg-white text-verde-claro': esRutaGestionarAulas(), 'bg-gray-100 text-gray-600 group-hover:bg-gray-200': !esRutaGestionarAulas() }">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                    </svg>
+                            <!-- Gestionar Aulas -->
+                            <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/gestionar-aulas']"
+                                   [ngClass]="{ 'bg-verde-claro text-white shadow-lg': esRutaGestionarAulas(), 'hover:bg-green-150': !esRutaGestionarAulas() }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                                         [ngClass]="{ 'bg-white text-verde-claro': esRutaGestionarAulas(), 'bg-gray-100 text-gray-600 group-hover:bg-gray-200': !esRutaGestionarAulas() }">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Gestionar Aulas</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Gestionar Aulas
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Gestionar Aulas</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Coordinadores -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/coordinadores']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20h5v-2a4 4 0 00-5-3.87M12 4a4 4 0 110 8 4 4 0 010-8z" />
-                                    </svg>
+                            <!-- Coordinadores -->
+                            <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/coordinadores']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20h5v-2a4 4 0 00-5-3.87M12 4a4 4 0 110 8 4 4 0 010-8z" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Coordinadores</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Coordinadores
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Coordinadores</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Generar Horarios -->
-                        <li *ngIf="usuarioService.tieneRol(['COORDINADOR', 'SUPERADMINISTRADOR' , 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/generar-horario']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
+                            <!-- Generar Horarios -->
+                            <li *ngIf="usuarioService.tieneRol(['COORDINADOR', 'SUPERADMINISTRADOR' , 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/generar-horario']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Generar Horarios</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Generar Horarios
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Generar Horarios</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Generar Reportes -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/generar-reporte']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
+                            <!-- Generar Reportes -->
+                            <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/generar-reporte']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Generar Reportes</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Generar Reportes
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Generar Reportes</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Ver Horarios -->
-                        <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/ver-horario']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
+                            <!-- Ver Horarios -->
+                            <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/ver-horario']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Ver Horarios</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Ver Horarios
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Ver Horarios</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Ver Horarios Docentes -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'])">
-                            <a [routerLink]="['/inicio/ver-horario-docente']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
+                            <!-- Ver Horarios Docentes -->
+                            <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/ver-horario-docente']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Ver Horarios Docentes</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Ver Horarios Docentes
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Ver Horarios Docentes</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Mi Horario (Estudiante) -->
-                        <li *ngIf="usuarioService.tieneRol(['ESTUDIANTE'])">
-                            <a [routerLink]="['/inicio/mi-horario']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
+                            <!-- Mi Horario (Estudiante) -->
+                            <li *ngIf="usuarioService.tieneRol(['ESTUDIANTE'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/mi-horario']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Mi Horario</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Mi Horario
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Mi Horario</span>
-                            </a>
-                        </li>
+                            </li>
 
-                        <!-- Horario Docente -->
-                        <li *ngIf="usuarioService.tieneRol(['DOCENTE'])">
-                            <a [routerLink]="['/inicio/docente-horario']"
-                               routerLinkActive="bg-verde-claro text-white shadow-lg"
-                               [routerLinkActiveOptions]="{ exact: true }"
-                               class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-gray-100">
-                                <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h10" />
-                                    </svg>
+                            <!-- Horario Docente -->
+                            <li *ngIf="usuarioService.tieneRol(['DOCENTE'])"
+                                class="group relative">
+                                <a [routerLink]="['/inicio/docente-horario']"
+                                   routerLinkActive="bg-verde-claro text-white shadow-lg"
+                                   [routerLinkActiveOptions]="{ exact: true }"
+                                   class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                                    <div class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h10" />
+                                        </svg>
+                                    </div>
+                                    <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Horario Docente</span>
+                                </a>
+                                <div *ngIf="!sidebarOpen" class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                                    Horario Docente
                                 </div>
-                                <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Horario Docente</span>
-                            </a>
-                        </li>
-                    </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </nav>
 
                 <!-- Información adicional cuando está abierto -->

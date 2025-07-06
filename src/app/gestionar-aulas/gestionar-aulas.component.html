@@ -4,22 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Aulas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'azul-botones': '#3b82f6',
-                        'rosado-oscuro': '#dc2626',
-                        'rosado-oscuro-hover': '#b91c1c'
-                    }
-                }
-            }
-        }
-    </script>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-gradient-to-br  to-indigo-100 min-h-screen animate-fade-in-delay">
     <div class="container mx-auto px-4 py-8">
         <!-- Header con icono y título -->
         <div class="text-center mb-8">
@@ -29,7 +15,7 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Gestión de Aulas</h1>
-            <p class="text-gray-600">Administra y configura las aulas de tu institución</p>
+            <p class="text-gray-600">Administra y configura las aulas </p>
         </div>
 
         <!-- Formulario para agregar aula -->
@@ -206,14 +192,14 @@
                             </svg>
                             Anterior
                         </button>
-                        
+
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-700">Página</span>
                             <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium">{{ paginaActual }}</span>
                             <span class="text-sm text-gray-700">de</span>
                             <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-lg text-sm font-medium">{{ totalPaginas }}</span>
                         </div>
-                        
+
                         <button (click)="cambiarPagina(1)" [disabled]="paginaActual === totalPaginas"
                             class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200">
                             Siguiente
@@ -259,11 +245,11 @@
                             </svg>
                             Nuevo Tipo de Aula
                         </h3>
-                        
+
                         <form (ngSubmit)="guardarTipoAula()" class="space-y-4">
                             <div class="space-y-2">
                                 <label class="block text-sm font-medium text-gray-700">Nombre del Tipo</label>
-                                <input type="text" [(ngModel)]="nuevoTipo.nombre" name="nombre" 
+                                <input type="text" [(ngModel)]="nuevoTipo.nombre" name="nombre"
                                     placeholder="Ej: Laboratorio, Aula Virtual, Auditorio"
                                     class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 bg-white"
                                     required>
@@ -290,7 +276,7 @@
                             </svg>
                             Tipos de Aula Existentes
                         </h3>
-                        
+
                         <div class="max-h-64 overflow-y-auto">
                             <div class="space-y-2">
                                 <div *ngFor="let tipo of tiposAula"

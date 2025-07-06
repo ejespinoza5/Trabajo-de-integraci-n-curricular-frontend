@@ -119,4 +119,12 @@ export class AuthService {
     return rolNombre ? rolesPermitidos.includes(rolNombre) : false;
   }
 
+  dashboard(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/dashboard`, { headers });
+  }
+
+
+
+
 }
