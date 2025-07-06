@@ -53,7 +53,7 @@
   </button>
 
   <!-- Botón Generar Excel -->
-  <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200 flex items-center gap-2" 
+  <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200 flex items-center gap-2"
     (click)="generarExcel()">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -63,7 +63,7 @@
   </button>
 
   <!-- Botón Configuración de Reporte -->
-  <button *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR']) || (observacion && usuarioService.tieneRol(['COORDINADOR']))"
+  <button *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR']) || (observacion && usuarioService.tieneRol(['COORDINADOR']))"
     class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition duration-200 flex items-center gap-2"
     (click)="abrirModalConfiguracion()">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,7 +341,7 @@
             </div>
           </div>
 
-         
+
 
           <!-- Mensaje de éxito -->
           <div *ngIf="mensajeExito" class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
@@ -431,7 +431,7 @@
                         </div>
                       </div>
                       <div class="ml-4">
-                        <h4 class="text-sm font-medium text-gray-900">Rector</h4>
+                        <h4 class="text-sm font-medium text-gray-900">Rector/a</h4>
                         <p class="text-sm text-gray-500">Máxima autoridad institucional</p>
                       </div>
                     </div>
@@ -460,7 +460,7 @@
                         </div>
                       </div>
                       <div class="ml-4">
-                        <h4 class="text-sm font-medium text-gray-900">Vicerrectora</h4>
+                        <h4 class="text-sm font-medium text-gray-900">Vicerrector/a</h4>
                         <p class="text-sm text-gray-500">Segunda autoridad institucional</p>
                       </div>
                     </div>

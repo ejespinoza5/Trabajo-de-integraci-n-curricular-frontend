@@ -10,7 +10,9 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { NotificationService } from '../notificacion.service';
 import rrulePlugin from '@fullcalendar/rrule';
+import listPlugin from '@fullcalendar/list';
 import { VerHorariosDocentesService } from '../ver-horarios-docentes.service';
+
 // Interfaces
 interface HorarioResponse {
   id: number;
@@ -38,9 +40,8 @@ interface HorarioDetalle {
   horaFin: string;
   fechaInicio: string;
   fechaFin: string;
-  tipoClase?: string; // ✅ Hacer obligatorio este campo
+  tipoClase?: string;
   grupoArticulado?: any;
-
 }
 
 // Clase para manejo de colores optimizada
@@ -56,11 +57,10 @@ class ColorManager {
   private colorMap = new Map<number, string>();
   private usedColorsCount = 0;
 
-  // Genera colores usando HSL para mejor distribución
   private generateHSLColor(index: number): string {
-    const hue = (index * 137.508) % 360; // Número áureo para distribución uniforme
-    const saturation = 70 + (index % 3) * 10; // Variación en saturación
-    const lightness = 65 + (index % 2) * 10; // Variación en brillo
+    const hue = (index * 137.508) % 360;
+    const saturation = 70 + (index % 3) * 10;
+    const lightness = 65 + (index % 2) * 10;
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
   }
 
@@ -71,7 +71,6 @@ class ColorManager {
       if (this.usedColorsCount < ColorManager.PALETTE.length) {
         color = ColorManager.PALETTE[this.usedColorsCount];
       } else {
-        // Genera colores dinámicamente cuando se agota la paleta
         color = this.generateHSLColor(this.usedColorsCount);
       }
 
@@ -82,12 +81,10 @@ class ColorManager {
     return this.colorMap.get(subjectId)!;
   }
 
-  // Método para obtener todos los colores asignados
   getAllColors(): Map<number, string> {
     return new Map(this.colorMap);
   }
 
-  // Resetea el manager de colores
   reset(): void {
     this.colorMap.clear();
     this.usedColorsCount = 0;
@@ -102,11 +99,8 @@ class ColorManager {
 export class GenerarHorariosComponent implements OnInit, OnDestroy {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
-  // Subjects para manejo de subscripciones
   private destroy$ = new Subject<void>();
   searchInput = new Subject<string>();
-
-  // Manager de colores optimizado
   private colorManager = new ColorManager();
 
   // Datos para formularios y filtros
@@ -145,13 +139,13 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   editFechaFin = '';
   editAulaSeleccionada = this.DEFAULT_SELECTION;
   editDiaSeleccionado = this.DEFAULT_SELECTION;
-    editDocenteSeleccionado: number = this.DEFAULT_SELECTION;
+  editDocenteSeleccionado: number = this.DEFAULT_SELECTION;
   mensajeModal = '';
   tipoMensajeModal: 'error' | 'success' | '' = '';
 
   docenteOriginal: number = 0;
-mostrarObservacion: boolean = false;
-observacion: string = '';
+  mostrarObservacion: boolean = false;
+  observacion: string = '';
 
   // Arrays de horarios
   todosLosHorarios: HorarioDetalle[] = [];
@@ -166,8 +160,6 @@ observacion: string = '';
     { nombre: 'Clase Articulada', valor: 'articulada' }
   ];
 
-
-
   tipoClaseSeleccionado: string = 'regular';
   cursosArticulados: Array<{ ID_CURSOS: number, ID_CARRERAS: number, NOMBRE_CARRERAS?: string, NOMBRE_CURSOS?: string }> = [];
   nuevaCarreraArticulada: number = 0;
@@ -176,14 +168,25 @@ observacion: string = '';
   cursos: any[] = [];
   docentes: any[] = [];
 
-  // Configuración del calendario optimizada
+  calendar!: Calendar;
+  viewMode: 'calendar' | 'list' | 'compact' = 'calendar';
+  eventDensity: 'low' | 'medium' | 'high' = 'medium';
+  isCompactView: boolean = false;
+
+  // ✅ CORREGIDO: Configuración inicial del calendario mejorada
   calendarOptions: CalendarOptions = {
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, listPlugin],
     initialView: 'timeGridWeek',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek'
+      right: 'dayGridMonth,timeGridWeek,listWeek,compactView'
+    },
+    customButtons: {
+      compactView: {
+        text: 'Compacto',
+        click: () => this.toggleCompactView()
+      }
     },
     weekends: true,
     allDaySlot: false,
@@ -193,22 +196,447 @@ observacion: string = '';
     height: 'auto',
     locales: [esLocale],
     locale: 'es',
+
+    // ✅ CORREGIDO: Configuración mejorada para eventos superpuestos
+    dayMaxEvents: false,
+    dayMaxEventRows: false,
+    slotEventOverlap: false,
+    eventMinWidth: 80,
+    eventMaxStack: 4,
+
+    // Configuración de tiempo
+    slotDuration: '01:00:00',
+    slotLabelInterval: '01:00:00',
     slotLabelFormat: {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
     },
-    eventDidMount: (info) => {
-      const asignaturaId = info.event.extendedProps['asignaturaId'];
-      if (asignaturaId) {
-        info.el.style.backgroundColor = this.colorManager.getColorForSubject(asignaturaId);
-        info.el.style.borderColor = this.colorManager.getColorForSubject(asignaturaId);
+
+    // ✅ CORREGIDO: Vistas personalizadas con configuración común
+    views: {
+      dayGridMonth: {
+        eventDidMount: (info) => this.setupEventDisplay(info),
+      },
+      timeGridWeek: {
+        dayHeaderFormat: {
+          weekday: 'short',
+          month: 'numeric',
+          day: 'numeric'
+        },
+        eventDidMount: (info) => this.setupEventDisplay(info),
+        eventOrderStrict: true,
+        eventOrder: ['start', 'title']
+      },
+      listWeek: {
+        buttonText: 'Lista',
+        listDayFormat: {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric'
+        },
+        listDaySideFormat: false,
+        eventDidMount: (info) => this.setupListEventDisplay(info)
       }
     },
+
+    // Eventos de interacción
     eventClick: (clickInfo: EventClickArg) => {
+      this.handleEventClick(clickInfo);
+    },
+
+    // ✅ CORREGIDO: Eventos de mouse mejorados para evitar scroll
+    eventMouseEnter: (info) => {
+      this.showEventTooltip(info);
+    },
+
+    eventMouseLeave: () => {
+      this.hideEventTooltip();
+    },
+
+    // ✅ CORREGIDO: Prevenir scroll automático
+    scrollTime: '08:00:00',
+    scrollTimeReset: false,
+  };
+
+  ngAfterViewInit() {
+    // ✅ CORREGIDO: Inicialización mejorada del calendario
+    setTimeout(() => {
+      if (this.calendarComponent) {
+        this.calendar = this.calendarComponent.getApi();
+        this.calendar.render();
+        // ✅ CORREGIDO: Añadir estilos CSS para el tooltip
+        this.addTooltipStyles();
+      }
+    });
+  }
+
+  // ✅ NUEVO: Método para añadir estilos CSS del tooltip
+  addTooltipStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .custom-tooltip {
+        position: fixed;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        line-height: 1.4;
+        z-index: 10000;
+        max-width: 250px;
+        word-wrap: break-word;
+        pointer-events: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transform: translateZ(0);
+        will-change: transform;
+      }
+
+      .custom-tooltip::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: -5px;
+        transform: translateY(-50%);
+        border: 5px solid transparent;
+        border-right-color: rgba(0, 0, 0, 0.9);
+      }
+
+      .event-compact {
+        font-size: 10px !important;
+        padding: 1px 3px !important;
+        line-height: 1.2 !important;
+      }
+
+      .event-compact .fc-event-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // ✅ CORREGIDO: Método mejorado para toggle de vista compacta
+  toggleCompactView() {
+    this.isCompactView = !this.isCompactView;
+
+    if (this.isCompactView) {
+      this.applyCompactView();
+    } else {
+      this.applyNormalView();
+    }
+
+    // ✅ CORREGIDO: Actualizar el calendario correctamente
+    this.updateCalendarOptions();
+  }
+
+  // ✅ CORREGIDO: Aplicar vista compacta
+  applyCompactView() {
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      eventMaxStack: 2,
+      eventMinWidth: 50,
+      slotDuration: '00:30:00',
+      slotLabelInterval: '01:00:00',
+      eventDisplay: 'block',
+      dayMaxEvents: 3,
+      moreLinkClick: 'popover',
+      customButtons: {
+        ...this.calendarOptions.customButtons,
+        compactView: {
+          text: 'Normal',
+          click: () => this.toggleCompactView()
+        }
+      }
+    };
+  }
+
+  // ✅ CORREGIDO: Aplicar vista normal
+  applyNormalView() {
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      eventMaxStack: 4,
+      eventMinWidth: 80,
+      slotDuration: '00:30:00',
+      slotLabelInterval: '01:00:00',
+      eventDisplay: 'auto',
+      dayMaxEvents: false,
+      moreLinkClick: 'popover',
+      customButtons: {
+        ...this.calendarOptions.customButtons,
+        compactView: {
+          text: 'Compacto',
+          click: () => this.toggleCompactView()
+        }
+      }
+    };
+  }
+
+  // ✅ CORREGIDO: Método mejorado para actualizar opciones del calendario
+  updateCalendarOptions() {
+    if (this.calendar) {
+      // Actualizar opciones del calendario una por una
+      this.calendar.setOption('eventMaxStack', this.calendarOptions.eventMaxStack);
+      this.calendar.setOption('eventMinWidth', this.calendarOptions.eventMinWidth);
+      this.calendar.setOption('slotDuration', this.calendarOptions.slotDuration);
+      this.calendar.setOption('slotLabelInterval', this.calendarOptions.slotLabelInterval);
+      this.calendar.setOption('eventDisplay', this.calendarOptions.eventDisplay);
+      this.calendar.setOption('dayMaxEvents', this.calendarOptions.dayMaxEvents);
+      this.calendar.setOption('customButtons', this.calendarOptions.customButtons);
+
+      // ✅ CORREGIDO: Actualizar headerToolbar para que funcione el botón today
+      this.calendar.setOption('headerToolbar', {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,listWeek,compactView'
+      });
+
+      // Forzar re-render
+      this.calendar.render();
+    }
+  }
+
+  // ✅ CORREGIDO: Método mejorado para configurar display de eventos
+  setupEventDisplay(info: any) {
+    const element = info.el;
+    const event = info.event;
+    const asignaturaId = event.extendedProps['asignaturaId'];
+
+    if (asignaturaId) {
+      const color = this.colorManager.getColorForSubject(asignaturaId);
+      element.style.backgroundColor = color;
+      element.style.borderColor = color;
+      element.style.borderWidth = '2px';
+      element.style.borderRadius = '4px';
+      element.style.margin = '1px';
+
+      // ✅ CORREGIDO: Aplicar estilos según la vista
+      if (this.isCompactView) {
+        element.style.fontSize = '10px';
+        element.style.fontWeight = '400';
+        element.style.padding = '1px 3px';
+        element.style.lineHeight = '1.2';
+
+        // ✅ CORREGIDO: Truncar texto largo en vista compacta
+        const title = element.querySelector('.fc-event-title');
+        if (title) {
+          title.style.overflow = 'hidden';
+          title.style.textOverflow = 'ellipsis';
+          title.style.whiteSpace = 'nowrap';
+        }
+      } else {
+        element.style.fontSize = '11px';
+        element.style.fontWeight = '500';
+        element.style.padding = '2px 5px';
+        element.style.lineHeight = '1.3';
+      }
+
+      // Añadir clase según el tipo de evento
+      const tipoEvento = event.extendedProps['tipo'];
+      element.classList.add(`evento-${tipoEvento}`);
+
+      // ✅ CORREGIDO: Añadir clase para vista compacta
+      if (this.isCompactView) {
+        element.classList.add('event-compact');
+      }
+
+      // ✅ CORREGIDO: Configurar tooltip mejorado
+      this.setupEventTooltip(element, event);
+    }
+  }
+
+  setupListEventDisplay(info: any) {
+    const element = info.el;
+    const event = info.event;
+    const asignaturaId = event.extendedProps['asignaturaId'];
+
+    if (asignaturaId) {
+      const color = this.colorManager.getColorForSubject(asignaturaId);
+      element.style.borderLeftColor = color;
+      element.style.borderLeftWidth = '4px';
+
+      // Añadir información adicional
+      const detailsDiv = document.createElement('div');
+      detailsDiv.className = 'event-details';
+      element.appendChild(detailsDiv);
+    }
+  }
+
+  // ✅ CORREGIDO: Método auxiliar para filtrar horarios
+  filtrarHorarios(termino: string) {
+    if (!termino.trim()) {
+      this.horariosFiltrados = [...this.todosLosHorarios];
+    } else {
+      this.horariosFiltrados = this.todosLosHorarios.filter(horario =>
+        horario.asignatura.nombre.toLowerCase().includes(termino.toLowerCase()) ||
+        horario.docente.nombre.toLowerCase().includes(termino.toLowerCase()) ||
+        horario.aula.nombre.toLowerCase().includes(termino.toLowerCase())
+      );
+    }
+
+    // Actualizar eventos en el calendario
+    this.actualizarEventosCalendario();
+  }
+
+  // ✅ CORREGIDO: Método para convertir horarios a eventos
+  convertirHorariosAEventos(horarios: HorarioDetalle[]): EventInput[] {
+    return horarios.map(horario => ({
+      id: horario.id?.toString(),
+      title: horario.asignatura.nombre,
+      start: `${horario.fechaInicio}T${horario.horaInicio}`,
+      end: `${horario.fechaFin}T${horario.horaFin}`,
+      extendedProps: {
+        horarioId: horario.id,
+        asignaturaId: horario.asignatura.id,
+        profesor: horario.docente.nombre,
+        aula: horario.aula.nombre,
+        tipo: horario.tipoClase
+      }
+    }));
+  }
+
+  getOverlappingEventsCount(event: any): number {
+    const eventStart = event.start;
+    const eventEnd = event.end;
+
+    if (!this.calendarOptions.events) {
+      return 1;
+    }
+    return (this.calendarOptions.events as any[]).filter((otherEvent: any) => {
+      if (otherEvent.id === event.id) return false;
+
+      const otherStart = new Date(otherEvent.start);
+      const otherEnd = new Date(otherEvent.end);
+
+      return (eventStart < otherEnd && eventEnd > otherStart);
+    }).length + 1;
+  }
+
+  // ✅ CORREGIDO: Método mejorado para configurar tooltip
+  setupEventTooltip(element: HTMLElement, event: any) {
+    const tooltipContent = [
+      event.title,
+      event.extendedProps['profesor'] ? `Profesor: ${event.extendedProps['profesor']}` : '',
+      event.extendedProps['aula'] ? `Aula: ${event.extendedProps['aula']}` : '',
+      event.extendedProps['tipo'] ? `Tipo: ${event.extendedProps['tipo']}` : ''
+    ].filter(Boolean).join('<br>');
+
+    element.setAttribute('data-tooltip', tooltipContent);
+  }
+
+  // ✅ CORREGIDO: Método mejorado para mostrar tooltip sin causar scroll
+  showEventTooltip(info: any) {
+    // Limpiar tooltip existente
+    this.hideEventTooltip();
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'custom-tooltip';
+    tooltip.innerHTML = info.el.getAttribute('data-tooltip') || '';
+
+    // ✅ CORREGIDO: Añadir al body y posicionar correctamente
+    document.body.appendChild(tooltip);
+
+    const rect = info.el.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+
+    // ✅ CORREGIDO: Posicionamiento mejorado para evitar scroll
+    let left = rect.right + 10;
+    let top = rect.top + (rect.height / 2) - (tooltipRect.height / 2);
+
+    // Verificar límites de la ventana
+    if (left + tooltipRect.width > window.innerWidth) {
+      left = rect.left - tooltipRect.width - 10;
+    }
+    if (top < 0) {
+      top = 10;
+    }
+    if (top + tooltipRect.height > window.innerHeight) {
+      top = window.innerHeight - tooltipRect.height - 10;
+    }
+
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+
+    // ✅ CORREGIDO: Prevenir que el tooltip cause scroll
+    tooltip.style.position = 'fixed';
+    tooltip.style.zIndex = '10000';
+  }
+
+  // ✅ CORREGIDO: Método mejorado para ocultar tooltip
+  hideEventTooltip() {
+    const tooltips = document.querySelectorAll('.custom-tooltip');
+    tooltips.forEach(tooltip => tooltip.remove());
+  }
+
+  handleEventClick(clickInfo: EventClickArg) {
+    const overlappingEvents = this.getOverlappingEvents(clickInfo.event);
+
+    if (overlappingEvents.length > 1) {
+      this.showOverlappingEventsModal(overlappingEvents);
+    } else {
       this.abrirModalDetalleHorario(clickInfo.event.extendedProps['horarioId']);
     }
-  };
+  }
+
+  getOverlappingEvents(event: any) {
+    const eventStart = event.start;
+    const eventEnd = event.end;
+
+    if (!this.calendarOptions.events) {
+      return [];
+    }
+    return (this.calendarOptions.events as any[]).filter((otherEvent: any) => {
+      const otherStart = new Date(otherEvent.start);
+      const otherEnd = new Date(otherEvent.end);
+
+      return (eventStart < otherEnd && eventEnd > otherStart);
+    });
+  }
+
+  showOverlappingEventsModal(events: any[]) {
+    console.log('Eventos superpuestos:', events);
+  }
+
+
+
+  // ✅ NUEVO: Método para configurar el calendario (llamar desde ngOnInit)
+  setupCalendar() {
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      eventDidMount: (info) => this.setupEventDisplay(info),
+    };
+  }
+
+  // ✅ CORREGIDO: Método para analizar densidad de eventos
+  analyzeEventDensity() {
+    const eventsByHour = new Map();
+
+    if (this.calendarOptions.events) {
+      (this.calendarOptions.events as any[]).forEach((event: any) => {
+        const hour = new Date(event.start).getHours();
+        const count = eventsByHour.get(hour) || 0;
+        eventsByHour.set(hour, count + 1);
+      });
+    }
+
+    const maxEventsPerHour = Math.max(...Array.from(eventsByHour.values()));
+
+    if (maxEventsPerHour >= 8) {
+      this.eventDensity = 'high';
+      this.calendarOptions.slotDuration = '00:30:00';
+      this.calendarOptions.eventMaxStack = 2;
+    } else if (maxEventsPerHour >= 4) {
+      this.eventDensity = 'medium';
+      this.calendarOptions.slotDuration = '00:30:00';
+      this.calendarOptions.eventMaxStack = 3;
+    } else {
+      this.eventDensity = 'low';
+      this.calendarOptions.slotDuration = '00:30:00';
+      this.calendarOptions.eventMaxStack = 4;
+    }
+  }
+
 
   constructor(
     private horariosService: HorariosService,
@@ -235,12 +663,32 @@ observacion: string = '';
   ngOnInit(): void {
     this.cargarDatosIniciales();
     this.initializeSelectedDocente();
+    this.analyzeEventDensity();
+    // Inicializar configuración del calendario
+    this.searchInput.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(termino => {
+      this.filtrarHorarios(termino);
+    });
+    this.setupCalendar();
+
+    // Configurar búsqueda con debounce
+    this.searchInput.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(term => {
+      this.filtrarHorarios(term);
+    });
   }
 
 
-  ngOnDestroy(): void {
+ ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    this.hideEventTooltip();
   }
 
 
@@ -360,61 +808,109 @@ observacion: string = '';
   }
 
   // Actualización de eventos optimizada
-  actualizarEventosCalendario(): void {
-    const eventos: EventInput[] = this.horariosFiltrados.map(horario => {
-      const fechaInicio = new Date(horario.fechaInicio);
-      const fechaFin = new Date(horario.fechaFin);
-      fechaFin.setDate(fechaFin.getDate() + 1);
+actualizarEventosCalendario(): void {
+  const eventos: EventInput[] = this.horariosFiltrados.map(horario => {
+    const fechaInicio = new Date(horario.fechaInicio);
+    const fechaFin = new Date(horario.fechaFin);
+    fechaFin.setDate(fechaFin.getDate() + 1);
 
-      // ✅ SOLUCIÓN: Manejar tanto cursos simples como múltiples
-      let cursoNombre: string;
-      if (horario.curso.cursos && horario.curso.cursos.length > 0) {
-        // Es una clase articulada con múltiples cursos
-        cursoNombre = horario.curso.nombre; // Ya viene formateado del backend
-      } else {
-        // Es una clase regular
-        cursoNombre = horario.curso.nombre;
+    let cursoNombre: string;
+    if (horario.curso.cursos && horario.curso.cursos.length > 0) {
+      cursoNombre = horario.curso.nombre;
+    } else {
+      cursoNombre = horario.curso.nombre;
+    }
+
+    return {
+      id: `horario-${horario.id}`,
+      title: `${horario.asignatura.nombre} \n${horario.aula.nombre} \n${horario.docente.nombre}`,
+      daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
+      startTime: horario.horaInicio,
+      endTime: horario.horaFin,
+      startRecur: fechaInicio,
+      endRecur: fechaFin,
+      extendedProps: {
+        horarioId: horario.id,
+        asignaturaId: horario.asignatura.id,
+        docente: horario.docente.nombre,
+        aula: horario.aula.nombre,
+        carrera: horario.carrera.nombre,
+        curso: cursoNombre,
+        tipoClase: horario.tipoClase || 'REGULAR',
+        cursosArticulados: horario.curso.cursos || null
       }
+    };
+  });
 
-      return {
-        id: `horario-${horario.id}`,
-        title: `${horario.asignatura.nombre}\n${horario.aula.nombre}\n${cursoNombre}`, // ✅ Agregar curso al título
-        daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
-        startTime: horario.horaInicio,
-        endTime: horario.horaFin,
-        startRecur: fechaInicio,
-        endRecur: fechaFin,
-        extendedProps: {
-          horarioId: horario.id,
-          asignaturaId: horario.asignatura.id,
-          docente: horario.docente.nombre,
-          aula: horario.aula.nombre,
-          carrera: horario.carrera.nombre,
-          curso: cursoNombre,
-          tipoClase: horario.tipoClase || 'REGULAR', // ✅ Incluir tipo de clase
-          cursosArticulados: horario.curso.cursos || null // ✅ Incluir cursos articulados
+  this.ngZone.run(() => {
+    if (this.calendarApi) {
+      this.calendarApi.removeAllEvents();
+      this.calendarApi.addEventSource(eventos);
+
+      requestAnimationFrame(() => {
+        this.calendarApi?.refetchEvents();
+        this.calendarApi?.render();
+      });
+    } else {
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        events: eventos,
+        eventContent: (arg) => {
+          const lines = arg.event.title.split('\n');
+          const container = document.createElement('div');
+
+          // Estilos para el contenedor principal
+          container.style.cssText = `
+            padding: 2px 4px;
+            font-size: 25px;
+            font-weight: bold;
+            color: #000 !important;
+            line-height: 1.1;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+          `;
+
+          // Mostrar máximo 3 líneas para evitar desbordamiento
+          const maxLines = Math.min(lines.length, 3);
+
+          lines.slice(0, maxLines).forEach((line, index) => {
+            const div = document.createElement('div');
+            div.textContent = line.trim();
+
+            // Estilos para cada línea
+            div.style.cssText = `
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              margin-bottom: 1px;
+              font-size: 12px;
+              font-weight: bold;
+              color: #000 !important;
+              flex-shrink: 0;
+              max-width: 100%;
+            `;
+
+            // Hacer la primera línea (asignatura) un poco más grande
+            if (index === 0) {
+              div.style.fontSize = '15px';
+              div.style.fontWeight = '900';
+            }
+
+            container.appendChild(div);
+          });
+
+          return { domNodes: [container] };
         }
       };
-    });
-
-    this.ngZone.run(() => {
-      if (this.calendarApi) {
-        this.calendarApi.removeAllEvents();
-        this.calendarApi.addEventSource(eventos);
-
-        requestAnimationFrame(() => {
-          this.calendarApi?.refetchEvents();
-          this.calendarApi?.render();
-        });
-      } else {
-        this.calendarOptions = {
-          ...this.calendarOptions,
-          events: eventos
-        };
-        this.cdr.detectChanges();
-      }
-    });
-  }
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   // Manejo centralizado de errores
   private handleError(message: string, error: any): void {

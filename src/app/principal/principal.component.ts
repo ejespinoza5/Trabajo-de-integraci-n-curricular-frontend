@@ -73,6 +73,8 @@ export class PrincipalComponent implements OnInit {
       return "ESTUDIANTE";
     } else if (idRol == 15) {
       return "DOCENTE";
+    } else if (idRol == 12) {
+      return "ADMINISTRADOR";
     }
     return "ROL DESCONOCIDO";
   }

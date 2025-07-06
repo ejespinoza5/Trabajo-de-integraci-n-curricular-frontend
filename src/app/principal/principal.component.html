@@ -95,7 +95,7 @@
 
                     <ul class="space-y-1 px-3">
                         <!-- INICIO -->
-                        <li>
+                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/bienvenida']"
                                routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"
@@ -110,7 +110,7 @@
                         </li>
 
                         <!-- Gestionar Aulas -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
+                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/gestionar-aulas']"
                                [ngClass]="{ 'bg-verde-claro text-white shadow-lg': esRutaGestionarAulas(), 'hover:bg-gray-100': !esRutaGestionarAulas() }"
                                class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group">
@@ -125,7 +125,7 @@
                         </li>
 
                         <!-- Coordinadores -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR'])">
+                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/coordinadores']"
                                routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"
@@ -140,7 +140,7 @@
                         </li>
 
                         <!-- Generar Horarios -->
-                        <li *ngIf="usuarioService.tieneRol(['COORDINADOR', 'SUPERADMINISTRADOR'])">
+                        <li *ngIf="usuarioService.tieneRol(['COORDINADOR', 'SUPERADMINISTRADOR' , 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/generar-horario']"
                                routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"
@@ -155,7 +155,7 @@
                         </li>
 
                         <!-- Generar Reportes -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR'])">
+                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/generar-reporte']"
                                routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"
@@ -170,7 +170,7 @@
                         </li>
 
                         <!-- Ver Horarios -->
-                        <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR'])">
+                        <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/ver-horario']"
                                routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"
@@ -185,7 +185,7 @@
                         </li>
 
                         <!-- Ver Horarios Docentes -->
-                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR'])">
+                        <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'])">
                             <a [routerLink]="['/inicio/ver-horario-docente']"
                                routerLinkActive="bg-verde-claro text-white shadow-lg"
                                [routerLinkActiveOptions]="{ exact: true }"

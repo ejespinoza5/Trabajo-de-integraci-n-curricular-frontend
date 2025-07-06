@@ -110,6 +110,7 @@ export class AuthService {
       case 13: return 'SUPERADMINISTRADOR';
       case 14: return 'ESTUDIANTE';
       case 15: return 'DOCENTE';
+      case 12: return 'ADMINISTRADOR';
       default: return null;
     }
   }
