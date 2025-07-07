@@ -374,3 +374,10 @@
     height: 5rem;
   }
 }
+
+/* Jerarquía de z-index */
+.header { z-index: 10; }
+.dropdown { z-index: 20; }
+.modal-backdrop { z-index: 40; }
+.modal-content { z-index: 50; }
+.tooltip { z-index: 60; }

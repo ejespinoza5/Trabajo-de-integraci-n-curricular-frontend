@@ -809,38 +809,59 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // Actualización de eventos optimizada
 actualizarEventosCalendario(): void {
-  const eventos: EventInput[] = this.horariosFiltrados.map(horario => {
-    const fechaInicio = new Date(horario.fechaInicio);
-    const fechaFin = new Date(horario.fechaFin);
-    fechaFin.setDate(fechaFin.getDate() + 1);
+  // Filtrar horarios incompletos para evitar errores de acceso a propiedades nulas
+  const eventos: EventInput[] = this.horariosFiltrados
+    .filter(horario =>
+      horario &&
+      horario.curso &&
+      horario.asignatura &&
+      horario.aula &&
+      horario.docente &&
+      horario.dia &&
+      horario.fechaInicio &&
+      horario.fechaFin &&
+      horario.horaInicio &&
+      horario.horaFin &&
+      horario.carrera &&
+      typeof horario.curso.nombre !== 'undefined' &&
+      typeof horario.asignatura.nombre !== 'undefined' &&
+      typeof horario.aula.nombre !== 'undefined' &&
+      typeof horario.docente.nombre !== 'undefined' &&
+      typeof horario.dia.id !== 'undefined' &&
+      typeof horario.carrera.nombre !== 'undefined'
+    )
+    .map(horario => {
+      const fechaInicio = new Date(horario.fechaInicio);
+      const fechaFin = new Date(horario.fechaFin);
+      fechaFin.setDate(fechaFin.getDate() + 1);
 
-    let cursoNombre: string;
-    if (horario.curso.cursos && horario.curso.cursos.length > 0) {
-      cursoNombre = horario.curso.nombre;
-    } else {
-      cursoNombre = horario.curso.nombre;
-    }
-
-    return {
-      id: `horario-${horario.id}`,
-      title: `${horario.asignatura.nombre} \n${horario.aula.nombre} \n${horario.docente.nombre}`,
-      daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
-      startTime: horario.horaInicio,
-      endTime: horario.horaFin,
-      startRecur: fechaInicio,
-      endRecur: fechaFin,
-      extendedProps: {
-        horarioId: horario.id,
-        asignaturaId: horario.asignatura.id,
-        docente: horario.docente.nombre,
-        aula: horario.aula.nombre,
-        carrera: horario.carrera.nombre,
-        curso: cursoNombre,
-        tipoClase: horario.tipoClase || 'REGULAR',
-        cursosArticulados: horario.curso.cursos || null
+      let cursoNombre: string;
+      if (horario.curso.cursos && horario.curso.cursos.length > 0) {
+        cursoNombre = horario.curso.nombre;
+      } else {
+        cursoNombre = horario.curso.nombre;
       }
-    };
-  });
+
+      return {
+        id: `horario-${horario.id}`,
+        title: `${horario.asignatura.nombre} \n${horario.aula.nombre} \n${horario.docente.nombre}`,
+        daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
+        startTime: horario.horaInicio,
+        endTime: horario.horaFin,
+        startRecur: fechaInicio,
+        endRecur: fechaFin,
+        extendedProps: {
+          horarioId: horario.id,
+          asignaturaId: horario.asignatura.id,
+          docente: horario.docente.nombre,
+          aula: horario.aula.nombre,
+          carrera: horario.carrera.nombre,
+          curso: cursoNombre,
+          tipoClase: horario.tipoClase || 'REGULAR',
+          cursosArticulados: horario.curso.cursos || null
+        }
+      };
+    });
 
   this.ngZone.run(() => {
     if (this.calendarApi) {
@@ -1854,10 +1875,26 @@ searchTerm: string = '';
   }
    onEditModalOpen(docenteId: any) {
     this.editDocenteSeleccionado = docenteId;
-    this.initializeSelectedDocente();
+    if (!this.docentes || this.docentes.length === 0) {
+      if (this.PeriodoSeleccionado > 0) {
+        this.horariosService.obtenerDocentePeriodo(this.PeriodoSeleccionado).subscribe({
+          next: (data) => {
+            this.docentes = data;
+            this.initializeSelectedDocente();
+          },
+          error: () => {
+            this.docentes = [];
+            this.docentesFiltrados = [];
+          }
+        });
+      } else {
+        this.docentesFiltrados = [];
+      }
+    } else {
+      this.initializeSelectedDocente();
+    }
   }
 
-  // Devuelve el color de una materia por su id (para usar en la plantilla)
   getColorMateria(id: number | undefined): string {
     if (!id) return '#3B82F6';
     return this.colorManager.getColorForSubject(id);

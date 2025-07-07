@@ -128,7 +128,23 @@ cargarCursos(): void {
   }
 
 
-  generarPDF() {
+ generarPDF() {
+  // Verificar si ya hay un PDF generado previamente
+  if (this.pdfSrc) {
+    const width = 900;
+    const height = 700;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+
+    window.open(
+      this.pdfSrc,
+      'pdfViewer',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
+    );
+    return;
+  }
+
+  // Validar que los filtros estén completos
   if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
     this.notificationService.showWarningReport(
       'Filtros incompletos',
@@ -150,11 +166,24 @@ cargarCursos(): void {
     next: (blob: Blob) => {
       this.notificationService.hideLoading();
 
+      // Crear la URL del blob
       this.pdfBlob = blob;
       const blobUrl = window.URL.createObjectURL(blob);
       this.pdfUrl = blobUrl;
       this.pdfSrc = blobUrl;
-      this.mostrarModalPDF = true;
+
+      // Configurar ventana flotante centrada
+      const width = 900;
+      const height = 700;
+      const left = (screen.width - width) / 2;
+      const top = (screen.height - height) / 2;
+
+      // Abrir el PDF en una ventana flotante centrada
+      const ventanaFlotante = window.open(
+        blobUrl,
+        'pdfViewer',
+        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
+      );
 
       this.notificationService.showSuccess(
         'El informe se generó correctamente.'
@@ -208,7 +237,7 @@ generarExcel() {
       link.href = url;
       link.download = `reporte-${this.PeriodoSeleccionado}-${this.CarreraSeleccionada}-${this.CursoSeleccionado}.xlsx`;
       link.click();
-      
+
       // Limpiar la URL creada
       window.URL.revokeObjectURL(url);
 
@@ -286,7 +315,7 @@ cerrarModalConfiguracion(): void {
       comunitario: this.observacion.SERVICIO_COMUNITARIO_HORAS || '',
       ingles: this.observacion.INGLES_HORAS || ''
     };
-    
+
     // Crear respaldo
     this.observacionOriginal = { ...this.observacionEditada };
   }
@@ -309,18 +338,18 @@ cerrarModalConfiguracion(): void {
 
   // Llamar al servicio con el ID de observación
   const idObservacion = this.observacion.id; // Asume que tienes el ID
-  
+
   this.reporteService.editarObservaciones(idObservacion, this.observacionEditada)
     .subscribe({
       next: (response) => {
         this.notificationService.hideLoading();
         this.modoEdicion = false;
-        
+
         // Si tu servicio de actualización devuelve un mensaje de éxito
         this.notificationService.showSuccess(
           'Cambios Guardados Correctamente.',
         );
-        
+
         // Actualizar los datos originales
         this.observacion.PRACTICAS_PREPROFESIONALES_HORAS = this.observacionEditada.preprof;
         this.observacion.SERVICIO_COMUNITARIO_HORAS = this.observacionEditada.comunitario;
@@ -330,9 +359,9 @@ cerrarModalConfiguracion(): void {
       error: (error) => {
         this.notificationService.hideLoading();
         console.error('Error al guardar observaciones:', error);
-        
+
         let mensajeError = 'Error al guardar los cambios';
-        
+
         // Manejo específico de errores
         if (error.status === 403 && error.error && error.error.message) {
           // Error 403: Forbidden
@@ -345,7 +374,7 @@ cerrarModalConfiguracion(): void {
         } else if (error.message) {
           mensajeError = error.message;
         }
-        
+
         this.notificationService.showErrorReport(
           'Error',
           mensajeError,
@@ -368,7 +397,7 @@ obtenerTextoEstado(configurado: boolean): string {
 }
 
 obtenerClasesEstado(configurado: boolean): string {
-  return configurado 
+  return configurado
     ? 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800'
     : 'inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800';
 }
@@ -398,12 +427,12 @@ inicializarDatosAutoridades(): void {
   // Mapear los datos de autoridades al formato de edición
   const rector = this.autoridades.find(auth => auth.ID_AUTORIDAD === 1);
   const vicerrectora = this.autoridades.find(auth => auth.ID_AUTORIDAD === 2);
-  
+
   this.autoridadesEditadas = {
     rector: rector?.NOMBRE_AUTORIDAD || '',
     vicerrectora: vicerrectora?.NOMBRE_AUTORIDAD || ''
   };
-  
+
   // Crear respaldo
   this.autoridadesOriginales = { ...this.autoridadesEditadas };
 }
@@ -429,19 +458,19 @@ guardarCambiosAutoridades(): void {
       next: (response) => {
         this.notificationService.hideLoading();
         this.modoEdicionAutoridades = false;
-        
+
         // Si tu servicio de actualización devuelve un mensaje de éxito
         this.notificationService.showSuccess(
           'Datos de autoridades actualizados correctamente.',
         );
-        
+
         // Actualizar los datos originales
         this.autoridadesOriginales = { ...this.autoridadesEditadas };
-        
+
         // Actualizar el array de autoridades
         const rectorIndex = this.autoridades.findIndex(auth => auth.ID_AUTORIDAD === 1);
         const vicerrectoraIndex = this.autoridades.findIndex(auth => auth.ID_AUTORIDAD === 2);
-        
+
         if (rectorIndex !== -1) {
           this.autoridades[rectorIndex].NOMBRE_AUTORIDAD = this.autoridadesEditadas.rector;
         }
@@ -452,9 +481,9 @@ guardarCambiosAutoridades(): void {
       error: (error) => {
         this.notificationService.hideLoading();
         console.error('Error al guardar autoridades:', error);
-        
+
         let mensajeError = 'Error al guardar las autoridades';
-        
+
         // Manejo específico de errores
         if (error.status === 403 && error.error && error.error.message) {
           // Error 403: Forbidden
@@ -467,7 +496,7 @@ guardarCambiosAutoridades(): void {
         } else if (error.message) {
           mensajeError = error.message;
         }
-        
+
         this.notificationService.showErrorReport(
           'Error',
           mensajeError,
