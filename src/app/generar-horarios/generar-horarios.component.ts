@@ -1081,22 +1081,6 @@ actualizarEventosCalendario(): void {
 
 
   private validateHorarioData(): boolean {
-    // Log de depuración para ver los valores actuales
-    console.log('DEBUG validateHorarioData:', {
-      PeriodoSeleccionado: this.PeriodoSeleccionado,
-      DiaSeleccionado: this.DiaSeleccionado,
-      AulaSeleccionada: this.AulaSeleccionada,
-      horaInicio: this.horaInicio,
-      horaFin: this.horaFin,
-      fechaInicio: this.fechaInicio,
-      fechaFin: this.fechaFin,
-      tipoClaseSeleccionado: this.tipoClaseSeleccionado,
-      CarreraSeleccionada: this.CarreraSeleccionada,
-      NivelSeleccionado: this.NivelSeleccionado,
-      DocenteSeleccionado: this.DocenteSeleccionado,
-      AsignaturaSeleccionada: this.AsignaturaSeleccionada,
-      cursosArticulados: this.cursosArticulados
-    });
 
     // Forzar actualización de valores si hay selección individual
     if (this.tipoClaseSeleccionado === 'regular' && this.DocenteAsignaturaSeleccionada) {
@@ -1285,8 +1269,6 @@ abrirModalDetalleHorario(horarioId: number): void {
     this.docenteOriginal = Number(horario.docente.id);
     this.mostrarObservacion = false;
     this.observacion = '';
-      console.log('editDocenteSeleccionado:', this.editDocenteSeleccionado);
-    // Código existente para tipoClase...
     if (!horario.tipoClase) {
       if (horario.curso.cursos && horario.curso.cursos.length > 0) {
         this.horarioSeleccionado.tipoClase = 'articulada';

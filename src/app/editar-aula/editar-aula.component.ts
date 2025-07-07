@@ -21,7 +21,7 @@ export class EditarAulaComponent implements OnInit {
   };
   tipos: any[] = []; // Array de tipos de aula
   id: number = 0;
-  
+
   constructor(
     private route: ActivatedRoute,
     private aulaService: AulasService,
@@ -31,10 +31,10 @@ export class EditarAulaComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = +this.route.snapshot.paramMap.get('id')!;
-    
+
     // Cargar los tipos disponibles primero
     this.cargarTipos();
-    
+
     // Cargar los datos del aula
     this.cargarAula();
   }
@@ -44,7 +44,6 @@ export class EditarAulaComponent implements OnInit {
     this.aulaService.obtenerTipoAulas().subscribe({
       next: (tipos) => {
         this.tipos = tipos;
-        console.log('Tipos cargados:', tipos); // Para debug
       },
       error: (err) => {
         console.error('Error al cargar tipos:', err);
@@ -58,9 +57,8 @@ export class EditarAulaComponent implements OnInit {
       next: (data: Aulas) => {
         this.aula = {
           nombre: data.NOMBRE_AULA,
-          tipo: data.TIPO_AULA 
+          tipo: data.TIPO_AULA
         };
-        console.log('Aula cargada:', this.aula); 
       },
       error: (err) => {
         console.error('Error al obtener aula:', err);
@@ -71,19 +69,18 @@ export class EditarAulaComponent implements OnInit {
 
   guardarCambios(): void {
     this.notificationService.showLoading('Actualizando aula...');
-    
-    console.log('Datos a enviar:', this.aula); // Para debug
-    
+
+
     this.aulaService.actualizarAulas(this.id, this.aula).subscribe({
       next: (response) => {
         this.notificationService.hideLoading();
-        
+
         this.notificationService.showSuccessReport(
           'Aula Actualizada',
           response.mensaje || 'Aula actualizada correctamente',
           'Continuar'
         );
-        
+
         setTimeout(() => {
           this.router.navigate(['/inicio/gestionar-aulas']);
         }, 1500);
@@ -91,9 +88,9 @@ export class EditarAulaComponent implements OnInit {
       error: (error) => {
         this.notificationService.hideLoading();
         console.error('Error al actualizar aula:', error);
-        
+
         let mensajeError = 'Error al actualizar el aula';
-        
+
         if (error.status === 403 && error.error && error.error.message) {
           mensajeError = error.error.message;
         } else if (error.status === 404 && error.error && error.error.message) {
@@ -103,7 +100,7 @@ export class EditarAulaComponent implements OnInit {
         } else if (error.message) {
           mensajeError = error.message;
         }
-        
+
         this.notificationService.showErrorReport(
           'Error',
           mensajeError,

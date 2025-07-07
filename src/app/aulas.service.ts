@@ -35,7 +35,7 @@ export interface Aulas {
   providedIn: 'root'
 })
 export class AulasService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
   constructor(private http: HttpClient) { }
 
   private getAuthHeaders(): HttpHeaders {

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ReportesService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
 
   constructor(private http: HttpClient) { }
 
@@ -25,7 +25,7 @@ export class ReportesService {
     });
   }
 
-  
+
   crearReporteExcel(coordinador: any): Observable<Blob> {
     return this.http.post(this.apiUrl + '/generar-excel', coordinador, {
       headers: this.getAuthHeaders(),
@@ -45,8 +45,8 @@ export class ReportesService {
       headers: this.getAuthHeaders()
     });
   }
-  
-  
+
+
   obtenerAutoridades(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/autoridades`, {
       headers: this.getAuthHeaders()
@@ -58,7 +58,7 @@ export class ReportesService {
     });
   }
 
-  
+
 
 
 

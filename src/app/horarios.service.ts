@@ -19,7 +19,7 @@ import {
   providedIn: 'root'
 })
 export class HorariosService {
-  private apiUrl = 'http://localhost:3000/v1';
+  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
 
   // Cache storage
   private cacheMap = new Map<string, any>();
@@ -239,7 +239,7 @@ export class HorariosService {
       switchMap(horarioDetalle => {
         // Now we have the horario details with period information
         const idPeriodo = horarioDetalle.ID_PERIODO;
-  
+
         // Prepare options for DELETE
         const options: any = {
           headers: this.getAuthHeaders()
@@ -247,7 +247,7 @@ export class HorariosService {
         if (fechaExcepcion) {
           options.body = { fechaExcepcion };
         }
-  
+
         // Proceed with deletion
         return this.http.delete<any>(
           `${this.apiUrl}/horarios/${idHorario}`,
@@ -266,7 +266,7 @@ export class HorariosService {
                 }
               });
             }
-  
+
             // Clear cache for the specific horario detail
             const detailUrl = `${this.apiUrl}/horarios-completo/${idHorario}`;
             this.cacheMap.delete(detailUrl);

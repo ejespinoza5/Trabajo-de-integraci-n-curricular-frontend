@@ -31,7 +31,6 @@ export class PrincipalComponent implements OnInit {
     const idRol = this.usuarioService.ObtenerIdRol();
     const idUsuario = this.usuarioService.ObtenerIdToken();
     if (idRol == 17 || idRol == 1) {
-      console.log('ID de usuario:', idUsuario); // Verifica si el ID se obtiene correctamente
       if (!idUsuario) {
         console.error('No se pudo obtener el ID del usuario del token');
         return;
@@ -46,7 +45,6 @@ export class PrincipalComponent implements OnInit {
         }
       });
     } else {
-      console.log('ID de usuario:', idUsuario);
       if (!idUsuario) {
         console.error('No se pudo obtener el ID del usuario del token');
         return;
