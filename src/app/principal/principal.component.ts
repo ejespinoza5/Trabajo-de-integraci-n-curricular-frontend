@@ -145,14 +145,9 @@ async CerrarSesion() {
 }
 
 private redirigirALogin() {
-  if (this.router) {
-    this.router.navigate(['/login']).then(() => {
-      window.location.reload();
-    });
-  } else {
-    window.location.replace('/login');
-  }
+  window.location.href = 'https://horarios.istla-sigala.edu.ec/';
 }
+
 
 
 private limpiarDatosLocales() {

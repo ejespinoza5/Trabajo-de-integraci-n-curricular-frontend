@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { Roles } from './roles';
 
@@ -8,13 +8,11 @@ import { Roles } from './roles';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private router: Router) {}
-
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const token = localStorage.getItem('token');
 
     if (!token) {
-      this.router.navigate(['/login']);
+      window.location.href = 'https://horarios.istla-sigala.edu.ec/';
       return false;
     }
 
@@ -24,7 +22,7 @@ export class AuthGuard implements CanActivate {
       const rolUsuario: string = Roles[rolNumerico];
 
       if (!rolUsuario) {
-        this.router.navigate(['/login']);
+        window.location.href = 'https://horarios.istla-sigala.edu.ec/';
         return false;
       }
 
@@ -34,11 +32,11 @@ export class AuthGuard implements CanActivate {
         return true;
       }
 
-      this.router.navigate(['/inicio']);
+      window.location.href = 'https://horarios.istla-sigala.edu.ec/';
       return false;
     } catch (error) {
       console.error('Error al decodificar el token', error);
-      this.router.navigate(['/login']);
+      window.location.href = 'https://horarios.istla-sigala.edu.ec/';
       return false;
     }
   }
