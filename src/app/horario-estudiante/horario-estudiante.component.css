@@ -1,146 +1,225 @@
-/* Estilos para el calendario */
-.calendar-container {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
 
-/* Personalización de FullCalendar */
+/* Estilos para FullCalendar - Modo Claro (por defecto) */
 ::ng-deep .fc {
-  font-family: inherit;
+  --fc-border-color: #e5e7eb;
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #ffffff;
+  --fc-neutral-text-color: #1f2937;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #fff;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+  --fc-today-bg-color: rgba(255, 220, 40, 0.15);
+  --fc-button-bg-color: #199DBF;
+  --fc-button-border-color: #199DBF;
+  --fc-button-hover-bg-color: #1d4ed8;
+  --fc-button-hover-border-color: #199DBF;
+  --fc-button-active-bg-color: #199DBF;
+  --fc-button-active-border-color: #199DBF;
+  --fc-list-event-dot-width: 10px;
+  --fc-list-event-hover-bg-color: #f3f4f6;
 }
 
-::ng-deep .fc-header-toolbar {
-  padding: 1rem;
-  background-color: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+/* Estilos para FullCalendar - Modo Oscuro */
+::ng-deep .dark .fc {
+  --fc-border-color: #374151;
+  --fc-page-bg-color: #1f2937;
+  --fc-neutral-bg-color: #1f2937;
+  --fc-neutral-text-color: #e5e7eb;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #ffffff;
+  --fc-event-selected-overlay-color: rgba(255, 255, 255, 0.25);
+  --fc-today-bg-color: rgba(59, 130, 246, 0.15);
+  --fc-button-bg-color: #199DBF;
+  --fc-button-border-color: #199DBF;
+  --fc-button-hover-bg-color: #1d4ed8;
+  --fc-button-hover-border-color: #199DBF;
+  --fc-button-active-bg-color: #199DBF;
+  --fc-button-active-border-color: #199DBF;
+  --fc-list-event-dot-width: 10px;
+  --fc-list-event-hover-bg-color: #374151;
 }
 
-::ng-deep .fc-button-primary {
-  background-color: #3788d8;
-  border-color: #3788d8;
-  font-size: 0.875rem;
+/* Estilos específicos para elementos del calendario en modo oscuro */
+::ng-deep .dark .fc-theme-standard .fc-scrollgrid {
+  border-color: #374151;
 }
 
-::ng-deep .fc-button-primary:hover {
-  background-color: #3788d8;
-  border-color: #3788d8;
+::ng-deep .dark .fc-theme-standard td,
+::ng-deep .dark .fc-theme-standard th {
+  border-color: #374151;
 }
 
-::ng-deep .fc-button-primary:focus {
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+::ng-deep .dark .fc-col-header-cell {
+  background-color: #374151;
+  color: #e5e7eb;
 }
 
-::ng-deep .fc-event {
-  border-radius: 4px;
-  border: none;
-  padding: 2px 4px;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  cursor: pointer;
-  transition: all 0.2s ease;
+::ng-deep .dark .fc-daygrid-day {
+  background-color: #1f2937;
+  color: #e5e7eb;
 }
 
-::ng-deep .fc-event:hover {
-  transform: scale(1.02);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+::ng-deep .dark .fc-timegrid-slot {
+  border-color: #374151;
+  background-color: #1f2937;
 }
 
-::ng-deep .fc-event-title {
-  font-weight: 500;
-  white-space: pre-line;
-}
-
-::ng-deep .fc-timegrid-slot-label {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-::ng-deep .fc-col-header-cell {
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
-  font-weight: 600;
-  color: #374151;
-}
-
-::ng-deep .fc-daygrid-day-number {
-  font-weight: 500;
-  color: #374151;
-}
-
-::ng-deep .fc-today {
-  background-color: rgba(59, 130, 246, 0.05) !important;
-}
-
-::ng-deep .fc-timegrid-axis {
-  border-right: 1px solid #e2e8f0;
-}
-
-::ng-deep .fc-timegrid-slot {
-  border-bottom: 1px solid #f3f4f6;
-}
-
-::ng-deep .fc-timegrid-slot-minor {
-  border-bottom: 1px solid #f9fafb;
-}
-
-/* Estilos para ng-select */
-::ng-deep .ng-select {
-  min-height: 38px;
-}
-
-::ng-deep .ng-select.ng-select-focused .ng-select-container {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
-}
-
-::ng-deep .ng-select.ng-select-disabled .ng-select-container {
-  background-color: #f3f4f6;
+::ng-deep .dark .fc-timegrid-slot-label {
   color: #9ca3af;
 }
 
-::ng-deep .ng-option {
-  padding: 8px 12px;
-  font-size: 0.875rem;
+::ng-deep .dark .fc-timegrid-axis {
+  background-color: #1f2937;
 }
 
-::ng-deep .ng-option.ng-option-highlighted {
-  background-color: #3b82f6;
-  color: white;
+::ng-deep .dark .fc-scrollgrid-sync-table {
+  background-color: #1f2937;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-  ::ng-deep .fc-header-toolbar {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  ::ng-deep .fc-toolbar-chunk {
-    display: flex;
-    justify-content: center;
-  }
-
-  ::ng-deep .fc-button {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
-  ::ng-deep .fc-event {
-    font-size: 0.625rem;
-  }
+/* Texto de las horas en modo oscuro */
+::ng-deep .dark .fc-timegrid-slot-label-cushion {
+  color: #9ca3af;
 }
 
-/* Animaciones */
-.calendar-container {
-  animation: fadeIn 0.3s ease-in;
+/* Días de la semana en modo oscuro */
+::ng-deep .dark .fc-col-header-cell-cushion {
+  color: #e5e7eb;
+  font-weight: 600;
 }
 
+/* Botones en modo oscuro */
+::ng-deep .dark .fc-button {
+  background-color: #199DBF;
+  border-color: #199DBF;
+  color: #ffffff;
+}
+
+::ng-deep .dark .fc-button:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+::ng-deep .dark .fc-button-active {
+  background-color: #199DBF;
+  border-color: #199DBF;
+}
+
+/* Título del calendario en modo oscuro */
+::ng-deep .dark .fc-toolbar-title {
+  color: #e5e7eb;
+}
+
+/* Día actual en modo oscuro */
+::ng-deep .dark .fc-day-today {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Vista de lista en modo oscuro */
+::ng-deep .dark .fc-list-table {
+  background-color: #1f2937;
+}
+
+::ng-deep .dark .fc-list-day-cushion {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event:hover {
+  background-color: #374151;
+}
+
+::ng-deep .dark .fc-list-event-title {
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event-time {
+  color: #9ca3af;
+}
+
+/* Estilos para los eventos en el calendario */
+::ng-deep .fc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Estilo para el evento cuando se pasa el mouse */
+::ng-deep .fc-event:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+::ng-deep .dark .fc-event:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Ajustar altura de las celdas de tiempo */
+::ng-deep .fc-timegrid-slot {
+  height: 3rem !important;
+}
+
+/* Scrollbar en modo oscuro */
+::ng-deep .dark .fc-scroller::-webkit-scrollbar {
+  width: 8px;
+}
+
+::ng-deep .dark .fc-scroller::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::ng-deep .dark .fc-scroller::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::ng-deep .dark .fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Animaciones existentes */
 @keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.calendar-container {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.legend-container {
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.materia-item {
+  animation: slideInLeft 0.4s ease-out;
+  transition: transform 0.2s ease;
+}
+
+.materia-item:hover {
+  transform: scale(1.05);
+}
+
+@keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -148,24 +227,39 @@
   }
 }
 
-
-/* Botones de navegación del calendario */
-::ng-deep .fc-button {
-  background-color: #3788d8 !important;
-  border-color: #3788d8 !important;
-  color: white !important;
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-::ng-deep .fc-button:hover {
-  background-color: #2563EB !important;
-  border-color: #2563EB !important;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-::ng-deep .fc-button:disabled {
-  background-color: #3788d8!important;
-  border-color: #3788d8 !important;
+.form-group {
+  animation: fadeInUp 0.3s ease-out;
 }
 
+.form-group:hover .form-label svg {
+  @apply transform scale-110;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }

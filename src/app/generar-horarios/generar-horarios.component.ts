@@ -177,6 +177,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, listPlugin],
     initialView: 'timeGridWeek',
+    themeSystem: 'standard',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
@@ -237,9 +238,20 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
         },
         listDaySideFormat: false,
         eventDidMount: (info) => this.setupListEventDisplay(info)
+      },
+      timeGridDay: {
+        eventDidMount: (info) => this.setupEventDisplay(info)
       }
     },
-
+    eventDidMount: (info) => {
+      // Agregar clases directamente al elemento del evento
+      info.el.classList.add('dark:bg-gray-700', 'dark:text-white', 'dark:border-gray-600');
+    },
+    eventContent: (arg) => {
+      return {
+        html: `<div class="p-1 text-sm dark:text-white">${arg.event.title}</div>`
+      };
+    },
     // Eventos de interacción
     eventClick: (clickInfo: EventClickArg) => {
       this.handleEventClick(clickInfo);
@@ -685,7 +697,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   }
 
 
- ngOnDestroy() {
+  ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
     this.hideEventTooltip();
@@ -808,80 +820,80 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   }
 
   // Actualización de eventos optimizada
-actualizarEventosCalendario(): void {
-  // Filtrar horarios incompletos para evitar errores de acceso a propiedades nulas
-  const eventos: EventInput[] = this.horariosFiltrados
-    .filter(horario =>
-      horario &&
-      horario.curso &&
-      horario.asignatura &&
-      horario.aula &&
-      horario.docente &&
-      horario.dia &&
-      horario.fechaInicio &&
-      horario.fechaFin &&
-      horario.horaInicio &&
-      horario.horaFin &&
-      horario.carrera &&
-      typeof horario.curso.nombre !== 'undefined' &&
-      typeof horario.asignatura.nombre !== 'undefined' &&
-      typeof horario.aula.nombre !== 'undefined' &&
-      typeof horario.docente.nombre !== 'undefined' &&
-      typeof horario.dia.id !== 'undefined' &&
-      typeof horario.carrera.nombre !== 'undefined'
-    )
-    .map(horario => {
-      const fechaInicio = new Date(horario.fechaInicio);
-      const fechaFin = new Date(horario.fechaFin);
-      fechaFin.setDate(fechaFin.getDate() + 1);
+  actualizarEventosCalendario(): void {
+    // Filtrar horarios incompletos para evitar errores de acceso a propiedades nulas
+    const eventos: EventInput[] = this.horariosFiltrados
+      .filter(horario =>
+        horario &&
+        horario.curso &&
+        horario.asignatura &&
+        horario.aula &&
+        horario.docente &&
+        horario.dia &&
+        horario.fechaInicio &&
+        horario.fechaFin &&
+        horario.horaInicio &&
+        horario.horaFin &&
+        horario.carrera &&
+        typeof horario.curso.nombre !== 'undefined' &&
+        typeof horario.asignatura.nombre !== 'undefined' &&
+        typeof horario.aula.nombre !== 'undefined' &&
+        typeof horario.docente.nombre !== 'undefined' &&
+        typeof horario.dia.id !== 'undefined' &&
+        typeof horario.carrera.nombre !== 'undefined'
+      )
+      .map(horario => {
+        const fechaInicio = new Date(horario.fechaInicio);
+        const fechaFin = new Date(horario.fechaFin);
+        fechaFin.setDate(fechaFin.getDate() + 1);
 
-      let cursoNombre: string;
-      if (horario.curso.cursos && horario.curso.cursos.length > 0) {
-        cursoNombre = horario.curso.nombre;
-      } else {
-        cursoNombre = horario.curso.nombre;
-      }
-
-      return {
-        id: `horario-${horario.id}`,
-        title: `${horario.asignatura.nombre} \n${horario.aula.nombre} \n${horario.docente.nombre}`,
-        daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
-        startTime: horario.horaInicio,
-        endTime: horario.horaFin,
-        startRecur: fechaInicio,
-        endRecur: fechaFin,
-        extendedProps: {
-          horarioId: horario.id,
-          asignaturaId: horario.asignatura.id,
-          docente: horario.docente.nombre,
-          aula: horario.aula.nombre,
-          carrera: horario.carrera.nombre,
-          curso: cursoNombre,
-          tipoClase: horario.tipoClase || 'REGULAR',
-          cursosArticulados: horario.curso.cursos || null
+        let cursoNombre: string;
+        if (horario.curso.cursos && horario.curso.cursos.length > 0) {
+          cursoNombre = horario.curso.nombre;
+        } else {
+          cursoNombre = horario.curso.nombre;
         }
-      };
-    });
 
-  this.ngZone.run(() => {
-    if (this.calendarApi) {
-      this.calendarApi.removeAllEvents();
-      this.calendarApi.addEventSource(eventos);
-
-      requestAnimationFrame(() => {
-        this.calendarApi?.refetchEvents();
-        this.calendarApi?.render();
+        return {
+          id: `horario-${horario.id}`,
+          title: `${horario.asignatura.nombre} \n${horario.aula.nombre} \n${horario.docente.nombre}`,
+          daysOfWeek: [this.convertirDiaAFullCalendar(horario.dia.id)],
+          startTime: horario.horaInicio,
+          endTime: horario.horaFin,
+          startRecur: fechaInicio,
+          endRecur: fechaFin,
+          extendedProps: {
+            horarioId: horario.id,
+            asignaturaId: horario.asignatura.id,
+            docente: horario.docente.nombre,
+            aula: horario.aula.nombre,
+            carrera: horario.carrera.nombre,
+            curso: cursoNombre,
+            tipoClase: horario.tipoClase || 'REGULAR',
+            cursosArticulados: horario.curso.cursos || null
+          }
+        };
       });
-    } else {
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: eventos,
-        eventContent: (arg) => {
-          const lines = arg.event.title.split('\n');
-          const container = document.createElement('div');
 
-          // Estilos para el contenedor principal
-          container.style.cssText = `
+    this.ngZone.run(() => {
+      if (this.calendarApi) {
+        this.calendarApi.removeAllEvents();
+        this.calendarApi.addEventSource(eventos);
+
+        requestAnimationFrame(() => {
+          this.calendarApi?.refetchEvents();
+          this.calendarApi?.render();
+        });
+      } else {
+        this.calendarOptions = {
+          ...this.calendarOptions,
+          events: eventos,
+          eventContent: (arg) => {
+            const lines = arg.event.title.split('\n');
+            const container = document.createElement('div');
+
+            // Estilos para el contenedor principal
+            container.style.cssText = `
             padding: 2px 4px;
             font-size: 25px;
             font-weight: bold;
@@ -896,15 +908,15 @@ actualizarEventosCalendario(): void {
             justify-content: flex-start;
           `;
 
-          // Mostrar máximo 3 líneas para evitar desbordamiento
-          const maxLines = Math.min(lines.length, 3);
+            // Mostrar máximo 3 líneas para evitar desbordamiento
+            const maxLines = Math.min(lines.length, 3);
 
-          lines.slice(0, maxLines).forEach((line, index) => {
-            const div = document.createElement('div');
-            div.textContent = line.trim();
+            lines.slice(0, maxLines).forEach((line, index) => {
+              const div = document.createElement('div');
+              div.textContent = line.trim();
 
-            // Estilos para cada línea
-            div.style.cssText = `
+              // Estilos para cada línea
+              div.style.cssText = `
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -916,22 +928,22 @@ actualizarEventosCalendario(): void {
               max-width: 100%;
             `;
 
-            // Hacer la primera línea (asignatura) un poco más grande
-            if (index === 0) {
-              div.style.fontSize = '15px';
-              div.style.fontWeight = '900';
-            }
+              // Hacer la primera línea (asignatura) un poco más grande
+              if (index === 0) {
+                div.style.fontSize = '15px';
+                div.style.fontWeight = '900';
+              }
 
-            container.appendChild(div);
-          });
+              container.appendChild(div);
+            });
 
-          return { domNodes: [container] };
-        }
-      };
-      this.cdr.detectChanges();
-    }
-  });
-}
+            return { domNodes: [container] };
+          }
+        };
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   // Manejo centralizado de errores
   private handleError(message: string, error: any): void {
@@ -957,14 +969,14 @@ actualizarEventosCalendario(): void {
       .subscribe({
         next: (data) => this.carreras = data,
         error: (err) => this.handleError('Error al cargar carreras', err)
-    });
+      });
 
     this.horariosService.obtenerCarrerasPeriodoArticulado(idPeriodo)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => this.carrerasArticuladas = data,
         error: (err) => this.handleError('Error al cargar carreras', err)
-    });
+      });
 
 
     this.horariosService.obtenerDocentePeriodo(idPeriodo)
@@ -1270,37 +1282,37 @@ actualizarEventosCalendario(): void {
 
   // MÉTODOS PARA EL MODAL (continuarían igual pero con optimizaciones similares)
 
-abrirModalDetalleHorario(horarioId: number): void {
+  abrirModalDetalleHorario(horarioId: number): void {
 
-  const horario = this.horariosFiltrados.find(h => h.id === horarioId);
+    const horario = this.horariosFiltrados.find(h => h.id === horarioId);
 
-  if (horario) {
-    this.horarioSeleccionado = { ...horario };
-    this.modoEdicion = false;
-    this.editHoraInicio = this.formatHora(horario.horaInicio);
-    this.editHoraFin = this.formatHora(horario.horaFin);
-    this.editAulaSeleccionada = horario.aula.id;
-    this.editDiaSeleccionado = horario.dia.id;
-    this.editFechaFin = this.formatFecha(horario.fechaFin);
-    this.editFechaInicio = this.formatFecha(horario.fechaInicio);
-    this.editDocenteSeleccionado = Number(horario.docente.id);
-    this.onEditModalOpen(horario.docente.id);
+    if (horario) {
+      this.horarioSeleccionado = { ...horario };
+      this.modoEdicion = false;
+      this.editHoraInicio = this.formatHora(horario.horaInicio);
+      this.editHoraFin = this.formatHora(horario.horaFin);
+      this.editAulaSeleccionada = horario.aula.id;
+      this.editDiaSeleccionado = horario.dia.id;
+      this.editFechaFin = this.formatFecha(horario.fechaFin);
+      this.editFechaInicio = this.formatFecha(horario.fechaInicio);
+      this.editDocenteSeleccionado = Number(horario.docente.id);
+      this.onEditModalOpen(horario.docente.id);
 
-    // ✅ NUEVO: Guardar docente original y resetear observación
-    this.docenteOriginal = Number(horario.docente.id);
-    this.mostrarObservacion = false;
-    this.observacion = '';
-    if (!horario.tipoClase) {
-      if (horario.curso.cursos && horario.curso.cursos.length > 0) {
-        this.horarioSeleccionado.tipoClase = 'articulada';
-      } else {
-        this.horarioSeleccionado.tipoClase = 'regular';
+      // ✅ NUEVO: Guardar docente original y resetear observación
+      this.docenteOriginal = Number(horario.docente.id);
+      this.mostrarObservacion = false;
+      this.observacion = '';
+      if (!horario.tipoClase) {
+        if (horario.curso.cursos && horario.curso.cursos.length > 0) {
+          this.horarioSeleccionado.tipoClase = 'articulada';
+        } else {
+          this.horarioSeleccionado.tipoClase = 'regular';
+        }
       }
-    }
 
-    this.modalVisible = true;
+      this.modalVisible = true;
+    }
   }
-}
 
 
   cerrarModal(): void {
@@ -1328,8 +1340,8 @@ abrirModalDetalleHorario(horarioId: number): void {
       this.editFechaInicio = this.formatFecha(this.horarioSeleccionado.fechaInicio);
 
       // ✅ NUEVO: Resetear observación
-    this.mostrarObservacion = false;
-    this.observacion = '';
+      this.mostrarObservacion = false;
+      this.observacion = '';
     }
 
     this.modoEdicion = false;
@@ -1341,93 +1353,93 @@ abrirModalDetalleHorario(horarioId: number): void {
   // las mismas optimizaciones de manejo de errores y subscripciones
 
   // Guarda los cambios en un horario
-guardarCambiosHorario(): void {
-  if (!this.horarioSeleccionado || !this.horarioSeleccionado.id) {
-    this.notificationService.showErrorReport(
-      'Error',
-      'No se puede actualizar el horario',
-      'Cerrar'
-    );
-    return;
-  }
+  guardarCambiosHorario(): void {
+    if (!this.horarioSeleccionado || !this.horarioSeleccionado.id) {
+      this.notificationService.showErrorReport(
+        'Error',
+        'No se puede actualizar el horario',
+        'Cerrar'
+      );
+      return;
+    }
 
-  if (this.mostrarObservacion && this.observacion.trim().length < 10) {
-    this.notificationService.showErrorReport(
-      'Error',
-      'La observación debe tener al menos 10 caracteres.',
-      'Cerrar'
-    );
-    this.mostrarErrorObservacion = true;
-    return;
-  }
+    if (this.mostrarObservacion && this.observacion.trim().length < 10) {
+      this.notificationService.showErrorReport(
+        'Error',
+        'La observación debe tener al menos 10 caracteres.',
+        'Cerrar'
+      );
+      this.mostrarErrorObservacion = true;
+      return;
+    }
 
-  // Comprobar si los valores son válidos antes de enviar
-  if (!this.editAulaSeleccionada || !this.editDiaSeleccionado) {
-    this.notificationService.showErrorReport(
-      'Error',
-      'Debe seleccionar un aula y un día válidos',
-      'Cerrar'
-    );
-    return;
-  }
+    // Comprobar si los valores son válidos antes de enviar
+    if (!this.editAulaSeleccionada || !this.editDiaSeleccionado) {
+      this.notificationService.showErrorReport(
+        'Error',
+        'Debe seleccionar un aula y un día válidos',
+        'Cerrar'
+      );
+      return;
+    }
 
-  // Formatea la hora al formato HH:MM:SS
-  const formatearHora = (hora: string): string => {
-    if (!hora) return '';
-    if (/^\d{2}:\d{2}:\d{2}$/.test(hora)) return hora;
-    if (/^\d{2}:\d{2}$/.test(hora)) return `${hora}:00`;
-    return hora;
-  };
+    // Formatea la hora al formato HH:MM:SS
+    const formatearHora = (hora: string): string => {
+      if (!hora) return '';
+      if (/^\d{2}:\d{2}:\d{2}$/.test(hora)) return hora;
+      if (/^\d{2}:\d{2}$/.test(hora)) return `${hora}:00`;
+      return hora;
+    };
 
-  // Validar que tengamos horas válidas
-  if (!this.editHoraInicio || !this.editHoraFin) {
-    this.notificationService.showErrorReport(
-      'Error',
-      'Debe proporcionar horarios válidos',
-      'Cerrar'
-    );
-    return;
-  }
+    // Validar que tengamos horas válidas
+    if (!this.editHoraInicio || !this.editHoraFin) {
+      this.notificationService.showErrorReport(
+        'Error',
+        'Debe proporcionar horarios válidos',
+        'Cerrar'
+      );
+      return;
+    }
 
-  // Convertir los IDs a números para asegurar que sean del tipo correcto
-  const aulaId = Number(this.editAulaSeleccionada);
-  const diaId = Number(this.editDiaSeleccionado);
+    // Convertir los IDs a números para asegurar que sean del tipo correcto
+    const aulaId = Number(this.editAulaSeleccionada);
+    const diaId = Number(this.editDiaSeleccionado);
     const docenteId = Number(this.editDocenteSeleccionado);
 
 
-  const aulaSeleccionada = this.aulas.find(a => Number(a.ID_AULA) === aulaId);
-  const diaSeleccionado = this.dias.find(d => Number(d.ID_DIA) === diaId);
+    const aulaSeleccionada = this.aulas.find(a => Number(a.ID_AULA) === aulaId);
+    const diaSeleccionado = this.dias.find(d => Number(d.ID_DIA) === diaId);
 
-  // Verificar si encontramos el aula y el día antes de continuar
-  if (!aulaSeleccionada || !diaSeleccionado) {
-    this.notificationService.showErrorReport(
-      'Error',
-      'No se pudo encontrar el aula o el día seleccionado',
-      'Cerrar'
-    );
-    return;
-  }
+    // Verificar si encontramos el aula y el día antes de continuar
+    if (!aulaSeleccionada || !diaSeleccionado) {
+      this.notificationService.showErrorReport(
+        'Error',
+        'No se pudo encontrar el aula o el día seleccionado',
+        'Cerrar'
+      );
+      return;
+    }
 
-  // ✅ CORRECCIÓN: Construir datos según el tipo de horario
-  let horarioActualizado: any = {
-    ID_HORARIO: Number(this.horarioSeleccionado.id),
-    ID_PERIODO: this.PeriodoSeleccionado,
-    ID_DOCENTE: docenteId,
-    ID_ASIGNATURA: this.horarioSeleccionado.asignatura.id,
-    ID_AULA: aulaId,
-    ID_DIA: diaId,
-    HORA_INICIO: this.formatHora(this.editHoraInicio),
-    HORA_FIN: this.formatHora(this.editHoraFin),
-    FECHA_INICIO: this.formatFecha(this.editFechaInicio),
-    FECHA_FIN: this.formatFecha(this.editFechaFin),
-  };
-  if (this.mostrarObservacion && this.observacion.trim()) {
-    horarioActualizado.observacion = this.observacion.trim();
-  }
+    // ✅ CORRECCIÓN: Construir datos según el tipo de horario
+    let horarioActualizado: any = {
+      ID_HORARIO: Number(this.horarioSeleccionado.id),
+      ID_PERIODO: this.PeriodoSeleccionado,
+      ID_DOCENTE: docenteId,
+      ID_ASIGNATURA: this.horarioSeleccionado.asignatura.id,
+      ID_AULA: aulaId,
+      ID_DIA: diaId,
+      HORA_INICIO: this.formatHora(this.editHoraInicio),
+      HORA_FIN: this.formatHora(this.editHoraFin),
+      FECHA_INICIO: this.formatFecha(this.editFechaInicio),
+      FECHA_FIN: this.formatFecha(this.editFechaFin),
+    };
+    if (this.mostrarObservacion && this.observacion.trim()) {
+      horarioActualizado.observacion = this.observacion.trim();
+    }
 
     // ✅ CORRECCIÓN: Preservar el tipo de horario original
     if (this.horarioSeleccionado.tipoClase === 'ARTICULADA' ||
-        (this.horarioSeleccionado.carrera.carreras && this.horarioSeleccionado.carrera.carreras.length > 0)) {
+      (this.horarioSeleccionado.carrera.carreras && this.horarioSeleccionado.carrera.carreras.length > 0)) {
       // Es un horario articulado - preservar los cursos articulados CORRECTAMENTE
       horarioActualizado.cursosArticulados = this.horarioSeleccionado.carrera.carreras?.map(carrera => ({
         ID_CURSOS: this.horarioSeleccionado!.curso.id,        // ✅ Usar ! para asegurar que no es null
@@ -1441,95 +1453,95 @@ guardarCambiosHorario(): void {
       horarioActualizado.ID_CURSOS = this.horarioSeleccionado!.curso.id;
     }
 
-  // Mostrar loading
-  this.notificationService.showLoading('Actualizando horario...');
+    // Mostrar loading
+    this.notificationService.showLoading('Actualizando horario...');
 
-  this.horariosService.actualizarHorario(horarioActualizado).subscribe({
-    next: (response) => {
-      this.notificationService.hideLoading();
+    this.horariosService.actualizarHorario(horarioActualizado).subscribe({
+      next: (response) => {
+        this.notificationService.hideLoading();
 
-      if (!this.horarioSeleccionado?.docente) {
+        if (!this.horarioSeleccionado?.docente) {
+          this.notificationService.showErrorReport(
+            'Error',
+            'El docente no está definido',
+            'Cerrar'
+          );
+          return;
+        }
+
+        // ...dentro de guardarCambiosHorario()...
+        const horarioDetalleActualizado: HorarioDetalle = {
+          ...this.horarioSeleccionado,
+          horaInicio: formatearHora(this.editHoraInicio),
+          horaFin: formatearHora(this.editHoraFin),
+          fechaInicio: this.editFechaInicio,
+          fechaFin: this.editFechaFin,
+          aula: {
+            id: aulaId,
+            nombre: aulaSeleccionada.NOMBRE_AULA
+          },
+          dia: {
+            id: diaId,
+            nombre: diaSeleccionado.NOMBRE_DIA
+          },
+          // ✅ FORZAR el tipo de clase según la estructura
+          tipoClase: (this.horarioSeleccionado.carrera.carreras && this.horarioSeleccionado.carrera.carreras.length > 0)
+            ? 'ARTICULADA'  // ✅ Usar el mismo formato que viene del backend
+            : 'regular',
+          // ✅ NO sobrescribir curso ni carrera para articulados
+          curso: this.horarioSeleccionado.curso,
+          carrera: this.horarioSeleccionado.carrera
+        };
+
+        this.ngZone.run(() => {
+          this.actualizarHorarioEnListas(horarioDetalleActualizado);
+
+          // Mostrar mensaje de éxito
+          this.notificationService.showSuccess(
+            response.mensaje || 'Horario actualizado correctamente'
+          );
+
+          this.modoEdicion = false;
+
+          // Esperar a que el modal se actualice antes de cerrar
+          setTimeout(() => {
+            this.cerrarModal();
+            // Forzar una actualización completa del calendario
+            this.cargarTodosLosHorarios();
+          }, 1500);
+        });
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        console.error('Error en la actualización:', error);
+
+        let mensajeError = 'Error al actualizar el horario';
+
+        // Manejo específico de errores del backend
+        if (error.status === 403 && error.error && error.error.message) {
+          mensajeError = error.error.message;
+        } else if (error.status === 404 && error.error && error.error.message) {
+          mensajeError = error.error.message;
+        } else if (error.status === 409 && error.error && error.error.message) {
+          mensajeError = error.error.message;
+        } else if (error.error) {
+          if (error.error.message) {
+            mensajeError = error.error.message;
+          } else if (typeof error.error === 'string') {
+            mensajeError = error.error;
+          }
+        } else if (error.message) {
+          mensajeError = error.message;
+        }
+
         this.notificationService.showErrorReport(
           'Error',
-          'El docente no está definido',
+          mensajeError,
           'Cerrar'
         );
-        return;
       }
-
-            // ...dentro de guardarCambiosHorario()...
-            const horarioDetalleActualizado: HorarioDetalle = {
-        ...this.horarioSeleccionado,
-        horaInicio: formatearHora(this.editHoraInicio),
-        horaFin: formatearHora(this.editHoraFin),
-        fechaInicio: this.editFechaInicio,
-        fechaFin: this.editFechaFin,
-        aula: {
-          id: aulaId,
-          nombre: aulaSeleccionada.NOMBRE_AULA
-        },
-        dia: {
-          id: diaId,
-          nombre: diaSeleccionado.NOMBRE_DIA
-        },
-        // ✅ FORZAR el tipo de clase según la estructura
-        tipoClase: (this.horarioSeleccionado.carrera.carreras && this.horarioSeleccionado.carrera.carreras.length > 0)
-                    ? 'ARTICULADA'  // ✅ Usar el mismo formato que viene del backend
-                    : 'regular',
-        // ✅ NO sobrescribir curso ni carrera para articulados
-        curso: this.horarioSeleccionado.curso,
-        carrera: this.horarioSeleccionado.carrera
-      };
-
-      this.ngZone.run(() => {
-        this.actualizarHorarioEnListas(horarioDetalleActualizado);
-
-        // Mostrar mensaje de éxito
-        this.notificationService.showSuccess(
-          response.mensaje || 'Horario actualizado correctamente'
-        );
-
-        this.modoEdicion = false;
-
-        // Esperar a que el modal se actualice antes de cerrar
-        setTimeout(() => {
-          this.cerrarModal();
-          // Forzar una actualización completa del calendario
-          this.cargarTodosLosHorarios();
-        }, 1500);
-      });
-    },
-    error: (error) => {
-      this.notificationService.hideLoading();
-      console.error('Error en la actualización:', error);
-
-      let mensajeError = 'Error al actualizar el horario';
-
-      // Manejo específico de errores del backend
-      if (error.status === 403 && error.error && error.error.message) {
-        mensajeError = error.error.message;
-      } else if (error.status === 404 && error.error && error.error.message) {
-        mensajeError = error.error.message;
-      } else if (error.status === 409 && error.error && error.error.message) {
-        mensajeError = error.error.message;
-      } else if (error.error) {
-        if (error.error.message) {
-          mensajeError = error.error.message;
-        } else if (typeof error.error === 'string') {
-          mensajeError = error.error;
-        }
-      } else if (error.message) {
-        mensajeError = error.message;
-      }
-
-      this.notificationService.showErrorReport(
-        'Error',
-        mensajeError,
-        'Cerrar'
-      );
-    }
-  });
-}
+    });
+  }
 
   // Actualiza el horario en todas las listas
   private actualizarHorarioEnListas(horarioActualizado: HorarioDetalle): void {
@@ -1668,33 +1680,33 @@ guardarCambiosHorario(): void {
     }
   }
 
-agregarCursoArticulado() {
-  if (this.nuevaCarreraArticulada && this.nuevoCursoArticulado) {
-    const yaExiste = this.cursosArticulados.some(curso =>
-      curso.ID_CARRERAS === this.nuevaCarreraArticulada &&
-      curso.ID_CURSOS === this.nuevoCursoArticulado
-    );
+  agregarCursoArticulado() {
+    if (this.nuevaCarreraArticulada && this.nuevoCursoArticulado) {
+      const yaExiste = this.cursosArticulados.some(curso =>
+        curso.ID_CARRERAS === this.nuevaCarreraArticulada &&
+        curso.ID_CURSOS === this.nuevoCursoArticulado
+      );
 
-    if (!yaExiste) {
-      // Buscar los objetos completos para obtener los nombres
-      const carreraSeleccionada = this.carrerasArticuladas.find(c => c.ID_CARRERAS === this.nuevaCarreraArticulada);
-      const cursoSeleccionado = this.cursosDisponibles.find(c => c.ID_CURSOS === this.nuevoCursoArticulado);
+      if (!yaExiste) {
+        // Buscar los objetos completos para obtener los nombres
+        const carreraSeleccionada = this.carrerasArticuladas.find(c => c.ID_CARRERAS === this.nuevaCarreraArticulada);
+        const cursoSeleccionado = this.cursosDisponibles.find(c => c.ID_CURSOS === this.nuevoCursoArticulado);
 
-      this.cursosArticulados.push({
-        ID_CARRERAS: this.nuevaCarreraArticulada,
-        ID_CURSOS: this.nuevoCursoArticulado,
-        NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
-        NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
-      });
+        this.cursosArticulados.push({
+          ID_CARRERAS: this.nuevaCarreraArticulada,
+          ID_CURSOS: this.nuevoCursoArticulado,
+          NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
+          NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
+        });
 
-      this.nuevaCarreraArticulada = 0;
-      this.nuevoCursoArticulado = 0;
-      this.cursosDisponibles = [];
-    } else {
-      this.notificationService.showWarning('Esta combinación ya está agregada');
+        this.nuevaCarreraArticulada = 0;
+        this.nuevoCursoArticulado = 0;
+        this.cursosDisponibles = [];
+      } else {
+        this.notificationService.showWarning('Esta combinación ya está agregada');
+      }
     }
   }
-}
 
   eliminarCursoArticulado(index: number) {
     this.cursosArticulados.splice(index, 1);
@@ -1764,52 +1776,52 @@ agregarCursoArticulado() {
 
   // Devuelve una lista de docentes únicos (por ID) para evitar duplicados en el select
   // En tu componente
-get docentesUnicos() {
-  const lista = this.docentes
-    .map(docente => ({
-      ...docente,
-      ID_DOCENTE: Number(docente.ID_DOCENTE)
-    }))
-    .filter((docente, index, self) =>
-      index === self.findIndex(d => d.ID_DOCENTE === docente.ID_DOCENTE)
-    );
-  return lista;
-}
-
-onDocenteEditChange(nuevoDocenteId: any): void {
-  const nuevoDocente = Number(nuevoDocenteId);
-  const docenteOriginal = Number(this.docenteOriginal);
-
-  this.editDocenteSeleccionado = nuevoDocente;
-
-  if (nuevoDocente !== docenteOriginal) {
-    this.mostrarObservacion = true;
-    // Resetear error cuando se muestra el campo
-    this.mostrarErrorObservacion = false;
-  } else {
-    this.mostrarObservacion = false;
-    this.observacion = '';
-    this.mostrarErrorObservacion = false;
+  get docentesUnicos() {
+    const lista = this.docentes
+      .map(docente => ({
+        ...docente,
+        ID_DOCENTE: Number(docente.ID_DOCENTE)
+      }))
+      .filter((docente, index, self) =>
+        index === self.findIndex(d => d.ID_DOCENTE === docente.ID_DOCENTE)
+      );
+    return lista;
   }
-}
-mostrarErrorObservacion: boolean = false;
 
-validarObservacion(): boolean {
-  if (this.mostrarObservacion) {
-    const observacionValida = !!(this.observacion && this.observacion.trim().length > 0);
-    this.mostrarErrorObservacion = !observacionValida;
-    return observacionValida;
+  onDocenteEditChange(nuevoDocenteId: any): void {
+    const nuevoDocente = Number(nuevoDocenteId);
+    const docenteOriginal = Number(this.docenteOriginal);
+
+    this.editDocenteSeleccionado = nuevoDocente;
+
+    if (nuevoDocente !== docenteOriginal) {
+      this.mostrarObservacion = true;
+      // Resetear error cuando se muestra el campo
+      this.mostrarErrorObservacion = false;
+    } else {
+      this.mostrarObservacion = false;
+      this.observacion = '';
+      this.mostrarErrorObservacion = false;
+    }
   }
-  this.mostrarErrorObservacion = false;
-  return true;
-}
+  mostrarErrorObservacion: boolean = false;
 
-searchTerm: string = '';
+  validarObservacion(): boolean {
+    if (this.mostrarObservacion) {
+      const observacionValida = !!(this.observacion && this.observacion.trim().length > 0);
+      this.mostrarErrorObservacion = !observacionValida;
+      return observacionValida;
+    }
+    this.mostrarErrorObservacion = false;
+    return true;
+  }
+
+  searchTerm: string = '';
   isDropdownOpen: boolean = false;
   selectedDocente: any = null;
   docentesFiltrados: any[] = [];
 
- toggleDropdown(show: boolean) {
+  toggleDropdown(show: boolean) {
     this.isDropdownOpen = show;
     if (show) {
       // Cuando se abre, limpiar el término de búsqueda para permitir búsqueda
@@ -1873,7 +1885,7 @@ searchTerm: string = '';
       }
     }, 200);
   }
-   onEditModalOpen(docenteId: any) {
+  onEditModalOpen(docenteId: any) {
     this.editDocenteSeleccionado = docenteId;
     if (!this.docentes || this.docentes.length === 0) {
       if (this.PeriodoSeleccionado > 0) {

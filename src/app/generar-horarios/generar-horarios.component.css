@@ -1,7 +1,9 @@
-/* Estilos para FullCalendar */
+/* Estilos para FullCalendar - Modo Claro (por defecto) */
 ::ng-deep .fc {
   --fc-border-color: #e5e7eb;
   --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #ffffff;
+  --fc-neutral-text-color: #1f2937;
   --fc-event-bg-color: #3788d8;
   --fc-event-border-color: #3788d8;
   --fc-event-text-color: #fff;
@@ -13,11 +15,132 @@
   --fc-button-hover-border-color: #199DBF;
   --fc-button-active-bg-color: #199DBF;
   --fc-button-active-border-color: #199DBF;
+  --fc-list-event-dot-width: 10px;
+  --fc-list-event-hover-bg-color: #f3f4f6;
 }
 
-/* Asegurar que las fuentes sean consistentes */
-::ng-deep .fc {
-  font-family: inherit;
+/* Estilos para FullCalendar - Modo Oscuro */
+::ng-deep .dark .fc {
+  --fc-border-color: #374151;
+  --fc-page-bg-color: #1f2937;
+  --fc-neutral-bg-color: #1f2937;
+  --fc-neutral-text-color: #e5e7eb;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #ffffff;
+  --fc-event-selected-overlay-color: rgba(255, 255, 255, 0.25);
+  --fc-today-bg-color: rgba(59, 130, 246, 0.15);
+  --fc-button-bg-color: #199DBF;
+  --fc-button-border-color: #199DBF;
+  --fc-button-hover-bg-color: #1d4ed8;
+  --fc-button-hover-border-color: #199DBF;
+  --fc-button-active-bg-color: #199DBF;
+  --fc-button-active-border-color: #199DBF;
+  --fc-list-event-dot-width: 10px;
+  --fc-list-event-hover-bg-color: #374151;
+}
+
+/* Estilos específicos para elementos del calendario en modo oscuro */
+::ng-deep .dark .fc-theme-standard .fc-scrollgrid {
+  border-color: #374151;
+}
+
+::ng-deep .dark .fc-theme-standard td,
+::ng-deep .dark .fc-theme-standard th {
+  border-color: #374151;
+}
+
+::ng-deep .dark .fc-col-header-cell {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-daygrid-day {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-timegrid-slot {
+  border-color: #374151;
+  background-color: #1f2937;
+}
+
+::ng-deep .dark .fc-timegrid-slot-label {
+  color: #9ca3af;
+}
+
+::ng-deep .dark .fc-timegrid-axis {
+  background-color: #1f2937;
+}
+
+::ng-deep .dark .fc-scrollgrid-sync-table {
+  background-color: #1f2937;
+}
+
+/* Texto de las horas en modo oscuro */
+::ng-deep .dark .fc-timegrid-slot-label-cushion {
+  color: #9ca3af;
+}
+
+/* Días de la semana en modo oscuro */
+::ng-deep .dark .fc-col-header-cell-cushion {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+/* Botones en modo oscuro */
+::ng-deep .dark .fc-button {
+  background-color: #199DBF;
+  border-color: #199DBF;
+  color: #ffffff;
+}
+
+::ng-deep .dark .fc-button:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+::ng-deep .dark .fc-button-active {
+  background-color: #199DBF;
+  border-color: #199DBF;
+}
+
+/* Título del calendario en modo oscuro */
+::ng-deep .dark .fc-toolbar-title {
+  color: #e5e7eb;
+}
+
+/* Día actual en modo oscuro */
+::ng-deep .dark .fc-day-today {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Vista de lista en modo oscuro */
+::ng-deep .dark .fc-list-table {
+  background-color: #1f2937;
+}
+
+::ng-deep .dark .fc-list-day-cushion {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event:hover {
+  background-color: #374151;
+}
+
+::ng-deep .dark .fc-list-event-title {
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event-time {
+  color: #9ca3af;
 }
 
 /* Estilos para los eventos en el calendario */
@@ -28,34 +151,14 @@
   cursor: pointer;
 }
 
-/* Asegurar que el contenido de los eventos sea legible */
-::ng-deep .fc-event-title {
-  font-weight: bold;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-}
-
-/* Hacer que los eventos ocupen todo el espacio disponible */
-::ng-deep .fc-event-main {
-  padding: 4px;
-}
-
 /* Estilo para el evento cuando se pasa el mouse */
 ::ng-deep .fc-event:hover {
   opacity: 0.9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Mejorar la apariencia de los encabezados del calendario */
-::ng-deep .fc-col-header-cell {
-  background-color: #f3f4f6;
-  font-weight: bold;
-}
-
-/* Estilo para el día actual */
-::ng-deep .fc-day-today {
-  background-color: rgba(37, 99, 235, 0.05) !important;
+::ng-deep .dark .fc-event:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Ajustar altura de las celdas de tiempo */
@@ -63,57 +166,38 @@
   height: 3rem !important;
 }
 
-/* Hacer que el texto de los eventos sea más legible */
-::ng-deep .fc-event-title,
-::ng-deep .fc-event-time {
-  color: #000000;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+/* Scrollbar en modo oscuro */
+::ng-deep .dark .fc-scroller::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Diseño responsive para el calendario */
-@media (max-width: 768px) {
-  ::ng-deep .fc-toolbar {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  ::ng-deep .fc-toolbar-chunk {
-    display: flex;
-    justify-content: center;
-  }
+::ng-deep .dark .fc-scroller::-webkit-scrollbar-track {
+  background: #1f2937;
 }
 
-/* Tooltip personalizado para mostrar información adicional */
-::ng-deep .fc-event-tooltip {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ddd;
+::ng-deep .dark .fc-scroller::-webkit-scrollbar-thumb {
+  background: #4b5563;
   border-radius: 4px;
-  padding: 8px;
-  z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  font-size: 0.85rem;
-  max-width: 300px;
 }
 
-/* Estilo para la leyenda de materias */
-.materia-legend {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 8px;
-  margin-bottom: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  transition: all 0.2s;
+::ng-deep .dark .fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
-.materia-legend:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Animaciones existentes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Animaciones para el calendario */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
 .calendar-container {
   animation: slideInUp 0.6s ease-out;
 }
@@ -142,15 +226,6 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -162,132 +237,6 @@
   }
 }
 
-
-
-
-/* Estilos personalizados para el modal de Crear Horario */
-
-/* Grupos de formulario */
-.form-group {
-  @apply relative;
-}
-
-.form-label {
-  @apply flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2;
-}
-
-.form-label-small {
-  @apply flex items-center gap-1 text-xs font-medium text-gray-600 mb-1;
-}
-
-/* Contenedores de selects */
-.select-container {
-  @apply relative;
-}
-
-.select-container::before {
-  content: '';
-  @apply absolute right-3 top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-400 pointer-events-none z-10;
-}
-
-/* Estilos para ng-select */
-.custom-select ::ng-deep .ng-select {
-  @apply min-h-[42px] border border-gray-300 rounded-lg shadow-sm transition-all duration-200;
-}
-
-.custom-select ::ng-deep .ng-select:hover {
-  @apply border-gray-400 shadow-md;
-}
-
-.custom-select ::ng-deep .ng-select.ng-select-focused {
-  @apply border-blue-500 shadow-md ring-2 ring-blue-200;
-}
-
-.custom-select ::ng-deep .ng-select .ng-select-container {
-  @apply bg-white rounded-lg;
-}
-
-.custom-select ::ng-deep .ng-select .ng-control {
-  @apply bg-white rounded-lg min-h-[40px] px-3 py-2;
-}
-
-.custom-select ::ng-deep .ng-select .ng-placeholder {
-  @apply text-gray-500 text-sm;
-}
-
-.custom-select ::ng-deep .ng-select .ng-arrow-wrapper {
-  @apply pr-2;
-}
-
-.custom-select ::ng-deep .ng-select .ng-arrow {
-  @apply border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-500;
-}
-
-.custom-select ::ng-deep .ng-select.ng-select-opened .ng-arrow {
-  @apply border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-500 border-t-0;
-}
-
-.custom-select ::ng-deep .ng-dropdown-panel {
-  @apply bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-64 overflow-y-auto;
-}
-
-.custom-select ::ng-deep .ng-dropdown-panel .ng-option {
-  @apply px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150;
-}
-
-.custom-select ::ng-deep .ng-dropdown-panel .ng-option.ng-option-selected {
-  @apply bg-blue-500 text-white;
-}
-
-.custom-select ::ng-deep .ng-dropdown-panel .ng-optgroup {
-  @apply px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-200;
-}
-
-/* Estilos para select pequeño */
-.custom-select-small ::ng-deep .ng-select {
-  @apply min-h-[36px] border border-gray-300 rounded-md shadow-sm;
-}
-
-.custom-select-small ::ng-deep .ng-select .ng-control {
-  @apply min-h-[34px] px-2 py-1;
-}
-
-/* Grupos de input */
-.input-group {
-  @apply relative;
-}
-
-.input-label {
-  @apply block text-xs font-medium text-gray-700 mb-1;
-}
-
-/* Estilos para inputs de tiempo y fecha */
-.time-input, .date-input {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-         focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500
-         transition-all duration-200 bg-white hover:border-gray-400 shadow-sm;
-}
-
-.time-input:focus, .date-input:focus {
-  @apply shadow-md;
-}
-
-/* Botones */
-.btn-primary {
-  @apply bg-gradient-to-r from-green-500 to-green-600 text-white text-sm px-4 py-2 rounded-lg
-         hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-200
-         transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
-         shadow-md hover:shadow-lg flex items-center justify-center font-medium;
-}
-
-.btn-accept {
-  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm px-4 py-2 rounded-lg
-         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200
-         transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
-         shadow-md hover:shadow-lg flex items-center justify-center font-medium w-full;
-}
-
-/* Animaciones adicionales */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -303,20 +252,26 @@
   animation: fadeInUp 0.3s ease-out;
 }
 
-/* Efectos hover mejorados */
 .form-group:hover .form-label svg {
-  @apply transform scale-110
+  @apply transform scale-110;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+.time-input, .date-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
+         focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500
+         transition-all duration-200 bg-white hover:border-gray-400 shadow-sm;
+}
+/* Botones */
+.btn-primary {
+  @apply bg-gradient-to-r from-green-500 to-green-600 text-white text-sm px-4 py-2 rounded-lg
+         hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-200
+         transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
+         shadow-md hover:shadow-lg flex items-center justify-center font-medium;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.animate-fade-in-delay {
-  animation: fadeIn 0.6s ease-out 0.2s both;
+.btn-accept {
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm px-4 py-2 rounded-lg
+         hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200
+         transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed
+         shadow-md hover:shadow-lg flex items-center justify-center font-medium w-full;
 }

@@ -10,123 +10,171 @@
     rel="stylesheet">
 </head>
 
-<body class="bg-gray-50 font-montserrat">
+<body
+  class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 font-montserrat">
   <div class="flex flex-col h-screen">
-    <!-- Header Mejorado -->
-    <header class="bg-white shadow-lg border-b border-gray-200 flex-shrink-0 header-layout">
-            <div class="flex items-center justify-between px-6 py-4">
-        <!-- Logo Mejorado -->
-        <div class="flex items-center">
-          <div class="flex items-center justify-center">
+    <!-- Header Moderno con Glassmorphism -->
+    <header
+      class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-lg border-b border-white/20 dark:border-gray-700/50 flex-shrink-0 relative z-10">
+      <div class="flex items-center justify-between px-6 py-4">
+        <!-- Logo con efectos modernos -->
+        <div class="flex items-center group">
+          <div
+            class="flex items-center justify-center p-2 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 shadow-sm group-hover:shadow-md transition-all duration-300">
             <img
-              src="https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png"
-              alt="Logo Instituto Los Andes" class="h-14 w-auto object-contain">
+              [src]="isDarkMode ? 'https://i.imgur.com/rxIJCaB.png' : 'https://eva.istla.edu.ec/pluginfile.php/1/core_admin/logocompact/300x300/1737821353/logo%20istla.png'"
+              alt="Logo Instituto Los Andes"
+              class="h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300">
+          </div>
+          <div class="ml-4 hidden md:block">
+
           </div>
         </div>
 
-        <!-- Información del usuario -->
+        <!-- Información del usuario mejorada -->
         <div class="flex items-center space-x-4">
-          <!-- Avatar y datos -->
-          <div class="flex items-center space-x-3">
-            <div
-              class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                class="w-5 h-5 text-white">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+          <!-- Avatar y datos con diseño moderno -->
+          <div class="flex items-center space-x-3 group">
+            <div class="relative">
+              <div
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                  class="w-6 h-6 text-white">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <!-- Indicador de estado online -->
+              <div
+                class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full">
+              </div>
             </div>
             <div class="hidden md:block text-right">
-              <p class="font-semibold text-sm text-gray-800">{{nombreUsuario + ' ' + apellidoUsuario}}</p>
-              <p class="text-xs text-gray-600">{{ObtenerNombreRol()}}</p>
+              <p
+                class="font-semibold text-sm text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                {{nombreUsuario + ' ' + apellidoUsuario}}
+              </p>
+              <p class="text-xs text-gray-600 dark:text-gray-400">{{ObtenerNombreRol()}}</p>
             </div>
           </div>
 
-          <!-- Botón cerrar sesión -->
+          <!-- Botón cerrar sesión - manteniendo color original -->
           <button
-            class="bg-rosado-oscuro hover:bg-rosado-oscuro-hover text-white px-4 py-2 text-xs rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+            class="bg-rosado-oscuro hover:bg-rosado-oscuro-hover text-white px-4 py-2 text-xs rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 font-medium"
             (click)="CerrarSesion()">
-            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             CERRAR SESIÓN
+          </button>
+
+          <!-- Botón tema oscuro modernizado -->
+          <button
+            class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 px-3 py-2 text-xs rounded-xl transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105 border border-white/20 dark:border-gray-700/50"
+            (click)="toggleDarkMode()" title="Alternar modo oscuro">
+            <svg *ngIf="!isDarkMode" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <svg *ngIf="isDarkMode" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
           </button>
         </div>
       </div>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
-      <!-- Sidebar mejorado -->
-      <aside class="bg-white shadow-xl relative transition-all duration-300 flex-shrink-0 border-r border-gray-200"
+      <!-- Sidebar modernizado con Glassmorphism -->
+      <aside
+        class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-xl relative transition-all duration-300 flex-shrink-0 border-r-2 border-white/20 dark:border-gray-700/50 z-10"
         [ngClass]="{'w-64': sidebarOpen, 'w-20': !sidebarOpen}">
 
-        <!-- Botón toggle mejorado -->
+        <!-- Botón toggle modernizado -->
         <div class="absolute -right-4 top-1/2 transform -translate-y-1/2 z-20">
-          <div
-            class="bg-verde-claro hover:bg-green-600 text-white h-8 w-8 flex items-center justify-center rounded-full cursor-pointer shadow-lg transition-all duration-200 hover:shadow-xl"
-            (click)="toggleSidebar()">
+          <button
+            class="group bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-2 border-verde-claro shadow-xl h-16 w-8 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-verde-claro"
+            (click)="toggleSidebar()" [attr.aria-label]="sidebarOpen ? 'Cerrar menú lateral' : 'Abrir menú lateral'">
+            <span class="sr-only">Toggle Sidebar</span>
             <svg *ngIf="sidebarOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" class="w-4 h-4">
+              stroke="currentColor"
+              class="w-7 h-7 text-verde-claro transition-transform duration-300 group-hover:rotate-[-15deg]">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
             <svg *ngIf="!sidebarOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" class="w-4 h-4">
+              stroke="currentColor"
+              class="w-7 h-7 text-verde-claro transition-transform duration-300 group-hover:rotate-[15deg]">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-          </div>
+          </button>
         </div>
 
-        <!-- Navegación mejorada -->
-        <nav class="pt-6 h-full overflow-y-auto">
-          <div *ngIf="sidebarOpen" class="px-4 mb-6">
-            <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Menú Principal</h2>
+        <!-- Navegación modernizada -->
+        <nav class="h-full" [ngClass]="{'pt-8 overflow-y-auto': sidebarOpen, 'pt-4 overflow-hidden': !sidebarOpen}">
+          <div *ngIf="sidebarOpen" class="px-4 mb-8">
+            <div class="flex items-center space-x-2">
+              <div
+                class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <h2 class="text-sm font-bold text-gray-700 dark:text-gray-200 uppercase tracking-wider">Menú Principal
+              </h2>
+            </div>
           </div>
 
           <!-- Tooltip container para cuando el sidebar está cerrado -->
           <div class="relative">
-            <ul class="space-y-1 px-3">
+            <ul [ngClass]="{'space-y-2 px-3': sidebarOpen, 'space-y-1 px-2': !sidebarOpen}">
               <!-- INICIO -->
               <li
                 *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR'])"
                 class="group relative">
                 <a [routerLink]="['/inicio/bienvenida']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-gray-700 dark:to-gray-600 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Inicio</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Inicio</span>
                 </a>
                 <!-- Tooltip para cuando el sidebar está cerrado -->
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Inicio
                 </div>
               </li>
 
               <!-- Gestionar Aulas -->
               <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])" class="group relative">
-                <a [routerLink]="['/inicio/gestionar-aulas']"
-                  [ngClass]="{ 'bg-verde-claro text-white shadow-lg': esRutaGestionarAulas(), 'hover:bg-green-150': !esRutaGestionarAulas() }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group">
-                  <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                    [ngClass]="{ 'bg-white text-verde-claro': esRutaGestionarAulas(), 'bg-gray-100 text-gray-600 group-hover:bg-gray-200': !esRutaGestionarAulas() }">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                <a [routerLink]="['/inicio/gestionar-aulas']" routerLinkActive="bg-verde-claro text-white shadow-lg"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 text-gray-600 dark:text-gray-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Gestionar Aulas</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">Gestionar
+                    Aulas</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Gestionar Aulas
                 </div>
               </li>
@@ -135,19 +183,21 @@
               <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR'])" class="group relative">
                 <a [routerLink]="['/inicio/coordinadores']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 dark:from-gray-700 dark:to-gray-600 text-green-600 dark:text-green-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 20h5v-2a4 4 0 00-5-3.87M9 20h5v-2a4 4 0 00-5-3.87M12 4a4 4 0 110 8 4 4 0 010-8z" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Coordinadores</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Coordinadores</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Coordinadores
                 </div>
               </li>
@@ -157,19 +207,22 @@
                 class="group relative">
                 <a [routerLink]="['/inicio/generar-horario']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-violet-100 dark:from-gray-700 dark:to-gray-600 text-purple-600 dark:text-purple-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Generar Horarios</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Generar
+                    Horarios</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Generar Horarios
                 </div>
               </li>
@@ -179,19 +232,22 @@
                 class="group relative">
                 <a [routerLink]="['/inicio/generar-reporte']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 dark:from-gray-700 dark:to-gray-600 text-orange-600 dark:text-orange-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Generar Reportes</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Generar
+                    Reportes</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Generar Reportes
                 </div>
               </li>
@@ -201,19 +257,22 @@
                 class="group relative">
                 <a [routerLink]="['/inicio/ver-horario']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-gray-700 dark:to-gray-600 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Ver Horarios</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Ver
+                    Horarios</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Ver Horarios
                 </div>
               </li>
@@ -223,20 +282,23 @@
                 class="group relative">
                 <a [routerLink]="['/inicio/ver-horario-docente']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-100 to-cyan-100 dark:from-gray-700 dark:to-gray-600 text-teal-600 dark:text-teal-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Ver Horarios
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">Ver
+                    Horarios
                     Docentes</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Ver Horarios Docentes
                 </div>
               </li>
@@ -245,19 +307,22 @@
               <li *ngIf="usuarioService.tieneRol(['ESTUDIANTE'])" class="group relative">
                 <a [routerLink]="['/inicio/mi-horario']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 dark:from-gray-700 dark:to-gray-600 text-pink-600 dark:text-pink-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Mi Horario</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">Mi
+                    Horario</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Mi Horario
                 </div>
               </li>
@@ -266,19 +331,22 @@
               <li *ngIf="usuarioService.tieneRol(['DOCENTE'])" class="group relative">
                 <a [routerLink]="['/inicio/docente-horario']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
-                  class="flex items-center px-3 py-3 rounded-xl transition-all duration-200 group hover:bg-green-150">
+                  class="flex items-center rounded-xl transition-all duration-300 group hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  [ngClass]="{'px-4 py-3': sidebarOpen, 'px-2 py-2 justify-center': !sidebarOpen}">
                   <div
-                    class="w-8 h-8 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-100 to-amber-100 dark:from-gray-700 dark:to-gray-600 text-yellow-600 dark:text-yellow-400 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 6h16M4 10h16M4 14h10M4 18h10" />
                     </svg>
                   </div>
-                  <span *ngIf="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Horario Docente</span>
+                  <span *ngIf="sidebarOpen"
+                    class="ml-3 text-sm font-medium whitespace-nowrap dark:text-gray-200 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">Horario
+                    Docente</span>
                 </a>
                 <div *ngIf="!sidebarOpen"
-                  class="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-50">
+                  class="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-800/90 backdrop-blur-sm text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none z-50 shadow-lg">
                   Horario Docente
                 </div>
               </li>
@@ -286,47 +354,61 @@
           </div>
         </nav>
 
-        <!-- Información adicional cuando está abierto -->
-        <div *ngIf="sidebarOpen" class="absolute bottom-4 left-4 right-4">
-          <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-            <div class="flex items-center space-x-2 mb-2">
-              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h3 class="text-xs font-semibold text-blue-800">Sistema ISTLA</h3>
-            </div>
-            <p class="text-xs text-blue-700">Gestión de Horarios Académicos</p>
-          </div>
-        </div>
+
       </aside>
 
-      <!-- Contenido principal mejorado -->
-      <main class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100">
-        <div class="p-6">
-          <router-outlet></router-outlet>
+      <!-- Contenido principal modernizado -->
+      <main
+        class="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div class="relative">
+          <!-- Background Pattern sutil -->
+          <div class="absolute inset-0 bg-grid-pattern opacity-5 dark:opacity-10 pointer-events-none"></div>
+          <div class="relative">
+            <router-outlet></router-outlet>
+          </div>
         </div>
       </main>
     </div>
 
-    <!-- Footer mejorado -->
-    <footer class="bg-white border-t border-gray-200 py-4 text-center text-xs text-gray-600 flex-shrink-0">
+    <!-- Footer modernizado con Glassmorphism -->
+    <footer
+      class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-t border-white/20 dark:border-gray-700/50 py-6 text-center text-sm text-gray-600 dark:text-gray-400 flex-shrink-0">
       <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-center items-center space-y-1 md:space-y-0 md:space-x-4">
-          <p class="flex items-center">
-            <svg class="w-4 h-4 mr-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            Instituto Superior Tecnológico "Los Andes" ISTLA
-          </p>
+        <div class="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6">
+          <div class="flex items-center space-x-2">
+            <div
+              class="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <p class="font-medium text-gray-800 dark:text-gray-200">Instituto Superior Tecnológico "Los Andes" ISTLA</p>
+          </div>
           <span class="hidden md:inline text-gray-400">•</span>
-          <p>Sistema de Gestión de Horarios</p>
+          <p class="text-gray-700 dark:text-gray-300">Sistema de Gestión de Horarios</p>
         </div>
-        <p class="mt-1 text-gray-500">© 2025 - {{ObtenerAnioActual}} Todos los derechos reservados</p>
+        <div class="mt-3 flex items-center justify-center space-x-4">
+          <p class="text-gray-500 dark:text-gray-400">© 2025 - {{ObtenerAnioActual}} Todos los derechos reservados</p>
+        </div>
       </div>
     </footer>
   </div>
+
+  <style>
+    .bg-grid-pattern {
+      background-image:
+        linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .dark .bg-grid-pattern {
+      background-image:
+        linear-gradient(rgba(147, 197, 253, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(147, 197, 253, 0.1) 1px, transparent 1px);
+    }
+  </style>
 </body>
 
 </html>

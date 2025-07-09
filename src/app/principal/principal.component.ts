@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AuthService } from '../auth.service';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { NotificationService } from '../notificacion.service';
 
 @Component({
@@ -11,15 +11,26 @@ import { NotificationService } from '../notificacion.service';
 export class PrincipalComponent implements OnInit {
 
   sidebarOpen = true;
-
+   isDarkMode: boolean = false;
   nombreUsuario: string = '';
   apellidoUsuario: string = '';
+  mostrarMenuUsuario: boolean = false;
 
   ObtenerAnioActual= new Date().getFullYear();
 
-  constructor(public usuarioService: AuthService, private router:Router, private notificationService: NotificationService) {}
+  constructor(public usuarioService: AuthService, private router:Router, private notificationService: NotificationService,
+
+  ) {
+    // Cierra el menú al navegar
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.mostrarMenuUsuario = false;
+      }
+    });
+  }
   ngOnInit(): void {
     this.ObtenerNombreUsuario();
+    this.loadDarkModePreference();
   }
 
 
@@ -152,5 +163,40 @@ private limpiarDatosLocales() {
     console.error('Error limpiando datos locales:', error);
   }
 }
+
+toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
+    this.applyDarkMode();
+    this.saveDarkModePreference();
+
+  }
+
+   private applyDarkMode(): void {
+    if (this.isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+
+  private saveDarkModePreference(): void {
+    localStorage.setItem('darkMode', this.isDarkMode.toString());
+  }
+
+  // Cargar preferencia guardada
+  private loadDarkModePreference(): void {
+    const savedPreference = localStorage.getItem('darkMode');
+    if (savedPreference !== null) {
+      this.isDarkMode = savedPreference === 'true';
+    } else {
+      // Detectar preferencia del sistema
+      this.isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    this.applyDarkMode();
+  }
+
+  cerrarMenuUsuario() {
+    this.mostrarMenuUsuario = false;
+  }
 
 }

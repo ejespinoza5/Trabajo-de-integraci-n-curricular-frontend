@@ -46,13 +46,6 @@ ngOnInit(): void {
   obtenerOpcionesMenu(): any[] {
     const opciones = [
       {
-        titulo: 'Inicio',
-        descripcion: 'Página principal del sistema',
-        ruta: '/inicio/bienvenida',
-        icono: 'home',
-        roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR']
-      },
-      {
         titulo: 'Gestionar Aulas',
         descripcion: 'Administrar aulas del sistema',
         ruta: '/inicio/gestionar-aulas',
