@@ -417,4 +417,39 @@ obtenerInfoCursos(curso: any): string {
   // Si es un curso único
   return curso.nombre || '';
 }
+
+  generarPdfDocente(): void {
+    this.notificationService.showLoading('Generando PDF...');
+    this.verHorariosDocenteService.generarPdfDocente().subscribe({
+      next: (blob: Blob) => {
+        this.notificationService.hideLoading();
+        const url = window.URL.createObjectURL(blob);
+        const nuevaPestana = window.open(url, '_blank');
+        if (nuevaPestana) {
+          this.notificationService.showSuccess('El PDF se abrió en una nueva pestaña para previsualización.');
+        } else {
+          this.notificationService.showWarningReport(
+            'Ventana bloqueada',
+            'El navegador bloqueó la ventana emergente. El PDF se descargará automáticamente.',
+            'Entendido'
+          );
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `horario-docente.pdf`;
+          link.click();
+        }
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 5000);
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        this.notificationService.showErrorReport(
+          'Error',
+          'No se pudo generar el PDF del docente.',
+          'Cerrar'
+        );
+      }
+    });
+  }
 }

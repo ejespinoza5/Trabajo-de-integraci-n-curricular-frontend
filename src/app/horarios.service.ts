@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { API_BASE_URL } from './api-config';
 import {
   catchError,
   Observable,
@@ -19,7 +20,7 @@ import {
   providedIn: 'root'
 })
 export class HorariosService {
-  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
+  private apiUrl = API_BASE_URL;
 
   // Cache storage
   private cacheMap = new Map<string, any>();

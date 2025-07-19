@@ -22,6 +22,9 @@
   <p class="text-gray-600 dark:text-gray-300">Gestiona tu horario académico como docente</p>
 </div>
 
+<!-- Botón para descargar PDF del docente -->
+
+
 
     <!-- Contenedor principal -->
     <div class="max-w-7xl mx-auto">
@@ -70,7 +73,15 @@
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Calendario de Horarios</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex-1">Calendario de Horarios</h2>
+            <div *ngIf="horariosFiltrados.length > 0">
+              <button (click)="generarPdfDocente()" class="btn btn-primary bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow transition-all duration-200">
+                <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Descargar PDF
+              </button>
+            </div>
           </div>
 
           <div *ngIf="horariosFiltrados.length > 0"
@@ -124,7 +135,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
       (click)="cerrarModal()">
 
-      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-y-auto"
         (click)="$event.stopPropagation()">
 
         <!-- Header del Modal -->
@@ -157,7 +168,7 @@
           </div>
 
           <!-- Información detallada -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <!-- Código de materia -->
             <div *ngIf="horarioSeleccionado.codigo !== 'N/A'" class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
               <div class="flex items-center gap-3">
@@ -215,7 +226,7 @@
             </div>
 
             <!-- Horario -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-2 lg:col-span-2">
               <div class="flex items-center gap-3">
                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -232,7 +243,7 @@
             </div>
 
             <!-- Período de vigencia -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-2 lg:col-span-2">
               <div class="flex items-center gap-3">
                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -248,7 +259,7 @@
             </div>
 
             <!-- Carrera mejorada -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-3 lg:col-span-2">
               <div class="flex items-start gap-3">
                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -279,7 +290,7 @@
             </div>
 
             <!-- Curso/Nivel mejorado -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 md:col-span-3 lg:col-span-2">
               <div class="flex items-start gap-3">
                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

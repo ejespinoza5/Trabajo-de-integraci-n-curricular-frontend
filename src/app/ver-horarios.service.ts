@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { API_BASE_URL } from './api-config';
 
 export interface Periodo {
   id: number;
@@ -11,7 +12,7 @@ export interface Periodo {
 })
 export class VerHorariosService {
 
-  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
+  private apiUrl = API_BASE_URL;
 
   constructor(private http: HttpClient) { }
 

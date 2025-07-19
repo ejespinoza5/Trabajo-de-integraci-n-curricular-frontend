@@ -104,10 +104,46 @@ mensajeErrorAutoridades: string = '';
   onCarreraChange(): void {
     if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
       this.cargarCursos();
+      // ✅ NUEVO: Cargar observaciones de la carrera seleccionada
+      this.cargarObservacionPorCarrera(this.CarreraSeleccionada);
     } else {
       this.cursos = [];
       this.CursoSeleccionado = 0;
     }
+  }
+
+  // ✅ NUEVO: Método para cargar observaciones por carrera específica
+  cargarObservacionPorCarrera(idCarrera: number): void {
+    console.log('Cargando observaciones para carrera ID:', idCarrera);
+
+    this.reporteService.obtenerObservacionesPorCarrera(idCarrera).subscribe({
+      next: (data) => {
+        console.log('Observaciones cargadas para carrera', idCarrera, ':', data);
+        // ✅ CORRECCIÓN: Manejar el caso donde data puede ser un array o un objeto
+        const observacionData = Array.isArray(data) ? data[0] : data;
+        this.observacion = observacionData;
+
+        // ✅ NUEVO: Inicializar datos de edición si no están inicializados
+        if (!this.observacionEditada.preprof && !this.observacionEditada.comunitario && !this.observacionEditada.ingles) {
+          this.observacionEditada = {
+            preprof: observacionData?.PRACTICAS_PREPROFESIONALES_HORAS || '',
+            comunitario: observacionData?.SERVICIO_COMUNITARIO_HORAS || '',
+            ingles: observacionData?.INGLES_HORAS || ''
+          };
+          this.observacionOriginal = { ...this.observacionEditada };
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar observación para carrera', idCarrera, ':', err);
+
+        // ✅ NUEVO: Crear observación por defecto si falla la carga
+        this.observacion = {
+          PRACTICAS_PREPROFESIONALES_HORAS: '',
+          SERVICIO_COMUNITARIO_HORAS: '',
+          INGLES_HORAS: ''
+        };
+      }
+    });
   }
 
 cargarCursos(): void {
@@ -128,87 +164,106 @@ cargarCursos(): void {
   }
 
 
- generarPDF() {
-  // Verificar si ya hay un PDF generado previamente
-  if (this.pdfSrc) {
-    const width = 900;
-    const height = 700;
-    const left = (screen.width - width) / 2;
-    const top = (screen.height - height) / 2;
+  generarPDF() {
+    // Limpia el estado anterior
+    this.mensajeExito = '';
+    this.pdfSrc = '';
+    this.pdfUrl = '';
+    this.pdfBlob = undefined as any;
 
-    window.open(
-      this.pdfSrc,
-      'pdfViewer',
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
-    );
-    return;
-  }
-
-  // Validar que los filtros estén completos
-  if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
-    this.notificationService.showWarningReport(
-      'Filtros incompletos',
-      'Por favor, selecciona el periodo, la carrera y el curso antes de generar el PDF.',
-      'Entendido'
-    );
-    return;
-  }
-
-  const datos = {
-    idPeriodo: this.PeriodoSeleccionado,
-    idCarrera: this.CarreraSeleccionada,
-    idCurso: this.CursoSeleccionado
-  };
-
-  this.notificationService.showLoading('Generando PDF...');
-
-  this.reporteService.crearReporte(datos).subscribe({
-    next: (blob: Blob) => {
-      this.notificationService.hideLoading();
-
-      // Crear la URL del blob
-      this.pdfBlob = blob;
-      const blobUrl = window.URL.createObjectURL(blob);
-      this.pdfUrl = blobUrl;
-      this.pdfSrc = blobUrl;
-
-      // Configurar ventana flotante centrada
-      const width = 900;
-      const height = 700;
-      const left = (screen.width - width) / 2;
-      const top = (screen.height - height) / 2;
-
-      // Abrir el PDF en una ventana flotante centrada
-      const ventanaFlotante = window.open(
-        blobUrl,
-        'pdfViewer',
-        `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
+    // Validar que los filtros estén completos
+    if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
+      this.notificationService.showWarningReport(
+        'Filtros incompletos',
+        'Por favor, selecciona el periodo, la carrera y el curso antes de generar el PDF.',
+        'Entendido'
       );
-
-      this.notificationService.showSuccess(
-        'El informe se generó correctamente.'
-      );
-    },
-    error: (error) => {
-      this.notificationService.hideLoading();
-      console.error('Error al generar el PDF', error);
-
-      let mensajeError = 'Error al generar el PDF';
-
-      if (error.error?.message) {
-        mensajeError = error.error.message;
-      } else if (error.message) {
-        mensajeError = error.message;
-      }
-
-      this.notificationService.showErrorReport(
-        'Error',
-        mensajeError,
-        'Cerrar'
-      );
+      return;
     }
-  });
-}
+
+    // ✅ NUEVO: Verificar que los datos de configuración estén cargados (solo advertencias, no bloquea)
+    this.verificarDatosConfiguracion();
+
+    // ✅ CORRECCIÓN: Incluir datos de configuración en el PDF
+    const datos = {
+      idPeriodo: this.PeriodoSeleccionado,
+      idCarrera: this.CarreraSeleccionada,
+      idCurso: this.CursoSeleccionado,
+      // ✅ NUEVO: Incluir observaciones configuradas
+      observaciones: {
+        PRACTICAS_PREPROFESIONALES_HORAS: this.observacion?.PRACTICAS_PREPROFESIONALES_HORAS || '',
+        SERVICIO_COMUNITARIO_HORAS: this.observacion?.SERVICIO_COMUNITARIO_HORAS || '',
+        INGLES_HORAS: this.observacion?.INGLES_HORAS || ''
+      },
+      // ✅ NUEVO: Incluir autoridades configuradas
+      autoridades: {
+        rector: this.autoridades.find(auth => auth.ID_AUTORIDAD === 1)?.NOMBRE_AUTORIDAD || '',
+        vicerrectora: this.autoridades.find(auth => auth.ID_AUTORIDAD === 2)?.NOMBRE_AUTORIDAD || ''
+      }
+    };
+
+    // ✅ NUEVO: Log para debuggear los datos enviados
+    console.log('Datos enviados al backend para generar PDF:', datos);
+
+    this.notificationService.showLoading('Generando PDF...');
+
+    this.reporteService.crearReporte(datos).subscribe({
+      next: (blob: Blob) => {
+        this.notificationService.hideLoading();
+
+        // Guardar el blob para poder descargarlo después si es necesario
+        this.pdfBlob = blob;
+
+        // Crear URL para abrir en nueva pestaña
+        const url = window.URL.createObjectURL(blob);
+
+        // Abrir el PDF en una nueva pestaña
+        const nuevaPestana = window.open(url, '_blank');
+
+        if (nuevaPestana) {
+          this.notificationService.showSuccess(
+            'El PDF se abrió en una nueva pestaña para previsualización.'
+          );
+        } else {
+          // Si el navegador bloqueó la ventana emergente, mostrar mensaje
+          this.notificationService.showWarningReport(
+            'Ventana bloqueada',
+            'El navegador bloqueó la ventana emergente. El PDF se descargará automáticamente.',
+            'Entendido'
+          );
+
+          // Descargar como fallback
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `reporte-${this.PeriodoSeleccionado}-${this.CarreraSeleccionada}-${this.CursoSeleccionado}.pdf`;
+          link.click();
+        }
+
+        // Limpiar la URL creada después de un tiempo
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+        }, 5000);
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        console.error('Error al generar el PDF', error);
+
+        let mensajeError = 'Error al generar el PDF';
+
+        if (error.error?.message) {
+          mensajeError = error.error.message;
+        } else if (error.message) {
+          mensajeError = error.message;
+        }
+
+        this.notificationService.showErrorReport(
+          'Error',
+          mensajeError,
+          'Cerrar'
+        );
+      }
+    });
+  }
 generarExcel() {
   if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
     this.notificationService.showWarningReport(
@@ -282,16 +337,40 @@ descargarPDF() {
 cargarObservacion(): void {
   const idCarrera = this.authService.obtenerIdCarrera();
   if (idCarrera === null) {
+    console.error('No se pudo obtener la carrera del token');
     this.mensajeError = 'No se pudo obtener la carrera del token';
     return;
   }
+
+  console.log('Cargando observaciones para carrera ID:', idCarrera);
+
   this.reporteService.obtenerObservacionesPorCarrera(idCarrera).subscribe({
     next: (data) => {
-      this.observacion = data;
+      console.log('Observaciones cargadas:', data);
+      // ✅ CORRECCIÓN: Manejar el caso donde data puede ser un array o un objeto
+      const observacionData = Array.isArray(data) ? data[0] : data;
+      this.observacion = observacionData;
+
+      // ✅ NUEVO: Inicializar datos de edición si no están inicializados
+      if (!this.observacionEditada.preprof && !this.observacionEditada.comunitario && !this.observacionEditada.ingles) {
+        this.observacionEditada = {
+          preprof: observacionData?.PRACTICAS_PREPROFESIONALES_HORAS || '',
+          comunitario: observacionData?.SERVICIO_COMUNITARIO_HORAS || '',
+          ingles: observacionData?.INGLES_HORAS || ''
+        };
+        this.observacionOriginal = { ...this.observacionEditada };
+      }
     },
     error: (err) => {
       console.error('Error al cargar observación:', err);
       this.mensajeError = 'No se pudo cargar la observación';
+
+      // ✅ NUEVO: Crear observación por defecto si falla la carga
+      this.observacion = {
+        PRACTICAS_PREPROFESIONALES_HORAS: '',
+        SERVICIO_COMUNITARIO_HORAS: '',
+        INGLES_HORAS: ''
+      };
     }
   });
 }
@@ -411,14 +490,24 @@ obtenerClasesEstado(configurado: boolean): string {
   // Agregar estos métodos a la clase GenerarReportesComponent
 
 cargarAutoridades(): void {
+  console.log('Cargando autoridades...');
+
   this.reporteService.obtenerAutoridades().subscribe({
     next: (data) => {
+      console.log('Autoridades cargadas:', data);
       this.autoridades = data;
       this.inicializarDatosAutoridades();
     },
     error: (err) => {
       console.error('Error al cargar autoridades:', err);
       this.mensajeErrorAutoridades = 'No se pudieron cargar las autoridades';
+
+      // ✅ NUEVO: Crear autoridades por defecto si falla la carga
+      this.autoridades = [
+        { ID_AUTORIDAD: 1, NOMBRE_AUTORIDAD: '' },
+        { ID_AUTORIDAD: 2, NOMBRE_AUTORIDAD: '' }
+      ];
+      this.inicializarDatosAutoridades();
     }
   });
 }
@@ -510,5 +599,63 @@ limpiarMensajesAutoridades(): void {
   this.mensajeErrorAutoridades = '';
 }
 
+  // ✅ NUEVO: Método para verificar que los datos de configuración estén cargados
+  private verificarDatosConfiguracion(): boolean {
+    let problemas = [];
+
+    // Verificar que las observaciones estén cargadas
+    if (!this.observacion) {
+      console.warn('Observaciones no cargadas');
+      problemas.push('observaciones');
+    }
+
+    // Verificar que las autoridades estén cargadas
+    if (!this.autoridades || this.autoridades.length === 0) {
+      console.warn('Autoridades no cargadas');
+      problemas.push('autoridades');
+    }
+
+    // Verificar que al menos una autoridad tenga nombre
+    const rector = this.autoridades?.find(auth => auth.ID_AUTORIDAD === 1);
+    const vicerrectora = this.autoridades?.find(auth => auth.ID_AUTORIDAD === 2);
+
+    if ((!rector?.NOMBRE_AUTORIDAD && !vicerrectora?.NOMBRE_AUTORIDAD) && this.autoridades?.length > 0) {
+      console.warn('Ninguna autoridad tiene nombre configurado');
+      problemas.push('nombres de autoridades');
+    }
+
+    // ✅ CORRECCIÓN: Ser menos estricto - permitir generar PDF con advertencias
+    if (problemas.length > 0) {
+      console.warn('Problemas detectados en configuración:', problemas);
+
+      // Mostrar advertencia pero permitir continuar
+      this.notificationService.showWarningReport(
+        'Configuración incompleta',
+        `Algunos datos de configuración no están completos: ${problemas.join(', ')}. El PDF se generará con la información disponible.`,
+        'Continuar'
+      );
+
+      // ✅ NUEVO: Crear datos por defecto si no existen
+      if (!this.observacion) {
+        this.observacion = {
+          PRACTICAS_PREPROFESIONALES_HORAS: '',
+          SERVICIO_COMUNITARIO_HORAS: '',
+          INGLES_HORAS: ''
+        };
+      }
+
+      if (!this.autoridades || this.autoridades.length === 0) {
+        this.autoridades = [
+          { ID_AUTORIDAD: 1, NOMBRE_AUTORIDAD: '' },
+          { ID_AUTORIDAD: 2, NOMBRE_AUTORIDAD: '' }
+        ];
+      }
+    }
+
+    console.log('Datos de configuración verificados - continuando con generación de PDF');
+    return true; // ✅ CAMBIO: Siempre retornar true para permitir generar PDF
+  }
+
 
 }
+

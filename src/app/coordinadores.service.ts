@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
+import { API_BASE_URL } from './api-config';
 
 export interface Coordinadores {
   DOCUMENTO_USUARIOS: string;
@@ -39,7 +39,7 @@ export interface CoordinadoresTodos {
 })
 export class CoordinadoresService {
 
-  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
+    private apiUrl = API_BASE_URL;
 
   constructor(private http: HttpClient) { }
 

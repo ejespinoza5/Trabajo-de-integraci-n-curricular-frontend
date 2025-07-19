@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { API_BASE_URL } from './api-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://horarios.istla-sigala.edu.ec/api/v1';
+  private apiUrl = API_BASE_URL;
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');

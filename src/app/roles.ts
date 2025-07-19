@@ -5,3 +5,5 @@ export const Roles: Record<number, string> = {
   15: 'DOCENTE',
   12: 'ADMINISTRADOR',
 };
+
+

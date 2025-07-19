@@ -268,4 +268,54 @@ actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
     return `${hours}:${minutes}`;
   }
 
+  // Método para generar PDF del estudiante
+  generarPdfEstudiante(): void {
+    this.notificationService.showLoading('Generando PDF...');
+
+    this.verHorariosEstudianteService.generarPdfEstudiante().subscribe({
+      next: (blob: Blob) => {
+        this.notificationService.hideLoading();
+
+        // Crear URL del blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Intentar abrir en nueva pestaña
+        const newWindow = window.open(url, '_blank');
+
+        if (newWindow) {
+          // Si se abrió correctamente, revocar la URL después de un tiempo
+          setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+          }, 1000);
+        } else {
+          // Si no se pudo abrir, descargar el archivo
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'horario-estudiante.pdf';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          // Revocar la URL
+          setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+          }, 1000);
+
+          this.notificationService.showSuccess('PDF descargado correctamente');
+        }
+      },
+      error: (error) => {
+        this.notificationService.hideLoading();
+        console.error('Error al generar PDF:', error);
+
+        const mensaje = error?.error?.message || 'Error al generar el PDF';
+        this.notificationService.showErrorReport(
+          'Error',
+          mensaje,
+          'Cerrar'
+        );
+      }
+    });
+  }
+
 }
