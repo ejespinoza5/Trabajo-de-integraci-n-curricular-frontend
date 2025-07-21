@@ -82,7 +82,6 @@ export class PrincipalComponent implements OnInit {
       this.cdr.detectChanges();
     }
 
-    console.log('URL actual:', currentUrl, 'Es inicio:', this.isInicioPage);
   }
 
   ObtenerNombreUsuario() {

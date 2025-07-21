@@ -114,11 +114,9 @@ mensajeErrorAutoridades: string = '';
 
   // ✅ NUEVO: Método para cargar observaciones por carrera específica
   cargarObservacionPorCarrera(idCarrera: number): void {
-    console.log('Cargando observaciones para carrera ID:', idCarrera);
 
     this.reporteService.obtenerObservacionesPorCarrera(idCarrera).subscribe({
       next: (data) => {
-        console.log('Observaciones cargadas para carrera', idCarrera, ':', data);
         // ✅ CORRECCIÓN: Manejar el caso donde data puede ser un array o un objeto
         const observacionData = Array.isArray(data) ? data[0] : data;
         this.observacion = observacionData;
@@ -202,8 +200,7 @@ cargarCursos(): void {
       }
     };
 
-    // ✅ NUEVO: Log para debuggear los datos enviados
-    console.log('Datos enviados al backend para generar PDF:', datos);
+
 
     this.notificationService.showLoading('Generando PDF...');
 
@@ -342,11 +339,10 @@ cargarObservacion(): void {
     return;
   }
 
-  console.log('Cargando observaciones para carrera ID:', idCarrera);
+
 
   this.reporteService.obtenerObservacionesPorCarrera(idCarrera).subscribe({
     next: (data) => {
-      console.log('Observaciones cargadas:', data);
       // ✅ CORRECCIÓN: Manejar el caso donde data puede ser un array o un objeto
       const observacionData = Array.isArray(data) ? data[0] : data;
       this.observacion = observacionData;
@@ -490,11 +486,10 @@ obtenerClasesEstado(configurado: boolean): string {
   // Agregar estos métodos a la clase GenerarReportesComponent
 
 cargarAutoridades(): void {
-  console.log('Cargando autoridades...');
 
   this.reporteService.obtenerAutoridades().subscribe({
     next: (data) => {
-      console.log('Autoridades cargadas:', data);
+
       this.autoridades = data;
       this.inicializarDatosAutoridades();
     },
@@ -652,8 +647,8 @@ limpiarMensajesAutoridades(): void {
       }
     }
 
-    console.log('Datos de configuración verificados - continuando con generación de PDF');
-    return true; // ✅ CAMBIO: Siempre retornar true para permitir generar PDF
+
+    return true;
   }
 
 

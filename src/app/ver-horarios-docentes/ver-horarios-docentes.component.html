@@ -207,7 +207,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
       (click)="cerrarModal()">
 
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto"
         (click)="$event.stopPropagation()">
 
         <!-- Header del Modal -->
@@ -231,7 +231,7 @@
         </div>
 
         <!-- Contenido del Modal -->
-        <div class="p-6" *ngIf="horarioSeleccionado">
+        <div class="p-8" *ngIf="horarioSeleccionado">
           <!-- Indicador de color de la materia -->
           <div class="flex items-center mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
             <div class="w-6 h-6 rounded-full mr-4 shadow-sm" [style.background-color]="horarioSeleccionado.color">
@@ -239,8 +239,8 @@
             <h4 class="text-xl font-bold text-gray-800 dark:text-white">{{ horarioSeleccionado.asignatura }}</h4>
           </div>
 
-          <!-- Información detallada -->
-          <div class="space-y-4">
+          <!-- Información detallada en grid de 2 columnas -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Código de materia -->
             <div *ngIf="horarioSeleccionado.codigo !== 'N/A'" class="bg-white dark:bg-gray-700 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
               <div class="flex items-center gap-3">
@@ -330,8 +330,9 @@
               </div>
             </div>
 
-            <!-- Carrera mejorada -->
-            <div class="bg-white dark:bg-gray-700 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
+            <!-- Carrera mejorada - ocupará toda la fila si es necesario -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-xl border border-gray-200 dark:border-gray-600"
+                 [class.lg:col-span-2]="horarioSeleccionado.carrera?.esMultiple">
               <div class="flex items-start gap-3">
                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
@@ -347,7 +348,7 @@
                         Articulada
                       </span>
                     </div>
-                    <div class="space-y-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <div *ngFor="let carrera of horarioSeleccionado.carrera.lista"
                            class="text-sm text-gray-700 dark:text-gray-300 pl-2 border-l-2 border-blue-300 dark:border-blue-500">
                         {{ carrera.nombre }}
@@ -362,8 +363,9 @@
               </div>
             </div>
 
-            <!-- Curso/Nivel mejorado -->
-            <div class="bg-white dark:bg-gray-700 p-4 rounded-xl border border-gray-200 dark:border-gray-600">
+            <!-- Curso/Nivel mejorado - ocupará toda la fila si es necesario -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-xl border border-gray-200 dark:border-gray-600"
+                 [class.lg:col-span-2]="horarioSeleccionado.curso?.esMultiple">
               <div class="flex items-start gap-3">
                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -378,7 +380,7 @@
                         Articulado
                       </span>
                     </div>
-                    <div class="space-y-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <div *ngFor="let curso of horarioSeleccionado.curso.lista"
                            class="text-sm text-gray-700 dark:text-gray-300 pl-2 border-l-2 border-green-300 dark:border-green-500">
                         {{ curso.nombre }}
@@ -409,6 +411,7 @@
             </div>
           </div>
         </div>
+
         <!-- Footer del Modal -->
         <div class="p-6 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 rounded-b-2xl">
           <button (click)="cerrarModal()"

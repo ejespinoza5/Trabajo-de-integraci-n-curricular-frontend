@@ -632,7 +632,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   }
 
   showOverlappingEventsModal(events: any[]) {
-    console.log('Eventos superpuestos:', events);
+    //console.log('Eventos superpuestos:', events);
   }
 
 
