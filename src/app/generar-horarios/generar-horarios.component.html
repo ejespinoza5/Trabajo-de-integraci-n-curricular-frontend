@@ -547,7 +547,7 @@
 
     <!-- Leyenda de materias y sus colores -->
     <div class="mt-6 legend-container" *ngIf="materiasUnicas && materiasUnicas.length > 0">
-      <h3 class="text-lg font-bold mb-2">Materias</h3>
+      <h3 class="text-lg font-bold mb-2 dark:text-gray-200">Materias</h3>
       <div class="flex flex-wrap gap-2">
         <div *ngFor="let materia of materiasUnicas" class="flex items-center px-3 py-1 rounded materia-item"
           [ngStyle]="{'background-color': materia.color}">

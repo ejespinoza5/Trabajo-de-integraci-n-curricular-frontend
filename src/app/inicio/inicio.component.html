@@ -6,7 +6,7 @@
 
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
       <!-- Welcome Section -->
-      <div class="text-center mb-16">
+      <div class="text-center mb-6">
         <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium mb-6">
           <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
@@ -14,7 +14,7 @@
           Sistema de Gestión de Horarios
         </div>
 
-        <h1 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 dark:from-white dark:via-blue-200 dark:to-indigo-200 bg-clip-text text-transparent mb-6">
+        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 dark:from-white dark:via-blue-200 dark:to-indigo-200 bg-clip-text text-transparent mb-6">
           Bienvenido
         </h1>
 
@@ -33,7 +33,7 @@
       </div>
 
       <!-- Quick Stats Dashboard -->
-      <div *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR', 'COORDINADOR'])" class="mb-16">
+      <div *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR', 'COORDINADOR'])" class="mb-6">
         <!-- Loading State -->
         <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <div *ngFor="let item of [1,2,3,4,5]" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 animate-pulse border border-white/20 dark:border-gray-700/50">
@@ -160,7 +160,7 @@
              class="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer"
              (click)="navegarA(opcion.ruta)">
 
-          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+          <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
             <ng-container [ngSwitch]="opcion.icono">
               <svg *ngSwitchCase="'building'" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -220,6 +220,12 @@
                 </svg>
                 <svg *ngSwitchCase="'teacher'" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg *ngSwitchCase="'calendar'" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <svg *ngSwitchCase="'teaching'" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10M4 18h10" />
                 </svg>
               </ng-container>
             </div>

@@ -6,6 +6,7 @@
 /* Configuración global de la fuente Montserrat */
 html, body {
   font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
 }
 
 /* Puedes añadir variaciones de peso para diferentes elementos */

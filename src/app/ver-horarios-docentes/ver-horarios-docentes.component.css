@@ -219,7 +219,7 @@ html, body {
 
 .materia-item:hover {
   transform: scale(1.05);
-}  
+}
 
 .form-group {
   animation: fadeInUp 0.3s ease-out;
@@ -227,4 +227,38 @@ html, body {
 
 .form-group:hover .form-label svg {
   @apply transform scale-110;
+}
+
+/* Estilos responsivos para el contenedor del calendario */
+.calendar-container {
+  width: 100%;
+  min-height: 400px;
+  overflow-x: auto;
+}
+
+@media (max-width: 1024px) {
+  .calendar-container {
+    min-width: 0;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-container {
+    min-width: 0;
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  ::ng-deep .fc-toolbar-title {
+    font-size: 1.1rem;
+  }
+  ::ng-deep .fc .fc-col-header-cell, ::ng-deep .fc .fc-daygrid-day {
+    font-size: 0.9rem;
+  }
+  ::ng-deep .fc .fc-timegrid-slot-label {
+    font-size: 0.85rem;
+  }
+  ::ng-deep .fc .fc-event {
+    font-size: 0.8rem;
+  }
 }

@@ -22,13 +22,17 @@
         <div class="divide-y divide-gray-200">
           <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
             <div class="relative">
-              <input autocomplete="off" id="usuario" name="usuario" type="text"
+              <input autocomplete="off" id="usuario" name="usuario" type="email"
                      class="peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:border-cyan-600"
-                     placeholder="Usuario" [(ngModel)]="correo" required />
+                     placeholder="Usuario" [(ngModel)]="correo" required email #correoInput="ngModel" />
               <label for="usuario"
                      class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
                 Correo electrónico
               </label>
+              <div *ngIf="correoInput.invalid && (correoInput.dirty || correoInput.touched)" class="text-red-500 text-xs mt-1">
+                <span *ngIf="correoInput.errors?.['required']">El correo es obligatorio.</span>
+                <span *ngIf="correoInput.errors?.['email'] && !correoInput.errors?.['required']">Ingrese un correo electrónico válido.</span>
+              </div>
             </div>
 
             <div class="relative">

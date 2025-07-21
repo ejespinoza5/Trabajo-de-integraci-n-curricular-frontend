@@ -77,14 +77,14 @@ ngOnInit(): void {
         titulo: 'Ver Horarios',
         descripcion: 'Visualizar horarios académicos',
         ruta: '/inicio/ver-horario',
-        icono: 'book',
+        icono: 'calendar',
         roles: ['COORDINADOR', 'SUPERADMINISTRADOR', 'ADMINISTRADOR']
       },
       {
         titulo: 'Ver Horarios Docentes',
         descripcion: 'Visualizar horarios de docentes',
         ruta: '/inicio/ver-horario-docente',
-        icono: 'teacher',
+        icono: 'teaching',
         roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR']
       },
       {
