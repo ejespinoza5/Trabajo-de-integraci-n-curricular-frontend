@@ -157,8 +157,8 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     { nombre: 'Clase Articulada', valor: 'articulada' }
   ];
   tipoClaseSeleccionado: string = 'regular';
-  nuevaCarreraArticulada: number = 0;
-  nuevoCursoArticulado: number = 0;
+  nuevaCarreraArticulada: number | null = null;
+  nuevoCursoArticulado: number | null = null;
 
   // --- Calendario ---
   calendar!: Calendar;
@@ -1638,13 +1638,13 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       this.cursosArticulados = [];
     } else {
       this.cursosArticulados = [];
-      this.nuevaCarreraArticulada = 0;
-      this.nuevoCursoArticulado = 0;
+      this.nuevaCarreraArticulada = null;
+      this.nuevoCursoArticulado = null;
     }
 
   }
 
-  onNuevaCarreraArticuladaChange(carreraId: number) {
+  onNuevaCarreraArticuladaChange(carreraId: number | null) {
     this.nuevaCarreraArticulada = carreraId;
     this.nuevoCursoArticulado = 0;
 
@@ -1667,16 +1667,20 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
         const carreraSeleccionada = this.carrerasArticuladas.find(c => c.ID_CARRERAS === this.nuevaCarreraArticulada);
         const cursoSeleccionado = this.cursosDisponibles.find(c => c.ID_CURSOS === this.nuevoCursoArticulado);
 
-        this.cursosArticulados.push({
-          ID_CARRERAS: this.nuevaCarreraArticulada,
-          ID_CURSOS: this.nuevoCursoArticulado,
-          NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
-          NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
-        });
+        this.cursosArticulados = [
+          ...this.cursosArticulados,
+          {
+            ID_CARRERAS: this.nuevaCarreraArticulada,
+            ID_CURSOS: this.nuevoCursoArticulado,
+            NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
+            NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
+          }
+        ];
 
-        this.nuevaCarreraArticulada = 0;
-        this.nuevoCursoArticulado = 0;
+        this.nuevaCarreraArticulada = null;
+        this.nuevoCursoArticulado = null;
         this.cursosDisponibles = [];
+        this.cdr.detectChanges();
       } else {
         this.notificationService.showWarning('Esta combinación ya está agregada');
       }

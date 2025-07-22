@@ -221,7 +221,6 @@
                         (change)="onNuevaCarreraArticuladaChange(nuevaCarreraArticulada)"
                         [searchable]="true"
                         [clearable]="true"
-                        [appendTo]="'body'"
                         class="custom-select-small">
                     <ng-template ng-label-tmp let-item="item">
                       <div class="text-sm">{{ item ? item.NOMBRE_CARRERAS : 'Seleccionar carrera' }}</div>
@@ -246,7 +245,6 @@
                         [searchable]="true"
                         [clearable]="true"
                         [disabled]="!nuevaCarreraArticulada"
-                        [appendTo]="'body'"
                         class="custom-select-small"
                         [attr.aria-disabled]="!nuevaCarreraArticulada">
                     <ng-template ng-label-tmp let-item="item">
