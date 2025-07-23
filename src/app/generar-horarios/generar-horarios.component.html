@@ -149,8 +149,6 @@
                   [clearable]="false"
                   [appendTo]="'body'"
                   class="custom-select"
-                  [attr.aria-required]="true"
-                  [attr.aria-invalid]="!CarreraSeleccionada"
                   aria-describedby="carrera-error">
                 <ng-template ng-label-tmp let-item="item">
                   <div class="text-sm">{{ item ? item.NOMBRE_CARRERAS : 'Seleccionar carrera' }}</div>
@@ -416,8 +414,6 @@
                   [clearable]="false"
                   [appendTo]="'body'"
                   class="custom-select"
-                  [attr.aria-required]="true"
-                  [attr.aria-invalid]="!AulaSeleccionada"
                   aria-describedby="aula-error">
                 <ng-template ng-label-tmp let-item="item">
                   <div class="text-sm">{{ item ? item.NOMBRE_AULA : 'Seleccionar aula' }}</div>
@@ -452,8 +448,6 @@
                   [clearable]="false"
                   [appendTo]="'body'"
                   class="custom-select"
-                  [attr.aria-required]="true"
-                  [attr.aria-invalid]="!DiaSeleccionado"
                   aria-describedby="dia-error">
                 <ng-template ng-label-tmp let-item="item">
                   <div class="text-sm">{{ item ? item.NOMBRE_DIA : 'Seleccionar día' }}</div>

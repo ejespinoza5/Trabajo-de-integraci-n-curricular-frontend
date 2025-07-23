@@ -53,13 +53,13 @@
                 placeholder="-- Selecciona --" [searchable]="true" [clearable]="false" [appendTo]="'body'"
                 [typeahead]="searchInput" [searchFn]="customSearchFn">
                 <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm dark:text-white">
+                  <div>
                     {{ item ? item.DOCUMENTO_USUARIOS + ' - ' + (item.APELLIDOS_USUARIOS | uppercase) + ' ' +
                     (item.NOMBRES_USUARIOS | uppercase) : '-- Selecciona --' }}
                   </div>
                 </ng-template>
                 <ng-template ng-option-tmp let-item="item">
-                  <div class="text-sm py-1 ">
+                  <div>
                     <strong>{{ item.DOCUMENTO_USUARIOS }}</strong> - {{ item.APELLIDOS_USUARIOS | uppercase }} {{
                     item.NOMBRES_USUARIOS | uppercase }}
                   </div>
@@ -85,12 +85,12 @@
                 [(ngModel)]="carreraSeleccionada" placeholder="-- Selecciona --" [searchable]="true" [clearable]="false"
                 [appendTo]="'body'">
                 <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm ">
+                  <div>
                     {{ item ? (item.NOMBRE_CARRERAS | uppercase) : '-- Selecciona --' }}
                   </div>
                 </ng-template>
                 <ng-template ng-option-tmp let-item="item">
-                  <div class="text-sm py-1 ">{{ item.NOMBRE_CARRERAS | uppercase }}</div>
+                  <div>{{ item.NOMBRE_CARRERAS | uppercase }}</div>
                 </ng-template>
               </ng-select>
             </div>
@@ -193,14 +193,14 @@
               </div>
             </td>
             <td class="px-6 py-4">
-              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ coordinador.NOMBRE_COORDINADOR }}</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ coordinador.NOMBRE_COORDINADOR | titlecase }}</span>
             </td>
             <td class="px-6 py-4">
-              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ coordinador.APELLIDO_COORDINADOR }}</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">{{ coordinador.APELLIDO_COORDINADOR | titlecase }}</span>
             </td>
             <td class="px-6 py-4">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                {{ coordinador.NOMBRE_CARRERA }}
+                {{ coordinador.NOMBRE_CARRERA | titlecase }}
               </span>
             </td>
             <td class="px-6 py-4 text-center">

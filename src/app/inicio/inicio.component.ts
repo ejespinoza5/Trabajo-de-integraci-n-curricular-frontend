@@ -26,6 +26,7 @@ ngOnInit(): void {
           this.error = 'No se encontraron datos para mostrar en el dashboard.';
           this.notificationService.showWarning(this.error);
         }
+        this.animarEstadisticas();
       },
       error: (error) => {
         this.notificationService.showError('Error al cargar el dashboard');
@@ -104,6 +105,64 @@ ngOnInit(): void {
     ];
 
     return opciones.filter(opcion => this.tieneAcceso(opcion.roles));
+  }
+
+  // Variables para los valores animados
+  aulasAnimado = 0;
+  coordinadoresAnimado = 0;
+  docentesAnimado = 0;
+  asignaturasAnimado = 0;
+  carrerasAnimado = 0;
+
+  // Llama a esta función después de cargar dashboardData
+  animarEstadisticas() {
+    if (!this.dashboardData || !this.dashboardData.estadisticas) return;
+
+    // Pequeño delay para que se vea mejor la animación
+    setTimeout(() => {
+      this.animarContador('aulasAnimado', this.dashboardData.estadisticas.aulas);
+    }, 100);
+
+    setTimeout(() => {
+      this.animarContador('coordinadoresAnimado', this.dashboardData.estadisticas.coordinadores);
+    }, 200);
+
+    setTimeout(() => {
+      this.animarContador('docentesAnimado', this.dashboardData.estadisticas.docentes);
+    }, 300);
+
+    setTimeout(() => {
+      this.animarContador('asignaturasAnimado', this.dashboardData.estadisticas.asignaturas);
+    }, 400);
+
+    setTimeout(() => {
+      this.animarContador('carrerasAnimado', this.dashboardData.estadisticas.carreras);
+    }, 500);
+  }
+
+  animarContador(prop: string, valorFinal: number, duracion: number = 2000) {
+    (this as any)[prop] = 0;
+    if (valorFinal === 0) return;
+
+    const inicio = Date.now();
+    const animacion = () => {
+      const tiempoTranscurrido = Date.now() - inicio;
+      const progreso = Math.min(tiempoTranscurrido / duracion, 1);
+
+      // Función de easing para que la animación sea más suave (ease-out)
+      const valorEased = 1 - Math.pow(1 - progreso, 3);
+      const valorActual = Math.round(valorEased * valorFinal);
+
+      (this as any)[prop] = valorActual;
+
+      if (progreso < 1) {
+        requestAnimationFrame(animacion);
+      } else {
+        (this as any)[prop] = valorFinal;
+      }
+    };
+
+    requestAnimationFrame(animacion);
   }
 
 

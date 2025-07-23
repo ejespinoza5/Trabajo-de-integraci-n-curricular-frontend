@@ -486,9 +486,6 @@ ng-select:focus {
   border-color: #3b82f6;
 }
 
-.select-accessible select[aria-invalid="true"] {
-  border-color: #dc2626;
-}
 
 /* Estilos para tooltips accesibles */
 .tooltip {

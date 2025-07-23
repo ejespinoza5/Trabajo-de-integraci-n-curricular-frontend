@@ -1670,10 +1670,10 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
         this.cursosArticulados = [
           ...this.cursosArticulados,
           {
-            ID_CARRERAS: this.nuevaCarreraArticulada,
-            ID_CURSOS: this.nuevoCursoArticulado,
-            NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
-            NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
+          ID_CARRERAS: this.nuevaCarreraArticulada,
+          ID_CURSOS: this.nuevoCursoArticulado,
+          NOMBRE_CARRERAS: carreraSeleccionada?.NOMBRE_CARRERAS || 'Sin nombre',
+          NOMBRE_CURSOS: cursoSeleccionado?.NOMBRE_CURSOS || 'Sin nombre'
           }
         ];
 
