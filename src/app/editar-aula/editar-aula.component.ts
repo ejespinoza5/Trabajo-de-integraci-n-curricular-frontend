@@ -46,7 +46,6 @@ export class EditarAulaComponent implements OnInit {
         this.tipos = tipos;
       },
       error: (err) => {
-        console.error('Error al cargar tipos:', err);
         this.notificationService.showError('Error al cargar tipos de aula');
       }
     });
@@ -61,7 +60,6 @@ export class EditarAulaComponent implements OnInit {
         };
       },
       error: (err) => {
-        console.error('Error al obtener aula:', err);
         this.notificationService.showError('Error al obtener aula');
       }
     });
@@ -87,7 +85,6 @@ export class EditarAulaComponent implements OnInit {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al actualizar aula:', error);
 
         let mensajeError = 'Error al actualizar el aula';
 

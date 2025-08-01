@@ -29,6 +29,21 @@ export class HorarioEstudianteComponent implements OnInit {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek'
     },
+    // ✅ NUEVO: Configuración consistente de botones
+    buttonIcons: {
+      prev: 'chevron-left',
+      next: 'chevron-right',
+      prevYear: 'chevrons-left',
+      nextYear: 'chevrons-right'
+    },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      prev: '‹',
+      next: '›'
+    },
     weekends: true,
     allDaySlot: false,
     slotMinTime: '07:00:00',
@@ -41,12 +56,6 @@ export class HorarioEstudianteComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
-    },
-    buttonText: {
-      today: 'Hoy',
-      month: 'Mes',
-      week: 'Semana',
-      day: 'Día'
     },
     eventDataTransform: (event) => {
       return event;
@@ -85,7 +94,6 @@ cargarHorarios(): void {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al cargar los horarios:', error);
 
         const mensaje = error?.error?.message || 'Error al cargar los horarios';
         this.mensajeError = mensaje;
@@ -306,7 +314,6 @@ actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al generar PDF:', error);
 
         const mensaje = error?.error?.message || 'Error al generar el PDF';
         this.notificationService.showErrorReport(

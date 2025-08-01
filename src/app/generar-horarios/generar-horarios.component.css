@@ -1,3 +1,42 @@
+/* ============================= */
+/* ESTILOS ESPECÍFICOS DEL MODAL */
+/* ============================= */
+
+/* Modal backdrop y container */
+::ng-deep .modal-backdrop {
+  z-index: 1040 !important;
+}
+
+::ng-deep .modal-container {
+  z-index: 1050 !important;
+  position: relative;
+}
+
+/* ng-select específicos para este componente */
+::ng-deep .modal-container .ng-select.ng-select-opened .ng-select-container {
+  z-index: 1060 !important;
+}
+
+::ng-deep .modal-container .ng-dropdown-panel {
+  z-index: 1070 !important;
+}
+
+/* Contenedor del modal scrolleable */
+::ng-deep .modal-container {
+  max-height: 98vh;
+  overflow-y: auto;
+}
+
+/* Evitar que el modal se salga de la pantalla */
+::ng-deep .modal-container .ng-dropdown-panel {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* ============================= */
+/* ESTILOS FULLCALENDAR */
+/* ============================= */
+
 /* Estilos para FullCalendar - Modo Claro (por defecto) */
 ::ng-deep .fc {
   --fc-border-color: #e5e7eb;

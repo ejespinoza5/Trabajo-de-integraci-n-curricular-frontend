@@ -180,6 +180,22 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
         click: () => this.toggleCompactView()
       }
     },
+    // ✅ NUEVO: Configuración consistente de botones
+    buttonIcons: {
+      prev: 'chevron-left',
+      next: 'chevron-right',
+      prevYear: 'chevrons-left',
+      nextYear: 'chevrons-right'
+    },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      list: 'Lista',
+      prev: '‹',
+      next: '›'
+    },
     weekends: true,
     allDaySlot: false,
     slotMinTime: '07:00:00',
@@ -884,7 +900,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // Manejo centralizado de errores
   private handleError(message: string, error: any): void {
-    console.error(message, error);
     this.mensajeError = message;
     this.notificationService?.showError?.(message);
   }
@@ -1493,7 +1508,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error en la actualización:', error);
 
         let mensajeError = 'Error al actualizar el horario';
 

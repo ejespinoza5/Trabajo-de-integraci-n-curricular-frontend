@@ -29,6 +29,21 @@ export class HorarioDocenteComponent {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek'
     },
+    // ✅ NUEVO: Configuración consistente de botones
+    buttonIcons: {
+      prev: 'chevron-left',
+      next: 'chevron-right',
+      prevYear: 'chevrons-left',
+      nextYear: 'chevrons-right'
+    },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      prev: '‹',
+      next: '›'
+    },
     weekends: true,
     allDaySlot: false,
     slotMinTime: '07:00:00',
@@ -41,12 +56,6 @@ export class HorarioDocenteComponent {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
-    },
-    buttonText: {
-      today: 'Hoy',
-      month: 'Mes',
-      week: 'Semana',
-      day: 'Día'
     },
     eventDataTransform: (event) => {
       return event;
@@ -84,7 +93,6 @@ export class HorarioDocenteComponent {
         },
         error: (err) => {
           this.notificationService.hideLoading();
-          console.error('Error al cargar los horarios:', err);
           this.mensajeError = 'Error al cargar los horarios';
           this.limpiarCalendario();
         }
@@ -344,11 +352,9 @@ abrirModalDetalleHorario(horarioId: number): void {
 
   // MÉTODOS HEREDADOS (mantenidos por compatibilidad, pero ya no se usan)
   actualizarEventosCalendarioRecurrente(): void {
-    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
   }
 
   actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
-    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
   }
 
   obtenerInicioSemana(fecha: Date): Date {

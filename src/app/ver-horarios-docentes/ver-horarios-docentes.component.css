@@ -4,172 +4,114 @@ html, body {
   padding: 0;
 }
 
-/* Estilos para FullCalendar - Modo Claro (por defecto) */
-::ng-deep .fc {
-  --fc-border-color: #e5e7eb;
-  --fc-page-bg-color: #ffffff;
-  --fc-neutral-bg-color: #ffffff;
-  --fc-neutral-text-color: #1f2937;
-  --fc-event-bg-color: #3788d8;
-  --fc-event-border-color: #3788d8;
-  --fc-event-text-color: #fff;
-  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
-  --fc-today-bg-color: rgba(255, 220, 40, 0.15);
-  --fc-button-bg-color: #199DBF;
-  --fc-button-border-color: #199DBF;
-  --fc-button-hover-bg-color: #1d4ed8;
-  --fc-button-hover-border-color: #199DBF;
-  --fc-button-active-bg-color: #199DBF;
-  --fc-button-active-border-color: #199DBF;
-  --fc-list-event-dot-width: 10px;
-  --fc-list-event-hover-bg-color: #f3f4f6;
+/* ✅ ESTILOS ESPECÍFICOS SOLO PARA ESTE COMPONENTE */
+/* Los estilos globales de FullCalendar están ahora en styles.css */
+
+/* Animaciones específicas del componente */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilos para FullCalendar - Modo Oscuro */
-::ng-deep .dark .fc {
-  --fc-border-color: #374151;
-  --fc-page-bg-color: #1f2937;
-  --fc-neutral-bg-color: #1f2937;
-  --fc-neutral-text-color: #e5e7eb;
-  --fc-event-bg-color: #3788d8;
-  --fc-event-border-color: #3788d8;
-  --fc-event-text-color: #ffffff;
-  --fc-event-selected-overlay-color: rgba(255, 255, 255, 0.25);
-  --fc-today-bg-color: rgba(59, 130, 246, 0.15);
-  --fc-button-bg-color: #199DBF;
-  --fc-button-border-color: #199DBF;
-  --fc-button-hover-bg-color: #1d4ed8;
-  --fc-button-hover-border-color: #199DBF;
-  --fc-button-active-bg-color: #199DBF;
-  --fc-button-active-border-color: #199DBF;
-  --fc-list-event-dot-width: 10px;
-  --fc-list-event-hover-bg-color: #374151;
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
 }
 
-/* Estilos específicos para elementos del calendario en modo oscuro */
-::ng-deep .dark .fc-theme-standard .fc-scrollgrid {
-  border-color: #374151;
+.animate-fade-in-delay {
+  animation: fadeIn 0.6s ease-out 0.2s both;
 }
 
-::ng-deep .dark .fc-theme-standard td,
-::ng-deep .dark .fc-theme-standard th {
-  border-color: #374151;
+.calendar-container {
+  animation: slideInUp 0.6s ease-out;
 }
 
-::ng-deep .dark .fc-col-header-cell {
-  background-color: #374151;
-  color: #e5e7eb;
+.legend-container {
+  animation: fadeIn 0.8s ease-out 0.2s both;
 }
 
-::ng-deep .dark .fc-daygrid-day {
-  background-color: #1f2937;
-  color: #e5e7eb;
+.materia-item {
+  animation: slideInLeft 0.4s ease-out;
+  transition: transform 0.2s ease;
 }
 
-::ng-deep .dark .fc-timegrid-slot {
-  border-color: #374151;
-  background-color: #1f2937;
+.materia-item:hover {
+  transform: scale(1.05);
 }
 
-::ng-deep .dark .fc-timegrid-slot-label {
-  color: #9ca3af;
+.form-group {
+  animation: fadeInUp 0.3s ease-out;
 }
 
-::ng-deep .dark .fc-timegrid-axis {
-  background-color: #1f2937;
+.form-group:hover .form-label svg {
+  transform: scale(1.1);
 }
 
-::ng-deep .dark .fc-scrollgrid-sync-table {
-  background-color: #1f2937;
+/* Estilos responsivos para el contenedor del calendario */
+.calendar-container {
+  width: 100%;
+  min-height: 400px;
+  overflow-x: auto;
 }
 
-/* Texto de las horas en modo oscuro */
-::ng-deep .dark .fc-timegrid-slot-label-cushion {
-  color: #9ca3af;
+@media (max-width: 1024px) {
+  .calendar-container {
+    min-width: 0;
+    font-size: 0.95rem;
+  }
 }
 
-/* Días de la semana en modo oscuro */
-::ng-deep .dark .fc-col-header-cell-cushion {
-  color: #e5e7eb;
-  font-weight: 600;
+@media (max-width: 768px) {
+  .calendar-container {
+    min-width: 0;
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  ::ng-deep .fc-toolbar-title {
+    font-size: 1.1rem;
+  }
+  ::ng-deep .fc .fc-col-header-cell, ::ng-deep .fc .fc-daygrid-day {
+    font-size: 0.9rem;
+  }
+  ::ng-deep .fc .fc-timegrid-slot-label {
+    font-size: 0.85rem;
+  }
+  ::ng-deep .fc .fc-event {
+    font-size: 0.8rem;
+  }
 }
 
-/* Botones en modo oscuro */
-::ng-deep .dark .fc-button {
-  background-color: #199DBF;
-  border-color: #199DBF;
-  color: #ffffff;
+/* Animaciones adicionales */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-::ng-deep .dark .fc-button:hover {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-::ng-deep .dark .fc-button-active {
-  background-color: #199DBF;
-  border-color: #199DBF;
-}
-
-/* Título del calendario en modo oscuro */
-::ng-deep .dark .fc-toolbar-title {
-  color: #e5e7eb;
-}
-
-/* Día actual en modo oscuro */
-::ng-deep .dark .fc-day-today {
-  background-color: rgba(59, 130, 246, 0.15) !important;
-}
-
-/* Vista de lista en modo oscuro */
-::ng-deep .dark .fc-list-table {
-  background-color: #1f2937;
-}
-
-::ng-deep .dark .fc-list-day-cushion {
-  background-color: #374151;
-  color: #e5e7eb;
-}
-
-::ng-deep .dark .fc-list-event {
-  background-color: #1f2937;
-  border-color: #374151;
-  color: #e5e7eb;
-}
-
-::ng-deep .dark .fc-list-event:hover {
-  background-color: #374151;
-}
-
-::ng-deep .dark .fc-list-event-title {
-  color: #e5e7eb;
-}
-
-::ng-deep .dark .fc-list-event-time {
-  color: #9ca3af;
-}
-
-/* Estilos para los eventos en el calendario */
-::ng-deep .fc-event {
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-/* Estilo para el evento cuando se pasa el mouse */
-::ng-deep .fc-event:hover {
-  opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-::ng-deep .dark .fc-event:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Ajustar altura de las celdas de tiempo */
-::ng-deep .fc-timegrid-slot {
-  height: 3rem !important;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Scrollbar en modo oscuro */

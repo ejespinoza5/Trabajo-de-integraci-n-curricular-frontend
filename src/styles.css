@@ -20,4 +20,235 @@ p, span, div, a, button, input, select, textarea {
   font-weight: 100; /* Regular para texto normal */
 }
 
+/* ============================= */
+/* ESTILOS GLOBALES FULLCALENDAR */
+/* ============================= */
+
+/* ✅ NUEVO: Estilos para modales y ng-select */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 9999 !important;
+  transform: none !important;
+}
+
+.modal-backdrop {
+  z-index: 9999 !important;
+}
+
+.modal-container {
+  z-index: 10000 !important;
+}
+
+/* ng-select en modales */
+.ng-select.ng-select-opened .ng-select-container {
+  z-index: 10010 !important;
+}
+
+.ng-dropdown-panel {
+  z-index: 10020 !important;
+}
+
+/* Asegurar que los ng-select con appendTo='body' tengan z-index apropiado */
+.ng-dropdown-panel.ng-select-bottom {
+  z-index: 10020 !important;
+}
+
+.ng-dropdown-panel.ng-select-top {
+  z-index: 10020 !important;
+}
+
+/* Estilos para FullCalendar - Modo Claro (por defecto) */
+.fc {
+  --fc-border-color: #e5e7eb;
+  --fc-page-bg-color: #ffffff;
+  --fc-neutral-bg-color: #ffffff;
+  --fc-neutral-text-color: #1f2937;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #fff;
+  --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+  --fc-today-bg-color: rgba(255, 220, 40, 0.15);
+  --fc-button-bg-color: #199DBF;
+  --fc-button-border-color: #199DBF;
+  --fc-button-hover-bg-color: #1d4ed8;
+  --fc-button-hover-border-color: #199DBF;
+  --fc-button-active-bg-color: #199DBF;
+  --fc-button-active-border-color: #199DBF;
+  --fc-list-event-dot-width: 10px;
+  --fc-list-event-hover-bg-color: #f3f4f6;
+}
+
+/* ✅ ESTILOS CONSISTENTES PARA BOTONES DE NAVEGACIÓN */
+.fc .fc-button-primary {
+  background-color: #199DBF !important;
+  border-color: #199DBF !important;
+  color: white !important;
+  font-size: 14px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+}
+
+.fc .fc-prev-button,
+.fc .fc-next-button {
+  background-color: #199DBF !important;
+  border-color: #199DBF !important;
+  color: white !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  min-width: 40px !important;
+  height: 32px !important;
+}
+
+.fc .fc-button:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+.fc .fc-today-button {
+  background-color: #199DBF !important;
+  border-color: #199DBF !important;
+  color: white !important;
+  font-size: 14px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+}
+
+/* Estilos para FullCalendar - Modo Oscuro */
+.dark .fc {
+  --fc-border-color: #374151;
+  --fc-page-bg-color: #1f2937;
+  --fc-neutral-bg-color: #1f2937;
+  --fc-neutral-text-color: #e5e7eb;
+  --fc-event-bg-color: #3788d8;
+  --fc-event-border-color: #3788d8;
+  --fc-event-text-color: #ffffff;
+  --fc-event-selected-overlay-color: rgba(255, 255, 255, 0.25);
+  --fc-today-bg-color: rgba(59, 130, 246, 0.15);
+  --fc-button-bg-color: #199DBF;
+  --fc-button-border-color: #199DBF;
+  --fc-button-hover-bg-color: #1d4ed8;
+  --fc-button-hover-border-color: #199DBF;
+  --fc-button-active-bg-color: #199DBF;
+  --fc-button-active-border-color: #199DBF;
+  --fc-list-event-dot-width: 10px;
+  --fc-list-event-hover-bg-color: #374151;
+}
+
+/* Botones en modo oscuro */
+.dark .fc .fc-button-primary,
+.dark .fc .fc-prev-button,
+.dark .fc .fc-next-button,
+.dark .fc .fc-today-button {
+  background-color: #199DBF !important;
+  border-color: #199DBF !important;
+  color: #ffffff !important;
+}
+
+.dark .fc .fc-button:hover {
+  background-color: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+}
+
+/* Elementos específicos del calendario en modo oscuro */
+.dark .fc-theme-standard .fc-scrollgrid {
+  border-color: #374151;
+}
+
+.dark .fc-theme-standard td,
+.dark .fc-theme-standard th {
+  border-color: #374151;
+}
+
+.dark .fc-col-header-cell {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+.dark .fc-daygrid-day {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+.dark .fc-timegrid-slot {
+  border-color: #374151;
+  background-color: #1f2937;
+}
+
+.dark .fc-timegrid-slot-label {
+  color: #9ca3af;
+}
+
+.dark .fc-timegrid-axis {
+  background-color: #1f2937;
+}
+
+.dark .fc-scrollgrid-sync-table {
+  background-color: #1f2937;
+}
+
+.dark .fc-timegrid-slot-label-cushion {
+  color: #9ca3af;
+}
+
+.dark .fc-col-header-cell-cushion {
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+.dark .fc-toolbar-title {
+  color: #e5e7eb;
+}
+
+.dark .fc-day-today {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Estilos para los eventos en el calendario */
+.fc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.fc-event:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark .fc-event:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Ajustar altura de las celdas de tiempo */
+.fc-timegrid-slot {
+  height: 3rem !important;
+}
+
+/* Scrollbar en modo oscuro */
+.dark .fc-scroller::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark .fc-scroller::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark .fc-scroller::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.dark .fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
 

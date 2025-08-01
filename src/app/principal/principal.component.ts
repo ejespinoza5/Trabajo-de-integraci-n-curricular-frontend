@@ -89,7 +89,6 @@ export class PrincipalComponent implements OnInit {
     const idUsuario = this.usuarioService.ObtenerIdToken();
     if (idRol == 17 || idRol == 1) {
       if (!idUsuario) {
-        console.error('No se pudo obtener el ID del usuario del token');
         return;
       }
       this.usuarioService.getCoordinadorById(idUsuario).subscribe({
@@ -98,12 +97,10 @@ export class PrincipalComponent implements OnInit {
           this.apellidoUsuario = data.APELLIDO_COORDINADOR.toUpperCase();
         },
         error: (err) => {
-          console.error('Error al obtener el nombre', err);
         }
       });
     } else {
       if (!idUsuario) {
-        console.error('No se pudo obtener el ID del usuario del token');
         return;
       }
       this.usuarioService.getUsuarioById(idUsuario).subscribe({
@@ -112,7 +109,6 @@ export class PrincipalComponent implements OnInit {
           this.apellidoUsuario = data.APELLIDOS_USUARIOS.toUpperCase();
         },
         error: (err) => {
-          console.error('Error al obtener el nombre', err);
         }
       });
     }
@@ -173,7 +169,6 @@ async CerrarSesion() {
 
     } catch (error) {
       this.notificationService.hideLoading();
-      console.error('Error al cerrar sesión:', error);
 
 
 
@@ -185,7 +180,6 @@ async CerrarSesion() {
     }
 
   } catch (error) {
-    console.error('Error en el diálogo de confirmación:', error);
     this.redirigirALogin();
   }
 }
@@ -201,7 +195,6 @@ private limpiarDatosLocales() {
     localStorage.clear();
     sessionStorage.clear();
   } catch (error) {
-    console.error('Error limpiando datos locales:', error);
   }
 }
 

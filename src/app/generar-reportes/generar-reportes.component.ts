@@ -72,7 +72,6 @@ mensajeErrorAutoridades: string = '';
         }
       },
       error: (err) => {
-        console.error('Error al cargar periodos:', err);
         this.mensajeError = 'Error al cargar los periodos';
       }
     });
@@ -95,7 +94,6 @@ mensajeErrorAutoridades: string = '';
         this.CursoSeleccionado = 0;
       },
       error: (err) => {
-        console.error('Error al cargar carreras:', err);
         this.mensajeError = 'Error al cargar las carreras';
       }
     });
@@ -132,7 +130,6 @@ mensajeErrorAutoridades: string = '';
         }
       },
       error: (err) => {
-        console.error('Error al cargar observación para carrera', idCarrera, ':', err);
 
         // ✅ NUEVO: Crear observación por defecto si falla la carga
         this.observacion = {
@@ -154,7 +151,6 @@ cargarCursos(): void {
             this.CursoSeleccionado = 0;
           },
           error: (err) => {
-            console.error('Error al cargar cursos:', err);
             this.mensajeError = 'Error al cargar los cursos';
           }
         });
@@ -243,7 +239,6 @@ cargarCursos(): void {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al generar el PDF', error);
 
         let mensajeError = 'Error al generar el PDF';
 
@@ -299,7 +294,6 @@ generarExcel() {
     },
     error: (error) => {
       this.notificationService.hideLoading();
-      console.error('Error al generar el Excel', error);
 
       let mensajeError = 'Error al generar el Excel';
 
@@ -334,7 +328,6 @@ descargarPDF() {
 cargarObservacion(): void {
   const idCarrera = this.authService.obtenerIdCarrera();
   if (idCarrera === null) {
-    console.error('No se pudo obtener la carrera del token');
     this.mensajeError = 'No se pudo obtener la carrera del token';
     return;
   }
@@ -358,7 +351,6 @@ cargarObservacion(): void {
       }
     },
     error: (err) => {
-      console.error('Error al cargar observación:', err);
       this.mensajeError = 'No se pudo cargar la observación';
 
       // ✅ NUEVO: Crear observación por defecto si falla la carga
@@ -433,7 +425,6 @@ cerrarModalConfiguracion(): void {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al guardar observaciones:', error);
 
         let mensajeError = 'Error al guardar los cambios';
 
@@ -494,7 +485,6 @@ cargarAutoridades(): void {
       this.inicializarDatosAutoridades();
     },
     error: (err) => {
-      console.error('Error al cargar autoridades:', err);
       this.mensajeErrorAutoridades = 'No se pudieron cargar las autoridades';
 
       // ✅ NUEVO: Crear autoridades por defecto si falla la carga
@@ -564,7 +554,6 @@ guardarCambiosAutoridades(): void {
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al guardar autoridades:', error);
 
         let mensajeError = 'Error al guardar las autoridades';
 
@@ -600,13 +589,13 @@ limpiarMensajesAutoridades(): void {
 
     // Verificar que las observaciones estén cargadas
     if (!this.observacion) {
-      console.warn('Observaciones no cargadas');
+
       problemas.push('observaciones');
     }
 
     // Verificar que las autoridades estén cargadas
     if (!this.autoridades || this.autoridades.length === 0) {
-      console.warn('Autoridades no cargadas');
+
       problemas.push('autoridades');
     }
 
@@ -615,13 +604,11 @@ limpiarMensajesAutoridades(): void {
     const vicerrectora = this.autoridades?.find(auth => auth.ID_AUTORIDAD === 2);
 
     if ((!rector?.NOMBRE_AUTORIDAD && !vicerrectora?.NOMBRE_AUTORIDAD) && this.autoridades?.length > 0) {
-      console.warn('Ninguna autoridad tiene nombre configurado');
       problemas.push('nombres de autoridades');
     }
 
     // ✅ CORRECCIÓN: Ser menos estricto - permitir generar PDF con advertencias
     if (problemas.length > 0) {
-      console.warn('Problemas detectados en configuración:', problemas);
 
       // Mostrar advertencia pero permitir continuar
       this.notificationService.showWarningReport(

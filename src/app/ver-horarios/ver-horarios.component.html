@@ -136,7 +136,7 @@
 
           <!-- Estado general -->
           <div
-            *ngIf="PeriodoSeleccionado && CarreraSeleccionada && CursoSeleccionado && usuarioService.tieneRol(['SUPERADMINISTRADOR'])"
+            *ngIf="PeriodoSeleccionado && CarreraSeleccionada && CursoSeleccionado && usuarioService.tieneRol(['SUPERADMINISTRADOR','ADMINISTRADOR'])"
             class="mb-6">
             <div
               class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 border border-gray-200 dark:border-gray-600 p-6 rounded-xl shadow-sm">

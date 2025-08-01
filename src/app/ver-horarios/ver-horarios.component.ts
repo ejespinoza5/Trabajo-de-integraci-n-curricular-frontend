@@ -41,6 +41,21 @@ export class VerHorariosComponent implements OnInit {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek'
     },
+    // ✅ NUEVO: Configuración consistente de botones
+    buttonIcons: {
+      prev: 'chevron-left',
+      next: 'chevron-right',
+      prevYear: 'chevrons-left',
+      nextYear: 'chevrons-right'
+    },
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      prev: '‹',
+      next: '›'
+    },
     weekends: true,
     allDaySlot: false,
     slotMinTime: '07:00:00',
@@ -53,12 +68,6 @@ export class VerHorariosComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
-    },
-    buttonText: {
-      today: 'Hoy',
-      month: 'Mes',
-      week: 'Semana',
-      day: 'Día'
     },
     eventDataTransform: (event) => {
       return event;
@@ -92,7 +101,6 @@ export class VerHorariosComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Error al cargar periodos:', err);
         this.mensajeError = 'Error al cargar los periodos';
       }
     });
@@ -116,7 +124,6 @@ export class VerHorariosComponent implements OnInit {
         this.limpiarCalendario();
       },
       error: (err) => {
-        console.error('Error al cargar carreras:', err);
         this.mensajeError = 'Error al cargar las carreras';
       }
     });
@@ -156,7 +163,6 @@ export class VerHorariosComponent implements OnInit {
             this.limpiarCalendario();
           },
           error: (err) => {
-            console.error('Error al cargar cursos:', err);
             this.mensajeError = 'Error al cargar los cursos';
           }
         });
@@ -223,7 +229,6 @@ export class VerHorariosComponent implements OnInit {
         },
         error: (err) => {
           this.notificationService.hideLoading();
-          console.error('Error al cargar los horarios:', err);
           this.mensajeError = 'Error al cargar los horarios';
           this.limpiarCalendario();
         }
@@ -347,8 +352,7 @@ actualizarEventosCalendarioRecurrente(): void {
 
   // MÉTODOS MANTENIDOS PERO YA NO SE USAN (puedes eliminarlos si quieres)
   actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
-    // Este método ya no se usa con la nueva implementación
-    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
+
   }
 
   obtenerInicioSemana(fecha: Date): Date {

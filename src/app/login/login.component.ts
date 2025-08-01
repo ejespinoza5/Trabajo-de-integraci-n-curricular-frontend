@@ -61,7 +61,6 @@ iniciarSesion() {
       this.notificationService.hideLoading();
       const mensaje = err?.error?.mensaje || 'Ocurrió un error inesperado';
       this.notificationService.showError(mensaje);
-      console.error(err);
     }
   });
 }

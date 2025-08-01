@@ -50,7 +50,6 @@ export class GestionarAulasComponent implements OnInit {
       this.actualizarAulasPorPagina();
     },
     error: (error) => {
-      console.error('Error al obtener aulas:', error);
 
       let mensajeError = 'Error al cargar las aulas';
 
@@ -98,7 +97,6 @@ export class GestionarAulasComponent implements OnInit {
     },
     error: (error) => {
       this.notificationService.hideLoading();
-      console.error('Error al agregar aula', error);
       let mensajeError = 'Error al crear el aula';
 
       if (error.error && error.error.message) {
@@ -146,7 +144,6 @@ private procederConEliminacion(id: number): void {
     },
     error: (error) => {
       this.notificationService.hideLoading();
-      console.error('Error al eliminar aula:', error);
 
       let mensajeError = 'Error al eliminar el aula';
 
@@ -193,16 +190,16 @@ private procederConEliminacion(id: number): void {
     this.limpiarFormulario();
   }
 
-  
+
 
 obtenerTipos(): void {
   this.notificationService.showLoading('Cargando tipos de aula...');
-  
+
   this.aulaService.obtenerTipoAulas().subscribe({
     next: (response) => {
       this.notificationService.hideLoading();
       this.tiposAula = response;
-      
+
       if (response.length === 0) {
         this.notificationService.showWarning(
           'No se encontraron tipos de aula registrados.'
@@ -211,10 +208,9 @@ obtenerTipos(): void {
     },
     error: (error) => {
       this.notificationService.hideLoading();
-      console.error('Error al obtener tipos de aula:', error);
-      
+
       let mensajeError = 'Error al cargar los tipos de aula';
-      
+
       if (error.status === 403 && error.error && error.error.message) {
         mensajeError = error.error.message;
       } else if (error.status === 404 && error.error && error.error.message) {
@@ -224,7 +220,7 @@ obtenerTipos(): void {
       } else if (error.message) {
         mensajeError = error.message;
       }
-      
+
       this.notificationService.showErrorReport(
         'Error',
         mensajeError,
@@ -263,17 +259,16 @@ guardarTipoAula(): void {
         this.notificationService.showSuccess(
           'Tipo de aula actualizado correctamente.'
         );
-        
+
         this.obtenerTipos();
         this.cerrarModal();
         this.limpiarFormulario();
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al actualizar tipo de aula:', error);
-        
+
         let mensajeError = 'Error al actualizar el tipo de aula';
-        
+
         if (error.status === 403 && error.error && error.error.message) {
           mensajeError = error.error.message;
         } else if (error.status === 404 && error.error && error.error.message) {
@@ -286,7 +281,7 @@ guardarTipoAula(): void {
         } else if (error.message) {
           mensajeError = error.message;
         }
-        
+
         this.notificationService.showErrorReport(
           'Error',
           mensajeError,
@@ -302,16 +297,15 @@ guardarTipoAula(): void {
         this.notificationService.showSuccess(
           'Tipo de aula creado correctamente.'
         );
-        
+
         this.obtenerTipos();
         this.limpiarFormulario();
       },
       error: (error) => {
         this.notificationService.hideLoading();
-        console.error('Error al crear tipo de aula:', error);
-        
+
         let mensajeError = 'Error al crear el tipo de aula';
-        
+
         if (error.status === 403 && error.error && error.error.message) {
           mensajeError = error.error.message;
         } else if (error.status === 409 && error.error && error.error.message) {
@@ -322,7 +316,7 @@ guardarTipoAula(): void {
         } else if (error.message) {
           mensajeError = error.message;
         }
-        
+
         this.notificationService.showErrorReport(
           'Error',
           mensajeError,
@@ -342,7 +336,7 @@ eliminar(id: number): void {
   // Buscar el nombre del tipo para el mensaje de confirmación
   const tipoAEliminar = this.tiposAula.find(tipo => tipo.ID_TIPO === id);
   const nombreTipo = tipoAEliminar ? tipoAEliminar.NOMBRE_TIPO : 'este tipo de aula';
-  
+
   this.notificationService.showConfirm(
     '¿Estás seguro?',
     `¿Estás seguro de que deseas eliminar "${nombreTipo}"?`,
@@ -356,16 +350,16 @@ eliminar(id: number): void {
 }
 private procederConEliminacionTipo(id: number, nombreTipo: string): void {
   this.notificationService.showLoading('Eliminando tipo de aula...');
-  
+
   this.aulaService.eliminarTipoAulas(id).subscribe({
     next: (response) => {
       this.notificationService.hideLoading();
       this.notificationService.showSuccess(
         `Tipo de aula "${nombreTipo}" eliminado correctamente.`
       );
-      
+
       this.obtenerTipos();
-      
+
       // Si estaba editando el tipo eliminado, limpiar el formulario
       if (this.editandoId === id) {
         this.limpiarFormulario();
@@ -373,10 +367,9 @@ private procederConEliminacionTipo(id: number, nombreTipo: string): void {
     },
     error: (error) => {
       this.notificationService.hideLoading();
-      console.error('Error al eliminar tipo de aula:', error);
-      
+
       let mensajeError = 'Error al eliminar el tipo de aula';
-      
+
       if (error.status === 403 && error.error && error.error.message) {
         mensajeError = error.error.message;
       } else if (error.status === 404 && error.error && error.error.message) {
@@ -389,7 +382,7 @@ private procederConEliminacionTipo(id: number, nombreTipo: string): void {
       } else if (error.message) {
         mensajeError = error.message;
       }
-      
+
       this.notificationService.showErrorReport(
         'Error',
         mensajeError,

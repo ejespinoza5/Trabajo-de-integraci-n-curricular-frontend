@@ -89,7 +89,6 @@ searchInput = new Subject<string>();
       this.notificationService.hideLoading();
 
       const mensajeError = err.error?.message || 'No se pudo crear el coordinador';
-      console.error('Error al crear coordinador', err);
 
       this.notificationService.showErrorReport(
         'Error',
@@ -118,7 +117,7 @@ searchInput = new Subject<string>();
         this.notificationService.showSuccess(
           'El coordinador fue eliminado exitosamente.'
         );
-        this.cargarCoordinadores(); 
+        this.cargarCoordinadores();
       },
       error: (err) => {
         this.notificationService.hideLoading();

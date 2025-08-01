@@ -36,6 +36,22 @@ export class VerHorariosDocentesComponent {
       center: 'title',
       right: 'dayGridMonth,timeGridWeek'
     },
+    // ✅ NUEVO: Configurar iconos personalizados para las flechas
+    buttonIcons: {
+      prev: 'chevron-left',
+      next: 'chevron-right',
+      prevYear: 'chevrons-left',
+      nextYear: 'chevrons-right'
+    },
+    // ✅ ALTERNATIVA: Usar texto en lugar de iconos
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      prev: '‹',
+      next: '›'
+    },
     weekends: true,
     allDaySlot: false,
     slotMinTime: '07:00:00',
@@ -48,12 +64,6 @@ export class VerHorariosDocentesComponent {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false
-    },
-    buttonText: {
-      today: 'Hoy',
-      month: 'Mes',
-      week: 'Semana',
-      day: 'Día'
     },
     eventDataTransform: (event) => {
       return event;
@@ -86,7 +96,6 @@ export class VerHorariosDocentesComponent {
         }
       },
       error: (err) => {
-        console.error('Error al cargar periodos:', err);
         this.mensajeError = 'Error al cargar los periodos';
       }
     });
@@ -106,7 +115,6 @@ export class VerHorariosDocentesComponent {
         this.limpiarCalendario();
       },
       error: (err) => {
-        console.error('Error al cargar docentes:', err);
         this.mensajeError = 'Error al cargar docentes';
       }
     });
@@ -122,7 +130,6 @@ export class VerHorariosDocentesComponent {
             this.DocenteSeleccionado = 0;
           },
           error: (err) => {
-            console.error('Error al cargar docentes:', err);
             this.mensajeError = 'Error al cargar los docentes';
           }
         });
@@ -162,7 +169,6 @@ export class VerHorariosDocentesComponent {
         },
         error: (err) => {
           this.notificationService.hideLoading();
-          console.error('Error al cargar los horarios:', err);
           this.mensajeError = 'Error al cargar los horarios';
           this.limpiarCalendario();
         }
@@ -422,11 +428,10 @@ abrirModalDetalleHorario(horarioId: number): void {
 
   // MÉTODOS HEREDADOS (mantenidos por compatibilidad, pero ya no se usan)
   actualizarEventosCalendarioRecurrente(): void {
-    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
+
   }
 
   actualizarEventosParaSemanaActual(fechaReferencia: Date): void {
-    console.warn('Este método ya no se usa. Se mantiene por compatibilidad.');
   }
 
   obtenerInicioSemana(fecha: Date): Date {
