@@ -161,7 +161,7 @@
             <ul [ngClass]="{'space-y-2 px-3': sidebarOpen, 'space-y-1 px-2': !sidebarOpen}">
               <!-- INICIO -->
               <li
-                *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR'])"
+                *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR','VICERRECTOR'])"
                 class="group relative">
                 <a [routerLink]="['/inicio/bienvenida']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
@@ -258,7 +258,7 @@
               </li>
 
               <!-- Generar Reportes -->
-              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR'])"
+              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'])"
                 class="group relative">
                 <a [routerLink]="['/inicio/generar-reporte']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
@@ -283,7 +283,7 @@
               </li>
 
               <!-- Ver Horarios -->
-              <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR'])"
+              <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR','VICERRECTOR'])"
                 class="group relative">
                 <a [routerLink]="['/inicio/ver-horario']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"
@@ -308,7 +308,7 @@
               </li>
 
               <!-- Ver Horarios Docentes -->
-              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'])"
+              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'])"
                 class="group relative">
                 <a [routerLink]="['/inicio/ver-horario-docente']" routerLinkActive="bg-verde-claro text-white shadow-lg"
                   [routerLinkActiveOptions]="{ exact: true }"

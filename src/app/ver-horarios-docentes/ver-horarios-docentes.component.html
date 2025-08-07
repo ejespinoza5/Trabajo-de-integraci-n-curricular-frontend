@@ -91,10 +91,41 @@
                   placeholder="Seleccionar docente" (change)="onDocenteChange()" [searchable]="true" [clearable]="false"
                   [appendTo]="'body'" [disabled]="!PeriodoSeleccionado">
                   <ng-template ng-label-tmp let-item="item">
-                    <div class="text-sm">{{ item ? item.nombre : 'Seleccionar docente' }}</div>
+                    <div class="text-sm">{{ item ? (item.nombre | uppercase) : 'SELECCIONAR DOCENTE' }}</div>
+                  </ng-template>
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="text-sm">{{ item.nombre | uppercase }}</div>
                   </ng-template>
                 </ng-select>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón Ver PDF -->
+        <div *ngIf="PeriodoSeleccionado && DocenteSeleccionado" class="mb-8">
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200">Ver Horario</h3>
+              </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <!-- Botón Ver PDF -->
+              <button
+                class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 sm:px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                (click)="generarPDF()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Ver Horario PDF
+              </button>
             </div>
           </div>
         </div>

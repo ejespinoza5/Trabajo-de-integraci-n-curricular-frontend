@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Aulas</title>
-</head>
-
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen animate-fade-in-delay dark:bg-gray-900 dark:from-gray-900 dark:to-gray-900 h-full">
+<div class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen animate-fade-in-delay dark:bg-gray-900 dark:from-gray-900 dark:to-gray-900 h-full">
   <div class="container mx-auto px-4 py-8 dark:bg-gray-900">
+    
+                                       
     <!-- Header con icono y título -->
     <div class="text-center mb-8">
       <div
@@ -32,74 +25,322 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Agregar Nueva Aula</h2>
+                     <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Agregar Nueva Aula</h2>
         </div>
 
-        <!-- Campos del formulario -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <!-- Campo de Nombre -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium ">
-              <span class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                <svg class="w-4 h-4 text-gray-500 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-                Nombre del Aula
-              </span>
-            </label>
-            <input [(ngModel)]="nuevaAula.nombre" placeholder="Ej: Laboratorio de Computación"
-              class="w-full px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-800 bg-gray-50  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 focus:bg-white" />
-          </div>
+                 <!-- Campos del formulario -->
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+           <!-- Campo de Nombre -->
+           <div class="space-y-2">
+             <label class="block text-sm font-medium ">
+               <span class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                 <svg class="w-4 h-4 text-gray-500 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                 </svg>
+                 Nombre del Aula
+               </span>
+             </label>
+             <input [(ngModel)]="nuevaAula.nombre" placeholder="Ej: Laboratorio de Computación"
+               class="w-full px-3 py-3 border border-gray-300 rounded-xl text-sm bg-white text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400">
+           </div>
 
-          <!-- Campo de Tipo -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              <span class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-                Tipo de Aula
-              </span>
-            </label>
-            <div class="custom-ng-select">
-              <ng-select [items]="tiposAula" [(ngModel)]="nuevaAula.tipo" bindLabel="NOMBRE_TIPO" bindValue="ID_TIPO"
-                placeholder="Selecciona un tipo de aula" [searchable]="true" [clearable]="false" [appendTo]="'body'">
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm text-gray-800 ">{{ item?.NOMBRE_TIPO || 'Selecciona un tipo de aula' }}</div>
-                </ng-template>
-                <ng-template ng-option-tmp let-item="item">
-                  <div class="text-sm py-1 text-gray-800">{{ item.NOMBRE_TIPO }}</div>
-                </ng-template>
-              </ng-select>
-            </div>
-          </div>
-        </div>
+           <!-- Campo de Tipo -->
+           <div class="space-y-2">
+             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+               <span class="flex items-center gap-2">
+                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor"
+                   viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                 </svg>
+                 Tipo de Aula
+               </span>
+             </label>
+             
+             <!-- Custom Dropdown -->
+             <div class="relative" #dropdownContainer>
+               <!-- Dropdown Trigger -->
+                               <button 
+                  type="button"
+                  (click)="toggleDropdown()"
+                  [disabled]="agregandoNuevoTipo || editandoTipoEnSelect || agregandoNuevaUbicacion || editandoUbicacionEnSelect"
+                  class="w-full px-3 py-3 border border-gray-300 rounded-xl text-sm text-left bg-white text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between">
+                 <span class="truncate">
+                   {{ getSelectedTipoName() || 'Selecciona un tipo' }}
+                 </span>
+                 <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" 
+                      [class.rotate-180]="dropdownOpen"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                 </svg>
+               </button>
+
+               <!-- Dropdown Menu -->
+               <div *ngIf="dropdownOpen" 
+                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                 
+                 <!-- Search Input -->
+                 <div class="p-2 border-b border-gray-200">
+                   <input 
+                     type="text"
+                     [(ngModel)]="searchTerm"
+                     placeholder="Buscar tipo..."
+                     class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800"
+                     (click)="$event.stopPropagation()">
+                 </div>
+
+                 <!-- Options -->
+                 <div class="py-1">
+                   <!-- Real tipos -->
+                   <div *ngFor="let item of getFilteredTipos()" 
+                        class="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                        (click)="selectTipo(item)">
+                     <div class="flex items-center justify-between">
+                       <span class="text-sm text-gray-800">{{ item.NOMBRE_TIPO }}</span>
+                       <div class="flex gap-1 ml-2">
+                         <button 
+                           (click)="editarTipoDesdeSelect(item); $event.stopPropagation()"
+                           class="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                           title="Editar tipo">
+                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                           </svg>
+                         </button>
+                         <button 
+                           (click)="eliminarTipoDesdeSelect(item.ID_TIPO, item.NOMBRE_TIPO); $event.stopPropagation()"
+                           class="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 rounded transition-colors"
+                           title="Eliminar tipo">
+                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                           </svg>
+                         </button>
+                       </div>
+                     </div>
+                   </div>
+
+                   <!-- Add option -->
+                   <div *ngIf="!agregandoNuevoTipo && !editandoTipoEnSelect && getFilteredTipos().length > 0" 
+                        class="px-3 py-2 hover:bg-green-50 cursor-pointer border-t border-gray-200"
+                        (click)="activarModoAgregarTipo(); $event.stopPropagation()">
+                     <span class="text-sm text-green-600 font-medium">+ Agregar nuevo tipo</span>
+                   </div>
+
+                   <!-- No results message -->
+                   <div *ngIf="getFilteredTipos().length === 0 && searchTerm" 
+                        class="px-3 py-2 text-sm text-gray-500">
+                     No se encontraron tipos que coincidan con "{{ searchTerm }}"
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+                           <!-- Formulario de agregar tipo separado -->
+              <div *ngIf="agregandoNuevoTipo" class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div class="space-y-2">
+                  <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">Agregar nuevo tipo</div>
+                  
+                  
+                                     <input 
+                     type="text"
+                     [(ngModel)]="nuevoTipoNombre"
+                     placeholder="Nombre del tipo"
+                     class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800 mb-2">
+                   <div class="flex gap-2">
+                     <button 
+                       (click)="guardarNuevoTipo()"
+                       class="flex-1 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
+                       Guardar
+                     </button>
+                     <button 
+                       (click)="cancelarAgregarTipo()"
+                       class="flex-1 px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-colors">
+                       Cancelar
+                     </button>
+                   </div>
+                </div>
+              </div>
+
+              <!-- Formulario de editar tipo separado -->
+              <div *ngIf="editandoTipoEnSelect" class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div class="space-y-2">
+                  <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">Editar tipo</div>
+                  
+                                     <input 
+                     type="text"
+                     [(ngModel)]="editandoTipoNombre"
+                     placeholder="Nombre del tipo"
+                     class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800 mb-2">
+                   <div class="flex gap-2">
+                     <button 
+                       (click)="guardarEditarTipo()"
+                       class="flex-1 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors">
+                       Guardar
+                     </button>
+                     <button 
+                       (click)="cancelarEditarTipo()"
+                       class="flex-1 px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-colors">
+                       Cancelar
+                     </button>
+                   </div>
+                </div>
+              </div>
+           </div>
+
+           <!-- Campo de Ubicación -->
+           <div class="space-y-2">
+             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+               <span class="flex items-center gap-2">
+                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor"
+                   viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                 </svg>
+                 Ubicación de Aula
+               </span>
+             </label>
+             
+             <!-- Custom Dropdown para Ubicaciones -->
+             <div class="relative" #dropdownUbicacionContainer>
+               <!-- Dropdown Trigger -->
+                               <button 
+                  type="button"
+                  (click)="toggleDropdownUbicacion()"
+                  [disabled]="agregandoNuevaUbicacion || editandoUbicacionEnSelect || agregandoNuevoTipo || editandoTipoEnSelect"
+                  class="w-full px-3 py-3 border border-gray-300 rounded-xl text-sm text-left bg-white text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-between">
+                 <span class="truncate">
+                   {{ getSelectedUbicacionName() || 'Selecciona una ubicación' }}
+                 </span>
+                 <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" 
+                      [class.rotate-180]="dropdownUbicacionOpen"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                 </svg>
+               </button>
+
+               <!-- Dropdown Menu -->
+               <div *ngIf="dropdownUbicacionOpen" 
+                    class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                 
+                 <!-- Search Input -->
+                 <div class="p-2 border-b border-gray-200">
+                   <input 
+                     type="text"
+                     [(ngModel)]="searchTermUbicacion"
+                     placeholder="Buscar ubicación..."
+                     class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800"
+                     (click)="$event.stopPropagation()">
+                 </div>
+
+                                   <!-- Options -->
+                  <div class="py-1">
+                    <!-- Real ubicaciones -->
+                    <div *ngFor="let item of getFilteredUbicaciones(); let i = index" 
+                         class="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                         (click)="selectUbicacion(item)">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-800">{{ item.NOMBRE_UBICACION || 'Sin nombre' }}</span>
+                        <div class="flex gap-1 ml-2">
+                          <button 
+                            (click)="editarUbicacionDesdeSelect(item); $event.stopPropagation()"
+                            class="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded transition-colors"
+                            title="Editar ubicación">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button 
+                            (click)="eliminarUbicacionDesdeSelect(item.ID_UBICACION, item.NOMBRE_UBICACION); $event.stopPropagation()"
+                            class="p-1 text-red-600 hover:text-red-800 hover:bg-red-100 rounded transition-colors"
+                            title="Eliminar ubicación">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                   <!-- Add option -->
+                   <div *ngIf="!agregandoNuevaUbicacion && !editandoUbicacionEnSelect && getFilteredUbicaciones().length > 0" 
+                        class="px-3 py-2 hover:bg-green-50 cursor-pointer border-t border-gray-200"
+                        (click)="activarModoAgregarUbicacion(); $event.stopPropagation()">
+                     <span class="text-sm text-green-600 font-medium">+ Agregar nueva ubicación</span>
+                   </div>
+
+                   <!-- No results message -->
+                   <div *ngIf="getFilteredUbicaciones().length === 0 && searchTermUbicacion" 
+                        class="px-3 py-2 text-sm text-gray-500">
+                     No se encontraron ubicaciones que coincidan con "{{ searchTermUbicacion }}"
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+                           <!-- Formulario de agregar ubicación separado -->
+              <div *ngIf="agregandoNuevaUbicacion" class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div class="space-y-2">
+                  <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">Agregar nueva ubicación</div>
+                  
+                                     <input 
+                     type="text"
+                     [(ngModel)]="nuevaUbicacionNombre"
+                     placeholder="Nombre de la ubicación"
+                     class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800 mb-2">
+                   <div class="flex gap-2">
+                     <button 
+                       (click)="guardarNuevaUbicacion()"
+                       class="flex-1 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
+                       Guardar
+                     </button>
+                     <button 
+                       (click)="cancelarAgregarUbicacion()"
+                       class="flex-1 px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-colors">
+                       Cancelar
+                     </button>
+                   </div>
+                </div>
+              </div>
+
+              <!-- Formulario de editar ubicación separado -->
+              <div *ngIf="editandoUbicacionEnSelect" class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
+                <div class="space-y-2">
+                  <div class="text-sm font-semibold text-gray-800 dark:text-gray-200">Editar ubicación</div>
+                
+                                     <input 
+                     type="text"
+                     [(ngModel)]="editandoUbicacionNombre"
+                     placeholder="Nombre de la ubicación"
+                     class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-800 mb-2">
+                   <div class="flex gap-2">
+                     <button 
+                       (click)="guardarEditarUbicacion()"
+                       class="flex-1 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors">
+                       Guardar
+                     </button>
+                     <button 
+                       (click)="cancelarEditarUbicacion()"
+                       class="flex-1 px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-colors">
+                       Cancelar
+                     </button>
+                   </div>
+                </div>
+              </div>
+           </div>
+         </div>
 
         <!-- Botones -->
-        <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <!-- Botón Configurar Tipos -->
-          <button (click)="abrirModal()"
-            class="flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-xl text-sm font-medium hover:bg-gray-700 dark:hover:bg-gray-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Configurar Tipos
-          </button>
-
+        <div class="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
           <!-- Botón Agregar Aula -->
-          <button (click)="agregarAulas()"
-            class="flex items-center justify-center gap-2 bg-azul-botones text-white px-8 py-3 rounded-xl text-sm font-medium hover:bg-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Agregar Aula
-          </button>
+                     <button (click)="agregarAulas()"
+           class="flex items-center justify-center gap-2 bg-azul-botones text-white px-8 py-3 rounded-xl text-sm font-medium hover:bg-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+           </svg>
+           Agregar Aula
+         </button>
         </div>
       </div>
     </div>
@@ -151,6 +392,19 @@
                   </span>
                 </th>
                 <th
+                  class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                  <span class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Ubicación
+                  </span>
+                </th>
+                <th
                   class="px-6 py-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
                   <span class="flex items-center justify-center gap-2">
                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
@@ -183,6 +437,12 @@
                     {{ aula.NOMBRE_TIPO }}
                   </span>
                 </td>
+                                 <td class="px-6 py-4">
+                   <span
+                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200">
+                     {{ aula.NOMBRE_UBICACION || 'Sin ubicación' }}
+                   </span>
+                 </td>
                 <td class="px-6 py-4 text-center">
                   <div class="flex justify-center gap-2">
                     <button (click)="editarAula(aula.ID_AULA.toString())"
@@ -242,109 +502,5 @@
       </div>
     </div>
 
-
-    <!-- Modal -->
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm" *ngIf="mostrarModal">
-  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-
-    <!-- Header del modal -->
-    <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-t-2xl">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
-        </div>
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Gestión de Tipos de Aula</h2>
-      </div>
-
-      <button (click)="cerrarModal()" class="text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-2 transition-all duration-200">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Contenido del modal -->
-    <div class="p-6 space-y-6">
-
-      <!-- Formulario -->
-      <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Nuevo Tipo de Aula
-        </h3>
-
-        <form (ngSubmit)="guardarTipoAula()" class="space-y-4">
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Tipo</label>
-            <input type="text" [(ngModel)]="nuevoTipo.nombre" name="nombre"
-              class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-400"
-              placeholder="Ej: Laboratorio, Aula Virtual, Auditorio" required>
-          </div>
-
-          <div class="flex justify-end gap-3 pt-4">
-            <button type="button" (click)="cerrarModal()"
-              class="bg-rosado-oscuro text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-rosado-oscuro-hover transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              Cancelar
-            </button>
-            <button type="submit"
-              class="bg-azul-botones text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              Guardar Tipo
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Lista -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-          </svg>
-          Tipos de Aula Existentes
-        </h3>
-
-        <div class="max-h-64 overflow-y-auto">
-          <div class="space-y-2">
-            <div *ngFor="let tipo of tiposAula"
-              class="flex justify-between items-center p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <span class="text-gray-800 dark:text-white font-medium">{{ tipo.NOMBRE_TIPO }}</span>
-              </div>
-              <div class="flex gap-2">
-                <button (click)="editar(tipo)"
-                  class="bg-azul-botones text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                  <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Editar
-                </button>
-                <button (click)="eliminar(tipo.ID_TIPO)"
-                  class="bg-rosado-oscuro text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-rosado-oscuro-hover transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-                  <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
-
-  </div>
-</body>
-
-</html>

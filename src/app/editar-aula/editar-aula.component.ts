@@ -17,9 +17,11 @@ interface TipoAula {
 export class EditarAulaComponent implements OnInit {
   aula: any = {
     nombre: '',
-    tipo: 0 // ID del tipo seleccionado
+    tipo: 0, // ID del tipo seleccionado
+    ubicacion: 0 // ID de la ubicación seleccionada
   };
   tipos: any[] = []; // Array de tipos de aula
+  ubicaciones: any[] = []; // Array de ubicaciones
   id: number = 0;
 
   constructor(
@@ -32,15 +34,15 @@ export class EditarAulaComponent implements OnInit {
   ngOnInit(): void {
     this.id = +this.route.snapshot.paramMap.get('id')!;
 
-    // Cargar los tipos disponibles primero
+    // Cargar los tipos y ubicaciones disponibles primero
     this.cargarTipos();
+    this.cargarUbicaciones();
 
     // Cargar los datos del aula
     this.cargarAula();
   }
 
   cargarTipos(): void {
-    // Necesitas crear este método en tu servicio si no existe
     this.aulaService.obtenerTipoAulas().subscribe({
       next: (tipos) => {
         this.tipos = tipos;
@@ -51,12 +53,34 @@ export class EditarAulaComponent implements OnInit {
     });
   }
 
+  cargarUbicaciones(): void {
+    this.aulaService.obtenerUbicacionesAulas().subscribe({
+      next: (ubicaciones) => {
+        // Manejar diferentes formatos de respuesta
+        let ubicacionesProcesadas = ubicaciones;
+        if (ubicaciones && Array.isArray(ubicaciones)) {
+          ubicacionesProcesadas = ubicaciones;
+        } else if (ubicaciones && ubicaciones.data && Array.isArray(ubicaciones.data)) {
+          ubicacionesProcesadas = ubicaciones.data;
+        } else if (ubicaciones && ubicaciones.ubicaciones && Array.isArray(ubicaciones.ubicaciones)) {
+          ubicacionesProcesadas = ubicaciones.ubicaciones;
+        }
+        
+        this.ubicaciones = ubicacionesProcesadas;
+      },
+      error: (err) => {
+        this.notificationService.showError('Error al cargar ubicaciones');
+      }
+    });
+  }
+
   cargarAula(): void {
     this.aulaService.obtenerAulasId(this.id).subscribe({
       next: (data: Aulas) => {
         this.aula = {
           nombre: data.NOMBRE_AULA,
-          tipo: data.TIPO_AULA
+          tipo: data.TIPO_AULA,
+          ubicacion: data.ID_UBICACION || 0
         };
       },
       error: (err) => {
@@ -98,11 +122,7 @@ export class EditarAulaComponent implements OnInit {
           mensajeError = error.message;
         }
 
-        this.notificationService.showErrorReport(
-          'Error',
-          mensajeError,
-          'Cerrar'
-        );
+        this.notificationService.showWarning('Error: ' + mensajeError);
       }
     });
   }

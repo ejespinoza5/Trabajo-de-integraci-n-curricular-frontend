@@ -19,14 +19,14 @@ const routes: Routes = [
   { path: '', component: LoginComponent },
  { path: 'login', component: LoginComponent },
  {
-  path: 'inicio',component: PrincipalComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR','ESTUDIANTE','DOCENTE','ADMINISTRADOR'] } ,
+  path: 'inicio',component: PrincipalComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR','ESTUDIANTE','DOCENTE','ADMINISTRADOR','VICERRECTOR'] } ,
   children: [
     { path: 'bienvenida', component: InicioComponent,canActivate: [AuthGuard] },
     { path: 'gestionar-aulas', component: GestionarAulasComponent, canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR', 'ADMINISTRADOR'] } },
     { path: 'generar-horario', component: GenerarHorariosComponent,canActivate: [AuthGuard], data: { roles: ['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR'] } },
-    { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR'] } },
-    { path: 'ver-horario', component: VerHorariosComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'] } },
-    { path: 'ver-horario-docente', component: VerHorariosDocentesComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'] } },
+    { path: 'generar-reporte', component: GenerarReportesComponent,canActivate: [AuthGuard], data: { roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'] } },
+    { path: 'ver-horario', component: VerHorariosComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'] } },
+    { path: 'ver-horario-docente', component: VerHorariosDocentesComponent,canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'] } },
     { path: 'editar-aula/:id', component: EditarAulaComponent, canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR', 'ADMINISTRADOR'] } },
     { path: 'coordinadores', component: CoordinadoresComponent, canActivate: [AuthGuard],data: { roles: ['SUPERADMINISTRADOR', 'ADMINISTRADOR'] }},
     { path: 'mi-horario', component: HorarioEstudianteComponent, canActivate: [AuthGuard], data: { roles: ['ESTUDIANTE'] } },

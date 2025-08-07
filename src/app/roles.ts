@@ -4,6 +4,7 @@ export const Roles: Record<number, string> = {
   14: 'ESTUDIANTE',
   15: 'DOCENTE',
   12: 'ADMINISTRADOR',
+  18: 'VICERRECTOR',
 };
 
 

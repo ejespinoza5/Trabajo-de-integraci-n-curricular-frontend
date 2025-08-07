@@ -15,3 +15,27 @@ html, body {
 .animate-fade-in-delay {
   animation: fadeIn 0.6s ease-out 0.2s both;
 }
+
+/* Custom dropdown styles */
+.custom-dropdown {
+  position: relative;
+}
+
+.custom-dropdown .dropdown-menu {
+  z-index: 1000;
+}
+
+/* Ensure proper dark mode support for custom dropdown */
+.dark .custom-dropdown .dropdown-menu {
+  background-color: #374151;
+  border-color: #4B5563;
+  color: #E5E7EB;
+}
+
+.dark .custom-dropdown .dropdown-menu .dropdown-item {
+  color: #E5E7EB;
+}
+
+.dark .custom-dropdown .dropdown-menu .dropdown-item:hover {
+  background-color: #4B5563;
+}

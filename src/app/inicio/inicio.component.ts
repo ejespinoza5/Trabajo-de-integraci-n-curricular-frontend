@@ -72,21 +72,21 @@ ngOnInit(): void {
         descripcion: 'Crear reportes del sistema',
         ruta: '/inicio/generar-reporte',
         icono: 'chart',
-        roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR']
+        roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR','VICERRECTOR']
       },
       {
         titulo: 'Ver Horarios',
         descripcion: 'Visualizar horarios académicos',
         ruta: '/inicio/ver-horario',
         icono: 'calendar',
-        roles: ['COORDINADOR', 'SUPERADMINISTRADOR', 'ADMINISTRADOR']
+        roles: ['COORDINADOR', 'SUPERADMINISTRADOR', 'ADMINISTRADOR','VICERRECTOR']
       },
       {
         titulo: 'Ver Horarios Docentes',
         descripcion: 'Visualizar horarios de docentes',
         ruta: '/inicio/ver-horario-docente',
         icono: 'teaching',
-        roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR']
+        roles: ['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR','VICERRECTOR']
       },
       {
         titulo: 'Mi Horario',

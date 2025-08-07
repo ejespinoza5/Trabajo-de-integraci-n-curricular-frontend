@@ -182,6 +182,498 @@
   color: #9ca3af;
 }
 
+/* Estilos adicionales para la vista de lista en modo oscuro */
+::ng-deep .dark .fc-list-table td {
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-table th {
+  background-color: #374151;
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+::ng-deep .dark .fc-list-day {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-day-cushion {
+  background-color: #374151;
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+::ng-deep .dark .fc-list-event-dot {
+  border-color: #3788d8;
+  background-color: #3788d8;
+}
+
+::ng-deep .dark .fc-list-event-graphic {
+  color: #3788d8;
+}
+
+::ng-deep .dark .fc-list-event-title a {
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event-title a:hover {
+  color: #ffffff;
+}
+
+::ng-deep .dark .fc-list-event-dot {
+  background-color: #3788d8;
+  border-color: #3788d8;
+}
+
+::ng-deep .dark .fc-list-event-graphic + td {
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-event-time {
+  color: #9ca3af;
+}
+
+::ng-deep .dark .fc-list-event-dot {
+  background-color: #3788d8;
+  border-color: #3788d8;
+}
+
+/* Asegurar que todos los elementos de texto en la lista sean visibles */
+::ng-deep .dark .fc-list-view {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-view * {
+  color: inherit;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion {
+  color: #e5e7eb;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-time {
+  color: #9ca3af;
+}
+
+/* Estilos específicos para el contenido de los eventos en lista */
+::ng-deep .dark .fc-list-event-title {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-event-time {
+  color: #9ca3af !important;
+}
+
+::ng-deep .dark .fc-list-day-cushion {
+  color: #e5e7eb !important;
+}
+
+/* Asegurar que los enlaces en la lista sean visibles */
+::ng-deep .dark .fc-list-event-title a {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-event-title a:hover {
+  color: #ffffff !important;
+}
+
+/* Estilos más específicos y forzados para la vista de lista en modo oscuro */
+::ng-deep .dark .fc-list-view {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-table {
+  background-color: #1f2937 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-table td {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-table th {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-title {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-time {
+  color: #9ca3af !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-day-cushion {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-day {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+/* Estilos específicos para el contenido de texto en la lista */
+::ng-deep .dark .fc-list-view .fc-list-event-title a {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-title a:hover {
+  color: #ffffff !important;
+}
+
+/* Forzar colores para todos los elementos de texto en la lista */
+::ng-deep .dark .fc-list-view * {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-time {
+  color: #9ca3af !important;
+}
+
+/* Estilos específicos para el contenedor principal de la lista */
+::ng-deep .dark .fc-list-view .fc-scroller {
+  background-color: #1f2937 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-scroller-liquid {
+  background-color: #1f2937 !important;
+}
+
+/* Asegurar que los bordes también sean visibles */
+::ng-deep .dark .fc-list-view .fc-list-table td,
+::ng-deep .dark .fc-list-view .fc-list-table th {
+  border-color: #374151 !important;
+}
+
+/* Estilos para el contenido específico de los eventos */
+::ng-deep .dark .fc-list-view .fc-list-event-graphic + td {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-dot {
+  background-color: #3788d8 !important;
+  border-color: #3788d8 !important;
+}
+
+/* Estilos ultra-específicos y forzados para la vista de lista en modo oscuro */
+::ng-deep .dark .fc-list-view,
+::ng-deep .dark .fc-list-view *,
+::ng-deep .dark .fc-list-view .fc-list-table,
+::ng-deep .dark .fc-list-view .fc-list-table *,
+::ng-deep .dark .fc-list-view .fc-list-event,
+::ng-deep .dark .fc-list-view .fc-list-event * {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event-time * {
+  color: #9ca3af !important;
+}
+
+/* Forzar colores para elementos específicos de la lista */
+::ng-deep .dark .fc-list-view .fc-list-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event-title *,
+::ng-deep .dark .fc-list-view .fc-list-event-title a,
+::ng-deep .dark .fc-list-view .fc-list-event-title a * {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event-title a:hover,
+::ng-deep .dark .fc-list-view .fc-list-event-title a:hover * {
+  color: #ffffff !important;
+}
+
+/* Estilos para todos los elementos de texto en la lista */
+::ng-deep .dark .fc-list-view .fc-list-day,
+::ng-deep .dark .fc-list-view .fc-list-day *,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion * {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para celdas de tabla específicas */
+::ng-deep .dark .fc-list-view .fc-list-table td,
+::ng-deep .dark .fc-list-view .fc-list-table td *,
+::ng-deep .dark .fc-list-view .fc-list-table th,
+::ng-deep .dark .fc-list-view .fc-list-table th * {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para elementos gráficos y contenido específico */
+::ng-deep .dark .fc-list-view .fc-list-event-graphic,
+::ng-deep .dark .fc-list-view .fc-list-event-graphic *,
+::ng-deep .dark .fc-list-view .fc-list-event-graphic + td,
+::ng-deep .dark .fc-list-view .fc-list-event-graphic + td * {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para el contenido de texto de los eventos */
+::ng-deep .dark .fc-list-view .fc-list-event .fc-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event .fc-event-title *,
+::ng-deep .dark .fc-list-view .fc-list-event .fc-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event .fc-event-time * {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event .fc-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event .fc-event-time * {
+  color: #9ca3af !important;
+}
+
+/* Estilos para enlaces y elementos interactivos */
+::ng-deep .dark .fc-list-view a,
+::ng-deep .dark .fc-list-view a * {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view a:hover,
+::ng-deep .dark .fc-list-view a:hover * {
+  color: #ffffff !important;
+}
+
+/* Estilos para elementos de scroll y contenedores */
+::ng-deep .dark .fc-list-view .fc-scroller,
+::ng-deep .dark .fc-list-view .fc-scroller *,
+::ng-deep .dark .fc-list-view .fc-scroller-liquid,
+::ng-deep .dark .fc-list-view .fc-scroller-liquid * {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para elementos de texto específicos */
+::ng-deep .dark .fc-list-view span,
+::ng-deep .dark .fc-list-view div,
+::ng-deep .dark .fc-list-view p,
+::ng-deep .dark .fc-list-view td,
+::ng-deep .dark .fc-list-view th {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para elementos de tiempo específicos */
+::ng-deep .dark .fc-list-view .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event-time span,
+::ng-deep .dark .fc-list-view .fc-list-event-time div {
+  color: #9ca3af !important;
+}
+
+/* Estilos para elementos de título específicos */
+::ng-deep .dark .fc-list-view .fc-list-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event-title span,
+::ng-deep .dark .fc-list-view .fc-list-event-title div {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para elementos de día específicos */
+::ng-deep .dark .fc-list-view .fc-list-day-cushion,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion span,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion div {
+  color: #e5e7eb !important;
+}
+
+/* Estilos para todos los elementos de texto en la vista de lista */
+::ng-deep .dark .fc-list-view * {
+  color: #e5e7eb !important;
+}
+
+/* Excepción para elementos de tiempo */
+::ng-deep .dark .fc-list-view .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event-time * {
+  color: #9ca3af !important;
+}
+
+/* Estilos para elementos de texto específicos que podrían estar siendo sobrescritos */
+::ng-deep .dark .fc-list-view .fc-list-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event-title *,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion,
+::ng-deep .dark .fc-list-view .fc-list-day-cushion * {
+  color: #e5e7eb !important;
+  font-weight: normal !important;
+}
+
+/* Estilos para elementos de tiempo específicos */
+::ng-deep .dark .fc-list-view .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event-time * {
+  color: #9ca3af !important;
+  font-weight: normal !important;
+}
+
+/* Estilos específicos para la vista de lista con colores de materias */
+::ng-deep .fc-list-view .fc-list-event {
+  transition: all 0.2s ease;
+}
+
+::ng-deep .fc-list-view .fc-list-event:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Asegurar que los eventos con colores de fondo mantengan su apariencia */
+::ng-deep .fc-list-view .fc-list-event[style*="background-color"] {
+  color: #000 !important;
+}
+
+::ng-deep .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-title,
+::ng-deep .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-title * {
+  color: #000 !important;
+}
+
+::ng-deep .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-time,
+::ng-deep .fc-list-view .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-time * {
+  color: #000 !important;
+}
+
+/* Estilos para el dot de eventos con colores */
+::ng-deep .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-dot {
+  background-color: inherit !important;
+  border-color: inherit !important;
+}
+
+/* Estilos simples y limpios para la vista de lista */
+::ng-deep .fc-list-view .fc-list-event {
+  border-radius: 6px !important;
+  margin: 2px 0 !important;
+  padding: 8px 12px !important;
+}
+
+::ng-deep .fc-list-view .fc-list-event-time {
+  color: #000 !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+::ng-deep .fc-list-view .fc-list-event-title {
+  color: #000 !important;
+  font-weight: bold !important;
+  font-size: 13px !important;
+}
+
+/* Estilos para modo oscuro */
+::ng-deep .dark .fc-list-view .fc-list-day-cushion {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-day {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-table {
+  background-color: #1f2937 !important;
+}
+
+/* Asegurar que el tiempo sea visible en todos los casos */
+::ng-deep .fc-list-view .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event-time {
+  color: #000 !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Eliminar líneas feas y efectos hover problemáticos */
+::ng-deep .fc-list-view .fc-list-event:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Eliminar líneas rojas y bordes problemáticos */
+::ng-deep .fc-list-view .fc-list-table td,
+::ng-deep .fc-list-view .fc-list-table th {
+  border: none !important;
+}
+
+::ng-deep .fc-list-view .fc-list-event {
+  border: none !important;
+}
+
+/* Asegurar que el tiempo sea visible con mayor especificidad */
+::ng-deep .fc-list-view .fc-list-event .fc-list-event-time,
+::ng-deep .fc-list-view .fc-list-event .fc-list-event-time *,
+::ng-deep .dark .fc-list-view .fc-list-event .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event .fc-list-event-time * {
+  color: #000 !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+
+/* Estilos para el dot de eventos con colores */
+::ng-deep .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-dot {
+  background-color: inherit !important;
+  border-color: inherit !important;
+}
+
+/* Estilos para modo oscuro que respeten los colores de fondo */
+::ng-deep .dark .fc-list-view .fc-list-event[style*="background-color"] {
+  color: #000 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-title * {
+  color: #000 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event[style*="background-color"] .fc-list-event-time * {
+  color: #000 !important;
+}
+
+/* Estilos para elementos de día que mantengan el tema oscuro */
+::ng-deep .dark .fc-list-view .fc-list-day-cushion {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-day {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+/* Estilos para la tabla en modo oscuro */
+::ng-deep .dark .fc-list-view .fc-list-table {
+  background-color: #1f2937 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-table td {
+  border-color: #374151 !important;
+}
+
+/* Estilos para eventos sin color de fondo (fallback) */
+::ng-deep .dark .fc-list-view .fc-list-event:not([style*="background-color"]) {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event:not([style*="background-color"]) .fc-list-event-title,
+::ng-deep .dark .fc-list-view .fc-list-event:not([style*="background-color"]) .fc-list-event-title * {
+  color: #e5e7eb !important;
+}
+
+::ng-deep .dark .fc-list-view .fc-list-event:not([style*="background-color"]) .fc-list-event-time,
+::ng-deep .dark .fc-list-view .fc-list-event:not([style*="background-color"]) .fc-list-event-time * {
+  color: #9ca3af !important;
+}
+
 /* Estilos para los eventos en el calendario */
 ::ng-deep .fc-event {
   border-radius: 4px;

@@ -49,6 +49,8 @@ iniciarSesion() {
         this.router.navigate(['/inicio/bienvenida']);
       } else if (rol === 12) {
         this.router.navigate(['/inicio/bienvenida']);
+      } else if (rol === 18) {
+        this.router.navigate(['/inicio/bienvenida']);
       } else {
         this.notificationService.showWarningReport(
           'Rol no autorizado',

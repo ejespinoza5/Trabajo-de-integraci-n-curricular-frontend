@@ -3,6 +3,7 @@ import { Periodo, VerHorariosService } from '../ver-horarios.service';
 import { AuthService } from '../auth.service';
 import { ReportesService } from '../reportes.service';
 import { NotificationService } from '../notificacion.service';
+import { VerHorariosDocentesService } from '../ver-horarios-docentes.service';
 
 @Component({
   selector: 'app-generar-reportes',
@@ -19,6 +20,14 @@ export class GenerarReportesComponent implements OnInit {
     carreras: any[] = [];
     cursos: any[] = [];
     mensajeError: string = '';
+
+    // Nuevas propiedades para reportes de auditoría
+    docentes: any[] = [];
+    aulas: any[] = [];
+    docenteSeleccionado: number = 0;
+    aulaSeleccionada: number = 0;
+    
+
 
     observacion: any;
 
@@ -53,7 +62,7 @@ mensajeErrorAutoridades: string = '';
   observacionOriginal: any = {};
     constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService,
       private reporteService: ReportesService, private notificationService: NotificationService,
-      private authService: AuthService
+      private authService: AuthService, private verHorariosDocentesService: VerHorariosDocentesService
     ) { }
 
      ngOnInit(): void {
@@ -83,6 +92,10 @@ mensajeErrorAutoridades: string = '';
       this.cursos = [];
       this.CarreraSeleccionada = 0;
       this.CursoSeleccionado = 0;
+      this.docentes = [];
+      this.docenteSeleccionado = 0;
+      this.aulas = [];
+      this.aulaSeleccionada = 0;
       return;
     }
 
@@ -97,7 +110,12 @@ mensajeErrorAutoridades: string = '';
         this.mensajeError = 'Error al cargar las carreras';
       }
     });
+
+    this.cargarDocentes(idPeriodo);
+    this.cargarAulas(idPeriodo);
   }
+
+
 
   onCarreraChange(): void {
     if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
@@ -155,6 +173,113 @@ cargarCursos(): void {
           }
         });
     }
+  }
+
+  // Métodos para reportes de auditoría
+  cargarAulas(idPeriodo: number): void {
+    this.reporteService.obtenerAulasHorarios(idPeriodo).subscribe({
+      next: (data: any[]) => {
+        this.aulas = data;
+        this.aulaSeleccionada = 0;
+      },
+      error: (err: any) => {
+        this.mensajeError = 'Error al cargar las aulas';
+      }
+    });
+  }
+
+  cargarDocentes(idPeriodo: number): void {
+    this.verHorariosDocentesService.obtenerDocentesPorPeriodoYCarrera(idPeriodo).subscribe({
+      next: (data: any[]) => {
+        this.docentes = data;
+        this.docenteSeleccionado = 0;
+      },
+      error: (err: any) => {
+        this.mensajeError = 'Error al cargar los docentes';
+      }
+    });
+  }
+
+  generarPDFDocente(): void {
+    if (!this.PeriodoSeleccionado || !this.docenteSeleccionado) {
+      this.notificationService.showWarningReport(
+        'Filtros incompletos',
+        'Por favor, selecciona el periodo y el docente antes de generar el PDF.',
+        'Entendido'
+      );
+      return;
+    }
+
+    this.notificationService.showLoading('Generando PDF del docente...');
+
+    this.reporteService.generarPdfDocenteAuditoria(this.PeriodoSeleccionado, this.docenteSeleccionado).subscribe({
+      next: (blob: Blob) => {
+        this.notificationService.hideLoading();
+        
+        // Crear URL para abrir en nueva pestaña
+        const url = window.URL.createObjectURL(blob);
+        const nuevaPestana = window.open(url, '_blank');
+
+        if (nuevaPestana) {
+          this.notificationService.showSuccess(
+            'El PDF del docente se abrió en una nueva pestaña.'
+          );
+        } else {
+          this.notificationService.showWarningReport(
+            'Ventana bloqueada',
+            'El navegador bloqueó la ventana emergente. El PDF se descargará automáticamente.',
+            'Entendido'
+          );
+        }
+      },
+      error: (err) => {
+        this.notificationService.hideLoading();
+        this.notificationService.showError(
+          'Error al generar el PDF del docente. Hubo un problema al generar el reporte. Por favor, intenta nuevamente.'
+        );
+      }
+    });
+  }
+
+  generarPDFAula(): void {
+    if (!this.PeriodoSeleccionado || !this.aulaSeleccionada) {
+      this.notificationService.showWarningReport(
+        'Filtros incompletos',
+        'Por favor, selecciona el periodo y el aula antes de generar el PDF.',
+        'Entendido'
+      );
+      return;
+    }
+
+    this.notificationService.showLoading('Generando PDF del aula...');
+
+    this.reporteService.generarPdfAulaAuditoria(this.PeriodoSeleccionado, this.aulaSeleccionada).subscribe({
+      next: (blob: Blob) => {
+        this.notificationService.hideLoading();
+        
+        // Crear URL para abrir en nueva pestaña
+        const url = window.URL.createObjectURL(blob);
+        const nuevaPestana = window.open(url, '_blank');
+
+        if (nuevaPestana) {
+          this.notificationService.showSuccess(
+            'El PDF del aula se abrió en una nueva pestaña.'
+          );
+        } else {
+          this.notificationService.showWarningReport(
+            'Ventana bloqueada',
+            'El navegador bloqueó la ventana emergente. El PDF se descargará automáticamente.',
+            'Entendido'
+          );
+        }
+      },
+      error: (err) => {
+        this.notificationService.hideLoading();
+        this.notificationService.showError(
+          'Error al generar el PDF del aula. Hubo un problema al generar el reporte. Por favor, intenta nuevamente.'
+        );
+      }
+    });
   }
 
 
@@ -296,6 +421,108 @@ generarExcel() {
       this.notificationService.hideLoading();
 
       let mensajeError = 'Error al generar el Excel';
+
+      if (error.error?.message) {
+        mensajeError = error.error.message;
+      } else if (error.message) {
+        mensajeError = error.message;
+      }
+
+      this.notificationService.showErrorReport(
+        'Error',
+        mensajeError,
+        'Cerrar'
+      );
+    }
+  });
+}
+
+generarExcelDocente() {
+  if (!this.PeriodoSeleccionado || !this.docenteSeleccionado) {
+    this.notificationService.showWarningReport(
+      'Filtros incompletos',
+      'Por favor, selecciona el periodo y el docente antes de generar el Excel.',
+      'Entendido'
+    );
+    return;
+  }
+
+  this.notificationService.showLoading('Generando Excel de docente...');
+
+  console.log('Generando Excel para docente:', this.PeriodoSeleccionado, this.docenteSeleccionado);
+  this.reporteService.crearReporteDocentesExcel(this.PeriodoSeleccionado, this.docenteSeleccionado).subscribe({
+    next: (blob: Blob) => {
+      this.notificationService.hideLoading();
+
+      // Crear URL para descargar el archivo
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte-docente-${this.PeriodoSeleccionado}-${this.docenteSeleccionado}.xlsx`;
+      link.click();
+
+      // Limpiar la URL creada
+      window.URL.revokeObjectURL(url);
+
+      this.notificationService.showSuccess(
+        'El archivo Excel del docente se descargó correctamente.'
+      );
+    },
+    error: (error: any) => {
+      this.notificationService.hideLoading();
+
+      let mensajeError = 'Error al generar el Excel del docente';
+
+      if (error.error?.message) {
+        mensajeError = error.error.message;
+      } else if (error.message) {
+        mensajeError = error.message;
+      }
+
+      this.notificationService.showErrorReport(
+        'Error',
+        mensajeError,
+        'Cerrar'
+      );
+    }
+  });
+}
+
+generarExcelAula() {
+  if (!this.PeriodoSeleccionado || !this.aulaSeleccionada) {
+    this.notificationService.showWarningReport(
+      'Filtros incompletos',
+      'Por favor, selecciona el periodo y el aula antes de generar el Excel.',
+      'Entendido'
+    );
+    return;
+  }
+
+  this.notificationService.showLoading('Generando Excel de aula...');
+
+  console.log('Generando Excel para aula:', this.PeriodoSeleccionado, this.aulaSeleccionada);
+  this.reporteService.crearReporteAulasExcel(this.PeriodoSeleccionado, this.aulaSeleccionada).subscribe({
+    next: (blob: Blob) => {
+      this.notificationService.hideLoading();
+
+      // Crear URL para descargar el archivo
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `reporte-aula-${this.PeriodoSeleccionado}-${this.aulaSeleccionada}.xlsx`;
+      link.click();
+
+      // Limpiar la URL creada
+      window.URL.revokeObjectURL(url);
+
+      this.notificationService.showSuccess(
+        'El archivo Excel del aula se descargó correctamente.'
+      );
+    },
+    error: (error: any) => {
+      this.notificationService.hideLoading();
+
+      let mensajeError = 'Error al generar el Excel del aula';
 
       if (error.error?.message) {
         mensajeError = error.error.message;
@@ -640,4 +867,3 @@ limpiarMensajesAutoridades(): void {
 
 
 }
-

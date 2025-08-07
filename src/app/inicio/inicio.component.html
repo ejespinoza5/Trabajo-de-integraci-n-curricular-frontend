@@ -26,6 +26,10 @@
            class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
           Gestiona los horarios académicos y genera reportes para optimizar la planificación educativa.
         </p>
+        <p *ngIf="usuarioService.tieneRol(['VICERRECTOR'])"
+           class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          Gestiona el estado de los horarios académicos y genera reportes para optimizar la planificación educativa.
+        </p>
         <p *ngIf="usuarioService.tieneRol(['ESTUDIANTE', 'DOCENTE'])"
            class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
           Accede a tu información académica y visualiza tus horarios de manera intuitiva.
@@ -33,7 +37,7 @@
       </div>
 
       <!-- Quick Stats Dashboard -->
-      <div *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR', 'COORDINADOR'])" class="mb-6">
+      <div *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR', 'COORDINADOR','VICERRECTOR'])" class="mb-6">
         <!-- Loading State -->
         <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <div *ngFor="let item of [1,2,3,4,5]" class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 animate-pulse border border-white/20 dark:border-gray-700/50">

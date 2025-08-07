@@ -426,6 +426,51 @@ abrirModalDetalleHorario(horarioId: number): void {
     return `${hours}:${minutes}`;
   }
 
+  // Método para generar PDF de horarios de docentes
+  generarPDF(): void {
+    if (!this.PeriodoSeleccionado || !this.DocenteSeleccionado) {
+      this.notificationService.showWarningReport(
+        'Filtros incompletos',
+        'Por favor, selecciona el periodo y el docente antes de generar el PDF.',
+        'Entendido'
+      );
+      return;
+    }
+
+    this.notificationService.showLoading('Generando PDF del docente...');
+
+    this.verHorariosDocentesService.generarPDFHorariosDocente(
+      this.PeriodoSeleccionado,
+      this.DocenteSeleccionado
+    ).subscribe({
+      next: (blob: Blob) => {
+        this.notificationService.hideLoading();
+        
+        // Crear URL para abrir en nueva pestaña
+        const url = window.URL.createObjectURL(blob);
+        const nuevaPestana = window.open(url, '_blank');
+
+        if (nuevaPestana) {
+          this.notificationService.showSuccess(
+            'El PDF del docente se abrió en una nueva pestaña.'
+          );
+        } else {
+          this.notificationService.showWarningReport(
+            'Ventana bloqueada',
+            'El navegador bloqueó la ventana emergente. El PDF se descargará automáticamente.',
+            'Entendido'
+          );
+        }
+      },
+      error: (err) => {
+        this.notificationService.hideLoading();
+        this.notificationService.showError(
+          'Error al generar el PDF del docente. Hubo un problema al generar el reporte. Por favor, intenta nuevamente.'
+        );
+      }
+    });
+  }
+
   // MÉTODOS HEREDADOS (mantenidos por compatibilidad, pero ya no se usan)
   actualizarEventosCalendarioRecurrente(): void {
 

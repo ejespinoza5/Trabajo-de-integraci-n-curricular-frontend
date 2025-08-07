@@ -58,4 +58,27 @@ export class VerHorariosService {
       { headers }
     );
   }
+
+  generarPDFHorarios(idPeriodo: number, idCarrera: number, idCurso: number): Observable<Blob> {
+    const headers = this.getAuthHeaders();
+    
+    return this.http.get(`${this.apiUrl}/horarios-pdf/${idPeriodo}/${idCarrera}/${idCurso}`, {
+      headers,
+      responseType: 'blob'
+    });
+  }
+
+  //obtener fechas limites
+  obtenerFechasLimites(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/fechas-limites`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  //Actualizar fechas limites
+  actualizarFechasLimites(fechaInicio: string, fechaFin: string): Observable<any> {
+    const body = { fecha_inicial: fechaInicio, fecha_final: fechaFin };
+    const headers = this.getAuthHeaders();
+    return this.http.put<any>(`${this.apiUrl}/fechas-limites`, body, { headers });
+  }
+  
 }

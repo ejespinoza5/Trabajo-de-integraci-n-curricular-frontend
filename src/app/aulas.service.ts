@@ -9,6 +9,8 @@ export interface Aulas {
   NOMBRE_AULA: string;
   TIPO_AULA:number;
   NOMBRE_TIPO: string;
+  ID_UBICACION?: number;
+  NOMBRE_UBICACION?: string;
 }
 export interface TipoAula {
   ID_TIPO: number;
@@ -24,10 +26,17 @@ export interface AulaCreatedResponse {
 }
 export interface CrearAula {
   nombre: string;
-  tipo: string;
+  tipo: string | null;
+  ubicacion: string | null;
 }
 
-export interface Aulas {
+export interface ActualizarAula {
+  nombre: string;
+  tipo: number;
+  ubicacion: number;
+}
+
+export interface AulaSimple {
   id: number;
   nombre: string;
 }
@@ -66,13 +75,13 @@ export class AulasService {
   }
 
 
-  actualizarAulas(id: number, aula: Aulas): Observable<Aulas> {
+  actualizarAulas(id: number, aula: ActualizarAula): Observable<Aulas> {
     return this.http.put<Aulas>(`${this.apiUrl}/aulas/${id}`, aula, {
       headers: this.getAuthHeaders()
     });
   }
 
-  eliminarProducto(id: number): Observable<any> {
+  eliminarAulas(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/aulas/${id}`, {
       headers: this.getAuthHeaders()
     });
@@ -108,4 +117,35 @@ export class AulasService {
     });
   }
 
+
+  //Ubicaciones
+  crearUbicacionAula(datos: { nombre: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/aulas-ubicacion`, datos, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  actualizarUbicacionAulas(id: number, datos: { nombre: string }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/aulas-ubicacion/${id}`, datos, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  eliminarUbicacionAulas(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/aulas-ubicacion/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  obtenerUbicacionesAulas(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/aulas-ubicacion`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  obtenerUbicacionesAulasId(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/aulas-ubicacion/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
 }

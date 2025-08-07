@@ -504,15 +504,65 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
     if (asignaturaId) {
       const color = this.colorManager.getColorForSubject(asignaturaId);
-      element.style.borderLeftColor = color;
-      element.style.borderLeftWidth = '4px';
+      
+      // Aplicar color de fondo completo para la materia
+      element.style.backgroundColor = color;
+      element.style.borderColor = color;
+      element.style.borderWidth = '2px';
+      element.style.borderRadius = '6px';
+      element.style.margin = '2px 0';
+      element.style.padding = '8px 12px';
+      
+      // Color de texto negro para contraste con el fondo de color
       element.style.color = '#000';
       element.style.fontWeight = 'bold';
-
-      // Añadir información adicional
-      const detailsDiv = document.createElement('div');
-      detailsDiv.className = 'event-details';
-      element.appendChild(detailsDiv);
+      element.style.fontSize = '13px';
+      element.style.lineHeight = '1.4';
+      
+      // Asegurar que el texto sea visible
+      element.style.whiteSpace = 'normal';
+      element.style.wordBreak = 'break-word';
+      element.style.overflow = 'hidden';
+      
+      // Aplicar estilos a elementos internos
+      const titleElement = element.querySelector('.fc-list-event-title');
+      if (titleElement) {
+        titleElement.style.color = '#000';
+        titleElement.style.fontWeight = 'bold';
+        titleElement.style.fontSize = '13px';
+        titleElement.style.whiteSpace = 'normal';
+        titleElement.style.wordBreak = 'break-word';
+        titleElement.style.overflow = 'hidden';
+      }
+      
+      const timeElement = element.querySelector('.fc-list-event-time');
+      if (timeElement) {
+        timeElement.style.color = '#000';
+        timeElement.style.fontWeight = 'bold';
+        timeElement.style.fontSize = '12px';
+        timeElement.style.opacity = '1';
+        timeElement.style.visibility = 'visible';
+        timeElement.style.display = 'block';
+        timeElement.style.background = 'transparent';
+        timeElement.style.border = 'none';
+        
+        // Forzar que el contenido del tiempo sea visible
+        const timeText = timeElement.textContent || '';
+        if (timeText.trim()) {
+          timeElement.innerHTML = `<span style="color: #000; font-weight: bold; font-size: 12px; display: block; visibility: visible; opacity: 1;">${timeText}</span>`;
+        }
+      }
+      
+      // Estilo para el dot del evento
+      const dotElement = element.querySelector('.fc-list-event-dot');
+      if (dotElement) {
+        dotElement.style.backgroundColor = color;
+        dotElement.style.borderColor = color;
+        dotElement.style.borderWidth = '3px';
+      }
+      
+      // Eliminar clases que puedan forzar blanco
+      element.classList.remove('dark:text-white');
     }
   }
 

@@ -112,6 +112,7 @@ export class AuthService {
       case 14: return 'ESTUDIANTE';
       case 15: return 'DOCENTE';
       case 12: return 'ADMINISTRADOR';
+      case 18: return 'VICERRECTOR';
       default: return null;
     }
   }

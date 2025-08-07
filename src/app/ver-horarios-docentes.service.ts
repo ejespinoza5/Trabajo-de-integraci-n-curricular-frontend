@@ -42,5 +42,13 @@ export class VerHorariosDocentesService {
       headers: this.getAuthHeaders()
     });
   }
+
+  // Método para generar PDF de horarios de docentes
+  generarPDFHorariosDocente(idPeriodo: number, idDocente: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/pdf-docente-por-id/${idPeriodo}/${idDocente}`, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
  
 }
