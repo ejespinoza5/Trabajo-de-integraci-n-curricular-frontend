@@ -52,15 +52,6 @@ p, span, div, a, button, input, select, textarea {
   z-index: 10020 !important;
 }
 
-/* Asegurar que los ng-select con appendTo='body' tengan z-index apropiado */
-.ng-dropdown-panel.ng-select-bottom {
-  z-index: 10020 !important;
-}
-
-.ng-dropdown-panel.ng-select-top {
-  z-index: 10020 !important;
-}
-
 /* Estilos para FullCalendar - Modo Claro (por defecto) */
 .fc {
   --fc-border-color: #e5e7eb;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Periodo, VerHorariosService } from '../ver-horarios.service';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -93,8 +93,24 @@ export class VerHorariosComponent implements OnInit {
     }
   };
 
-  constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService,
-    private notificationService: NotificationService, private reporteService: ReportesService
+  // Propiedades para dropdowns personalizados
+  dropdownPeriodoOpen = false;
+  dropdownCarreraOpen = false;
+  dropdownCursoOpen = false;
+  searchTermPeriodo = '';
+  searchTermCarrera = '';
+  searchTermCurso = '';
+  periodosFiltrados: Periodo[] = [];
+  carrerasFiltradas: any[] = [];
+  cursosFiltrados: any[] = [];
+
+  constructor(
+    private verHorariosService: VerHorariosService, 
+    public usuarioService: AuthService,
+    private notificationService: NotificationService, 
+    private reporteService: ReportesService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit(): void {
@@ -103,10 +119,131 @@ export class VerHorariosComponent implements OnInit {
     this.cargarAutoridades();
   }
 
+  // =============================
+  // MÉTODOS PARA DROPDOWNS PERSONALIZADOS
+  // =============================
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    if (!target.closest('.dropdown-container') && !target.closest('.dropdown-button')) {
+      this.ngZone.run(() => {
+        this.dropdownPeriodoOpen = false;
+        this.dropdownCarreraOpen = false;
+        this.dropdownCursoOpen = false;
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  toggleDropdownPeriodo(): void {
+    this.ngZone.run(() => {
+      this.dropdownPeriodoOpen = !this.dropdownPeriodoOpen;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCursoOpen = false;
+      if (this.dropdownPeriodoOpen) {
+        this.periodosFiltrados = [...this.periodos];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownCarrera(): void {
+    this.ngZone.run(() => {
+      this.dropdownCarreraOpen = !this.dropdownCarreraOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownCursoOpen = false;
+      if (this.dropdownCarreraOpen) {
+        this.carrerasFiltradas = [...this.carreras];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownCurso(): void {
+    this.ngZone.run(() => {
+      this.dropdownCursoOpen = !this.dropdownCursoOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownCarreraOpen = false;
+      if (this.dropdownCursoOpen) {
+        this.cursosFiltrados = [...this.cursos];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  getSelectedPeriodoName(): string {
+    if (!this.PeriodoSeleccionado) return 'Seleccionar periodo';
+    const periodo = this.periodos.find(p => p.id === this.PeriodoSeleccionado);
+    return periodo ? periodo.nombre : 'Seleccionar period';
+  }
+
+  getSelectedCarreraName(): string {
+    if (!this.CarreraSeleccionada) return 'Seleccionar carrera';
+    const carrera = this.carreras.find(c => c.id === this.CarreraSeleccionada);
+    return carrera ? carrera.nombre : 'Seleccionar carrera';
+  }
+
+  getSelectedCursoName(): string {
+    if (!this.CursoSeleccionado) return 'Seleccionar curso';
+    const curso = this.cursos.find(c => c.id === this.CursoSeleccionado);
+    return curso ? curso.nombre : 'Seleccionar curso';
+  }
+
+  getFilteredPeriodos(): Periodo[] {
+    if (!this.searchTermPeriodo) {
+      return this.periodosFiltrados;
+    }
+    return this.periodosFiltrados.filter(periodo =>
+      periodo.nombre.toLowerCase().includes(this.searchTermPeriodo.toLowerCase())
+    );
+  }
+
+  getFilteredCarreras(): any[] {
+    if (!this.searchTermCarrera) {
+      return this.carrerasFiltradas;
+    }
+    return this.carrerasFiltradas.filter(carrera =>
+      carrera.nombre.toLowerCase().includes(this.searchTermCarrera.toLowerCase())
+    );
+  }
+
+  getFilteredCursos(): any[] {
+    if (!this.searchTermCurso) {
+      return this.cursosFiltrados;
+    }
+    return this.cursosFiltrados.filter(curso =>
+      curso.nombre.toLowerCase().includes(this.searchTermCurso.toLowerCase())
+    );
+  }
+
+  selectPeriodo(periodo: Periodo): void {
+    this.PeriodoSeleccionado = periodo.id;
+    this.dropdownPeriodoOpen = false;
+    this.searchTermPeriodo = '';
+    this.onPeriodoChange(periodo.id);
+  }
+
+  selectCarrera(carrera: any): void {
+    this.CarreraSeleccionada = carrera.id;
+    this.dropdownCarreraOpen = false;
+    this.searchTermCarrera = '';
+    this.onCarreraChange();
+  }
+
+  selectCurso(curso: any): void {
+    this.CursoSeleccionado = curso.id;
+    this.dropdownCursoOpen = false;
+    this.searchTermCurso = '';
+    this.onCursoChange();
+  }
+
   cargarPeriodos(): void {
     this.verHorariosService.obtenerPeriodos().subscribe({
       next: (data) => {
         this.periodos = data;
+        this.periodosFiltrados = [...data];
         if (this.periodos.length > 0) {
           this.PeriodoSeleccionado = this.periodos[this.periodos.length - 1].id;
           this.onPeriodoChange(this.PeriodoSeleccionado);
@@ -121,7 +258,9 @@ export class VerHorariosComponent implements OnInit {
   onPeriodoChange(idPeriodo: number): void {
     if (!idPeriodo) {
       this.carreras = [];
+      this.carrerasFiltradas = [];
       this.cursos = [];
+      this.cursosFiltrados = [];
       this.CarreraSeleccionada = 0;
       this.CursoSeleccionado = 0;
       return;
@@ -130,7 +269,9 @@ export class VerHorariosComponent implements OnInit {
     this.verHorariosService.obtenerCarrerasPorPeriodo(idPeriodo).subscribe({
       next: (data) => {
         this.carreras = data;
+        this.carrerasFiltradas = [...data];
         this.cursos = [];
+        this.cursosFiltrados = [];
         this.CarreraSeleccionada = 0;
         this.CursoSeleccionado = 0;
         this.limpiarCalendario();
@@ -171,6 +312,7 @@ export class VerHorariosComponent implements OnInit {
         .subscribe({
           next: (data) => {
             this.cursos = data;
+            this.cursosFiltrados = [...data];
             this.CursoSeleccionado = 0;
             this.limpiarCalendario();
           },

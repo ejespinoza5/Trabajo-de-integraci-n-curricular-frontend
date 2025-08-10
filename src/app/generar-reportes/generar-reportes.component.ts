@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Periodo, VerHorariosService } from '../ver-horarios.service';
 import { AuthService } from '../auth.service';
 import { ReportesService } from '../reportes.service';
@@ -60,10 +60,30 @@ mensajeExitoAutoridades: string = '';
 mensajeErrorAutoridades: string = '';
 
   observacionOriginal: any = {};
-    constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService,
-      private reporteService: ReportesService, private notificationService: NotificationService,
-      private authService: AuthService, private verHorariosDocentesService: VerHorariosDocentesService
-    ) { }
+  
+  // ✅ NUEVO: Propiedad para manejar la pestaña activa
+  pestanaActiva: 'academicos' | 'docente' | 'aula' = 'academicos';
+  
+  // ✅ NUEVO: Propiedades para dropdowns personalizados (igual que gestionar-aulas)
+  dropdownPeriodoOpen = false;
+  dropdownCarreraOpen = false;
+  dropdownCursoOpen = false;
+  dropdownDocenteOpen = false;
+  dropdownAulaOpen = false;
+  
+  // ✅ NUEVO: Términos de búsqueda
+  searchTermPeriodo = '';
+  searchTermCarrera = '';
+  searchTermCurso = '';
+  searchTermDocente = '';
+  searchTermAula = '';
+  
+
+  
+  constructor(private verHorariosService: VerHorariosService, public usuarioService: AuthService,
+    private reporteService: ReportesService, private notificationService: NotificationService,
+    private authService: AuthService, private verHorariosDocentesService: VerHorariosDocentesService
+  ) { }
 
      ngOnInit(): void {
     this.cargarPeriodos();
@@ -86,8 +106,11 @@ mensajeErrorAutoridades: string = '';
     });
   }
 
-  onPeriodoChange(idPeriodo: number): void {
-    if (!idPeriodo) {
+  onPeriodoChange(idPeriodo: any): void {
+    // ✅ CORRECCIÓN: Asegurar que idPeriodo sea un número
+    const periodoId = typeof idPeriodo === 'object' ? idPeriodo?.id : Number(idPeriodo);
+    
+    if (!periodoId || periodoId <= 0) {
       this.carreras = [];
       this.cursos = [];
       this.CarreraSeleccionada = 0;
@@ -99,7 +122,7 @@ mensajeErrorAutoridades: string = '';
       return;
     }
 
-    this.verHorariosService.obtenerCarrerasPorPeriodo(idPeriodo).subscribe({
+    this.verHorariosService.obtenerCarrerasPorPeriodo(periodoId).subscribe({
       next: (data) => {
         this.carreras = data;
         this.cursos = [];
@@ -111,17 +134,21 @@ mensajeErrorAutoridades: string = '';
       }
     });
 
-    this.cargarDocentes(idPeriodo);
-    this.cargarAulas(idPeriodo);
+    this.cargarDocentes(periodoId);
+    this.cargarAulas(periodoId);
   }
 
 
 
   onCarreraChange(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
+    // ✅ CORRECCIÓN: Asegurar que los valores sean números
+    const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+    const carreraId = typeof this.CarreraSeleccionada === 'object' && this.CarreraSeleccionada ? (this.CarreraSeleccionada as any)?.id : Number(this.CarreraSeleccionada);
+    
+    if (periodoId && carreraId) {
       this.cargarCursos();
       // ✅ NUEVO: Cargar observaciones de la carrera seleccionada
-      this.cargarObservacionPorCarrera(this.CarreraSeleccionada);
+      this.cargarObservacionPorCarrera(carreraId);
     } else {
       this.cursos = [];
       this.CursoSeleccionado = 0;
@@ -160,9 +187,13 @@ mensajeErrorAutoridades: string = '';
   }
 
 cargarCursos(): void {
-    if (this.PeriodoSeleccionado && this.CarreraSeleccionada) {
+    // ✅ CORRECCIÓN: Asegurar que los valores sean números
+    const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+    const carreraId = typeof this.CarreraSeleccionada === 'object' && this.CarreraSeleccionada ? (this.CarreraSeleccionada as any)?.id : Number(this.CarreraSeleccionada);
+    
+    if (periodoId && carreraId) {
       this.verHorariosService
-        .obtenerCursosPorPeriodoYCarrera(this.PeriodoSeleccionado, this.CarreraSeleccionada)
+        .obtenerCursosPorPeriodoYCarrera(periodoId, carreraId)
         .subscribe({
           next: (data) => {
             this.cursos = data;
@@ -201,7 +232,11 @@ cargarCursos(): void {
   }
 
   generarPDFDocente(): void {
-    if (!this.PeriodoSeleccionado || !this.docenteSeleccionado) {
+    // ✅ CORRECCIÓN: Asegurar que los valores sean números
+    const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+    const docenteId = Number(this.docenteSeleccionado);
+    
+    if (!periodoId || !docenteId) {
       this.notificationService.showWarningReport(
         'Filtros incompletos',
         'Por favor, selecciona el periodo y el docente antes de generar el PDF.',
@@ -212,7 +247,7 @@ cargarCursos(): void {
 
     this.notificationService.showLoading('Generando PDF del docente...');
 
-    this.reporteService.generarPdfDocenteAuditoria(this.PeriodoSeleccionado, this.docenteSeleccionado).subscribe({
+    this.reporteService.generarPdfDocenteAuditoria(periodoId, docenteId).subscribe({
       next: (blob: Blob) => {
         this.notificationService.hideLoading();
         
@@ -242,7 +277,11 @@ cargarCursos(): void {
   }
 
   generarPDFAula(): void {
-    if (!this.PeriodoSeleccionado || !this.aulaSeleccionada) {
+    // ✅ CORRECCIÓN: Asegurar que los valores sean números
+    const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+    const aulaId = Number(this.aulaSeleccionada);
+    
+    if (!periodoId || !aulaId) {
       this.notificationService.showWarningReport(
         'Filtros incompletos',
         'Por favor, selecciona el periodo y el aula antes de generar el PDF.',
@@ -253,7 +292,7 @@ cargarCursos(): void {
 
     this.notificationService.showLoading('Generando PDF del aula...');
 
-    this.reporteService.generarPdfAulaAuditoria(this.PeriodoSeleccionado, this.aulaSeleccionada).subscribe({
+    this.reporteService.generarPdfAulaAuditoria(periodoId, aulaId).subscribe({
       next: (blob: Blob) => {
         this.notificationService.hideLoading();
         
@@ -290,8 +329,13 @@ cargarCursos(): void {
     this.pdfUrl = '';
     this.pdfBlob = undefined as any;
 
+    // ✅ CORRECCIÓN: Asegurar que los valores sean números
+    const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+    const carreraId = typeof this.CarreraSeleccionada === 'object' && this.CarreraSeleccionada ? (this.CarreraSeleccionada as any)?.id : Number(this.CarreraSeleccionada);
+    const cursoId = Number(this.CursoSeleccionado);
+
     // Validar que los filtros estén completos
-    if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
+    if (!periodoId || !carreraId || !cursoId) {
       this.notificationService.showWarningReport(
         'Filtros incompletos',
         'Por favor, selecciona el periodo, la carrera y el curso antes de generar el PDF.',
@@ -305,9 +349,9 @@ cargarCursos(): void {
 
     // ✅ CORRECCIÓN: Incluir datos de configuración en el PDF
     const datos = {
-      idPeriodo: this.PeriodoSeleccionado,
-      idCarrera: this.CarreraSeleccionada,
-      idCurso: this.CursoSeleccionado,
+      idPeriodo: periodoId,
+      idCarrera: carreraId,
+      idCurso: cursoId,
       // ✅ NUEVO: Incluir observaciones configuradas
       observaciones: {
         PRACTICAS_PREPROFESIONALES_HORAS: this.observacion?.PRACTICAS_PREPROFESIONALES_HORAS || '',
@@ -382,7 +426,12 @@ cargarCursos(): void {
     });
   }
 generarExcel() {
-  if (!this.PeriodoSeleccionado || !this.CarreraSeleccionada || !this.CursoSeleccionado) {
+  // ✅ CORRECCIÓN: Asegurar que los valores sean números
+  const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+  const carreraId = typeof this.CarreraSeleccionada === 'object' && this.CarreraSeleccionada ? (this.CarreraSeleccionada as any)?.id : Number(this.CarreraSeleccionada);
+  const cursoId = Number(this.CursoSeleccionado);
+
+  if (!periodoId || !carreraId || !cursoId) {
     this.notificationService.showWarningReport(
       'Filtros incompletos',
       'Por favor, selecciona el periodo, la carrera y el curso antes de generar el Excel.',
@@ -392,9 +441,9 @@ generarExcel() {
   }
 
   const datos = {
-    idPeriodo: this.PeriodoSeleccionado,
-    idCarrera: this.CarreraSeleccionada,
-    idCurso: this.CursoSeleccionado
+    idPeriodo: periodoId,
+    idCarrera: carreraId,
+    idCurso: cursoId
   };
 
   this.notificationService.showLoading('Generando Excel...');
@@ -438,7 +487,11 @@ generarExcel() {
 }
 
 generarExcelDocente() {
-  if (!this.PeriodoSeleccionado || !this.docenteSeleccionado) {
+  // ✅ CORRECCIÓN: Asegurar que los valores sean números
+  const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+  const docenteId = Number(this.docenteSeleccionado);
+
+  if (!periodoId || !docenteId) {
     this.notificationService.showWarningReport(
       'Filtros incompletos',
       'Por favor, selecciona el periodo y el docente antes de generar el Excel.',
@@ -449,8 +502,8 @@ generarExcelDocente() {
 
   this.notificationService.showLoading('Generando Excel de docente...');
 
-  console.log('Generando Excel para docente:', this.PeriodoSeleccionado, this.docenteSeleccionado);
-  this.reporteService.crearReporteDocentesExcel(this.PeriodoSeleccionado, this.docenteSeleccionado).subscribe({
+  console.log('Generando Excel para docente:', periodoId, docenteId);
+  this.reporteService.crearReporteDocentesExcel(periodoId, docenteId).subscribe({
     next: (blob: Blob) => {
       this.notificationService.hideLoading();
 
@@ -489,7 +542,11 @@ generarExcelDocente() {
 }
 
 generarExcelAula() {
-  if (!this.PeriodoSeleccionado || !this.aulaSeleccionada) {
+  // ✅ CORRECCIÓN: Asegurar que los valores sean números
+  const periodoId = typeof this.PeriodoSeleccionado === 'object' && this.PeriodoSeleccionado ? (this.PeriodoSeleccionado as any)?.id : Number(this.PeriodoSeleccionado);
+  const aulaId = Number(this.aulaSeleccionada);
+
+  if (!periodoId || !aulaId) {
     this.notificationService.showWarningReport(
       'Filtros incompletos',
       'Por favor, selecciona el periodo y el aula antes de generar el Excel.',
@@ -500,8 +557,8 @@ generarExcelAula() {
 
   this.notificationService.showLoading('Generando Excel de aula...');
 
-  console.log('Generando Excel para aula:', this.PeriodoSeleccionado, this.aulaSeleccionada);
-  this.reporteService.crearReporteAulasExcel(this.PeriodoSeleccionado, this.aulaSeleccionada).subscribe({
+  console.log('Generando Excel para aula:', periodoId, aulaId);
+  this.reporteService.crearReporteAulasExcel(periodoId, aulaId).subscribe({
     next: (blob: Blob) => {
       this.notificationService.hideLoading();
 
@@ -805,10 +862,17 @@ guardarCambiosAutoridades(): void {
       }
     });
 }
-limpiarMensajesAutoridades(): void {
+  limpiarMensajesAutoridades(): void {
   this.mensajeExitoAutoridades = '';
   this.mensajeErrorAutoridades = '';
 }
+
+  // ✅ NUEVO: Método para cambiar de pestaña
+  cambiarPestana(pestana: 'academicos' | 'docente' | 'aula'): void {
+    this.pestanaActiva = pestana;
+  }
+
+
 
   // ✅ NUEVO: Método para verificar que los datos de configuración estén cargados
   private verificarDatosConfiguracion(): boolean {
@@ -864,6 +928,167 @@ limpiarMensajesAutoridades(): void {
 
     return true;
   }
+
+  // ✅ NUEVO: Métodos para dropdowns personalizados (igual que gestionar-aulas)
+  
+  // Toggle dropdowns con posicionamiento simple
+  toggleDropdownPeriodo(): void {
+    this.dropdownPeriodoOpen = !this.dropdownPeriodoOpen;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCursoOpen = false;
+    this.dropdownDocenteOpen = false;
+    this.dropdownAulaOpen = false;
+  }
+
+  toggleDropdownCarrera(): void {
+    this.dropdownCarreraOpen = !this.dropdownCarreraOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownCursoOpen = false;
+    this.dropdownDocenteOpen = false;
+    this.dropdownAulaOpen = false;
+  }
+
+  toggleDropdownCurso(): void {
+    this.dropdownCursoOpen = !this.dropdownCursoOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownDocenteOpen = false;
+    this.dropdownAulaOpen = false;
+  }
+
+  toggleDropdownDocente(): void {
+    this.dropdownDocenteOpen = !this.dropdownDocenteOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCursoOpen = false;
+    this.dropdownAulaOpen = false;
+  }
+
+  toggleDropdownAula(): void {
+    this.dropdownAulaOpen = !this.dropdownAulaOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCursoOpen = false;
+    this.dropdownDocenteOpen = false;
+  }
+
+  // Métodos de selección
+  selectPeriodo(periodo: any): void {
+    this.PeriodoSeleccionado = periodo.id;
+    this.dropdownPeriodoOpen = false;
+    this.searchTermPeriodo = '';
+    this.onPeriodoChange(periodo.id);
+  }
+
+  selectCarrera(carrera: any): void {
+    this.CarreraSeleccionada = carrera.id;
+    this.dropdownCarreraOpen = false;
+    this.searchTermCarrera = '';
+    this.onCarreraChange();
+  }
+
+  selectCurso(curso: any): void {
+    this.CursoSeleccionado = curso.id;
+    this.dropdownCursoOpen = false;
+    this.searchTermCurso = '';
+  }
+
+  selectDocente(docente: any): void {
+    this.docenteSeleccionado = docente.id;
+    this.dropdownDocenteOpen = false;
+    this.searchTermDocente = '';
+  }
+
+  selectAula(aula: any): void {
+    this.aulaSeleccionada = aula.ID_AULA;
+    this.dropdownAulaOpen = false;
+    this.searchTermAula = '';
+  }
+
+  // Métodos para mostrar texto seleccionado
+  getSelectedPeriodoName(): string {
+    if (!this.PeriodoSeleccionado) return '';
+    const periodo = this.periodos.find(p => p.id === this.PeriodoSeleccionado);
+    return periodo ? periodo.nombre : '';
+  }
+
+  getSelectedCarreraName(): string {
+    if (!this.CarreraSeleccionada) return '';
+    const carrera = this.carreras.find(c => c.id === this.CarreraSeleccionada);
+    return carrera ? carrera.nombre : '';
+  }
+
+  getSelectedCursoName(): string {
+    if (!this.CursoSeleccionado) return '';
+    const curso = this.cursos.find(c => c.id === this.CursoSeleccionado);
+    return curso ? curso.nombre : '';
+  }
+
+  getSelectedDocenteName(): string {
+    if (!this.docenteSeleccionado) return '';
+    const docente = this.docentes.find(d => d.id === this.docenteSeleccionado);
+    return docente ? docente.nombre : '';
+  }
+
+  getSelectedAulaName(): string {
+    if (!this.aulaSeleccionada) return '';
+    const aula = this.aulas.find(a => a.ID_AULA === this.aulaSeleccionada);
+    return aula ? aula.NOMBRE_AULA : '';
+  }
+
+  // Métodos para filtrar opciones
+  getFilteredPeriodos(): any[] {
+    if (!this.searchTermPeriodo) return this.periodos;
+    return this.periodos.filter(periodo => 
+      periodo.nombre.toLowerCase().includes(this.searchTermPeriodo.toLowerCase())
+    );
+  }
+
+  getFilteredCarreras(): any[] {
+    if (!this.searchTermCarrera) return this.carreras;
+    return this.carreras.filter(carrera => 
+      carrera.nombre.toLowerCase().includes(this.searchTermCarrera.toLowerCase())
+    );
+  }
+
+  getFilteredCursos(): any[] {
+    if (!this.searchTermCurso) return this.cursos;
+    return this.cursos.filter(curso => 
+      curso.nombre.toLowerCase().includes(this.searchTermCurso.toLowerCase())
+    );
+  }
+
+  getFilteredDocentes(): any[] {
+    if (!this.searchTermDocente) return this.docentes;
+    return this.docentes.filter(docente => 
+      docente.nombre.toLowerCase().includes(this.searchTermDocente.toLowerCase())
+    );
+  }
+
+  getFilteredAulas(): any[] {
+    if (!this.searchTermAula) return this.aulas;
+    return this.aulas.filter(aula => 
+      aula.NOMBRE_AULA.toLowerCase().includes(this.searchTermAula.toLowerCase())
+    );
+  }
+
+  // Cerrar dropdowns cuando se hace clic fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: any): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown-container')) {
+      this.dropdownPeriodoOpen = false;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCursoOpen = false;
+      this.dropdownDocenteOpen = false;
+      this.dropdownAulaOpen = false;
+    }
+  }
+
+
+
+
+
 
 
 }

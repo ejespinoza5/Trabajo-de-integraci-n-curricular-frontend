@@ -64,14 +64,40 @@
                   Periodo
                 </span>
               </label>
-              <div class="custom-ng-select">
-                <ng-select [items]="periodos" bindLabel="nombre" bindValue="id" [(ngModel)]="PeriodoSeleccionado"
-                  placeholder="Seleccionar periodo" (change)="onPeriodoChange(PeriodoSeleccionado)" [searchable]="true"
-                  [clearable]="false" [appendTo]="'body'">
-                  <ng-template ng-label-tmp let-item="item">
-                    <div class="text-sm">{{ item ? item.nombre : 'Seleccionar periodo' }}</div>
-                  </ng-template>
-                </ng-select>
+              <div class="dropdown-container">
+                <button type="button" 
+                        class="dropdown-button w-full flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-h-[48px]"
+                        (click)="toggleDropdownPeriodo()"
+                        [disabled]="false">
+                  <span class="dropdown-text">{{ getSelectedPeriodoName() }}</span>
+                  <svg class="dropdown-arrow w-4 h-4 text-gray-400 dark:text-gray-300 transition-transform duration-200"
+                       [class.rotate-180]="dropdownPeriodoOpen"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <div *ngIf="dropdownPeriodoOpen" class="dropdown-menu absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="dropdown-search p-2 border-b border-gray-200 dark:border-gray-600">
+                    <input type="text" 
+                           [(ngModel)]="searchTermPeriodo" 
+                           (input)="$event.stopPropagation()"
+                           placeholder="Buscar periodo..."
+                           class="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           name="searchPeriodo">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let periodo of getFilteredPeriodos()" 
+                         class="dropdown-option px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-900 dark:text-gray-200"
+                         (click)="selectPeriodo(periodo)">
+                      {{ periodo.nombre }}
+                    </div>
+                    <div *ngIf="getFilteredPeriodos().length === 0" 
+                         class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                      No se encontraron periodos
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -86,17 +112,40 @@
                   Docente
                 </span>
               </label>
-              <div class="custom-ng-select">
-                <ng-select [items]="docentes" bindLabel="nombre" bindValue="id" [(ngModel)]="DocenteSeleccionado"
-                  placeholder="Seleccionar docente" (change)="onDocenteChange()" [searchable]="true" [clearable]="false"
-                  [appendTo]="'body'" [disabled]="!PeriodoSeleccionado">
-                  <ng-template ng-label-tmp let-item="item">
-                    <div class="text-sm">{{ item ? (item.nombre | uppercase) : 'SELECCIONAR DOCENTE' }}</div>
-                  </ng-template>
-                  <ng-template ng-option-tmp let-item="item">
-                    <div class="text-sm">{{ item.nombre | uppercase }}</div>
-                  </ng-template>
-                </ng-select>
+              <div class="dropdown-container">
+                <button type="button" 
+                        class="dropdown-button w-full flex items-center justify-between p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-h-[48px]"
+                        (click)="toggleDropdownDocente()"
+                        [disabled]="!PeriodoSeleccionado">
+                  <span class="dropdown-text">{{ getSelectedDocenteName() }}</span>
+                  <svg class="dropdown-arrow w-4 h-4 text-gray-400 dark:text-gray-300 transition-transform duration-200"
+                       [class.rotate-180]="dropdownDocenteOpen"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <div *ngIf="dropdownDocenteOpen" class="dropdown-menu absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto">
+                  <div class="dropdown-search p-2 border-b border-gray-200 dark:border-gray-600">
+                    <input type="text" 
+                           [(ngModel)]="searchTermDocente" 
+                           (input)="$event.stopPropagation()"
+                           placeholder="Buscar docente..."
+                           class="w-full p-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           name="searchDocente">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let docente of getFilteredDocentes()" 
+                         class="dropdown-option px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-900 dark:text-gray-200"
+                         (click)="selectDocente(docente)">
+                      {{ docente.nombre | uppercase }}
+                    </div>
+                    <div *ngIf="getFilteredDocentes().length === 0" 
+                         class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                      No se encontraron docentes
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -2,6 +2,21 @@
 /* ESTILOS ESPECÍFICOS DEL MODAL */
 /* ============================= */
 
+/* Estilos específicos para el select de docente en el modal de edición */
+#edit-docente-select {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  padding: 0.375rem 0.5rem !important;
+  height: auto !important;
+  min-height: 36px !important;
+}
+
+#edit-docente-select option {
+  font-size: 0.875rem !important;
+  padding: 0.25rem 0.5rem !important;
+  line-height: 1.25rem !important;
+}
+
 /* Modal backdrop y container */
 ::ng-deep .modal-backdrop {
   z-index: 1040 !important;
@@ -1336,10 +1351,401 @@ ng-select:focus {
   max-height: 90vh !important;
 }
 
+/* ======================================== */
+/* NUEVA IMPLEMENTACIÓN DE DROPDOWNS DESDE CERO */
+/* ======================================== */
 
+/* Estilos básicos para la aplicación */
+html, body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
 
+.animate-fade-in-delay {
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
 
+/* Estilos para dropdowns - usando el patrón de gestionar-aulas */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+}
 
+.dropdown-button {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: white;
+  color: #374151;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 38px;
+  transition: all 0.2s;
+}
 
+.dropdown-button:hover {
+  border-color: #9ca3af;
+}
+
+.dropdown-button:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dropdown-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 99999 !important;
+  margin-top: 4px;
+}
+
+/* Asegurar que los dropdowns dentro de las pestañas no se corten */
+.p-6 .dropdown-menu {
+  position: absolute !important;
+  z-index: 9999 !important;
+  max-height: 200px !important;
+}
+
+/* Remover overflow hidden del contenedor de pestañas - SOLUCIÓN DEFINITIVA */
+.bg-white.dark\\:bg-gray-800.rounded-lg.shadow-xl.border.border-gray-100.dark\\:border-gray-700.overflow-hidden {
+  overflow: visible !important;
+}
+
+/* Alternativa más específica */
+div[class*="overflow-hidden"] {
+  overflow: visible !important;
+}
+
+/* Forzar que todos los contenedores de pestañas permitan overflow */
+.rounded-lg.shadow-xl.border.overflow-hidden {
+  overflow: visible !important;
+}
+
+/* Remover overflow hidden del contenedor del accordion - SOLUCIÓN DEFINITIVA */
+#accordion-content {
+  overflow: visible !important;
+}
+
+/* Forzar que todos los contenedores del formulario permitan overflow */
+.form-group, .select-container, .dropdown-container {
+  overflow: visible !important;
+}
+
+/* Asegurar que el contenedor del formulario también permita overflow */
+form[role="form"] {
+  overflow: visible !important;
+}
+
+/* Asegurar que el grid también permita overflow */
+.grid {
+  overflow: visible !important;
+}
+
+/* Asegurar que el div con clase p-6 también permita overflow */
+.p-6 {
+  overflow: visible !important;
+}
+
+/* Asegurar que todos los contenedores anidados permitan overflow */
+#accordion-content * {
+  overflow: visible !important;
+}
+
+/* Excepción para elementos que necesitan scroll */
+#accordion-content .dropdown-menu {
+  overflow-y: auto !important;
+}
+
+.dropdown-search {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dropdown-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.dropdown-search input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.dropdown-options {
+  padding: 4px 0;
+}
+
+.dropdown-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #374151;
+  background-color: white;
+  transition: background-color 0.15s;
+}
+
+.dropdown-option:hover {
+  background-color: #f3f4f6;
+}
+
+.dropdown-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #6b7280;
+}
+
+.dropdown-arrow {
+  transition: transform 0.2s;
+  color: #6b7280;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Dark mode support */
+.dark .dropdown-button {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.dark .dropdown-button:hover {
+  border-color: #6b7280;
+}
+
+.dark .dropdown-menu {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark .dropdown-search input {
+  background-color: #4b5563;
+  border-color: #6b7280;
+  color: #e5e7eb;
+}
+
+.dark .dropdown-option {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+.dark .dropdown-option:hover {
+  background-color: #4b5563;
+}
+
+.dark .dropdown-arrow {
+  color: #9ca3af;
+}
+
+/* Estilos para modo oscuro */
+.dark .dropdown-button {
+  background-color: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark .dropdown-button:hover {
+  background-color: #4b5563;
+  border-color: #6b7280;
+}
+
+.dark .dropdown-menu {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark .dropdown-search input {
+  background-color: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.dark .dropdown-option {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+
+.dark .dropdown-option:hover {
+  background-color: #4b5563;
+}
+
+.dark .dropdown-arrow {
+  color: #9ca3af;
+}
+
+/* ============================= */
+/* ESTILOS PARA EL DROPDOWN DE DOCENTE PERSONALIZADO */
+/* ============================= */
+
+/* Contenedor del dropdown de docente personalizado */
+.custom-select-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Opciones del dropdown de docente - más pequeñas */
+#edit-docente-options .px-4.py-3 {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  min-height: 36px !important;
+  max-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+.dark #edit-docente-options .px-4.py-3 {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+/* Asegurar que los nombres de docentes sean visibles */
+#edit-docente-options .px-4.py-3.text-gray-900,
+#edit-docente-options .px-4.py-3.dark\\:text-gray-200 {
+  color: #111827 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  background-color: #ffffff !important;
+}
+
+/* Modo oscuro para nombres de docentes */
+.dark #edit-docente-options .px-4.py-3.text-gray-900,
+.dark #edit-docente-options .px-4.py-3.dark\\:text-gray-200 {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+/* Hover en las opciones */
+#edit-docente-options .px-4.py-3:hover {
+  background-color: #f3f4f6 !important;
+}
+
+.dark #edit-docente-options .px-4.py-3:hover {
+  background-color: #374151 !important;
+}
+
+/* Opción seleccionada */
+#edit-docente-options .px-4.py-3.bg-blue-50,
+#edit-docente-options .px-4.py-3.dark\\:bg-blue-900 {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
+}
+
+.dark #edit-docente-options .px-4.py-3.bg-blue-50,
+.dark #edit-docente-options .px-4.py-3.dark\\:bg-blue-900 {
+  background-color: #1e3a8a !important;
+  color: #93c5fd !important;
+}
+
+/* Opción vacía */
+#edit-docente-options .px-4.py-3.text-gray-500,
+#edit-docente-options .px-4.py-3.dark\\:text-gray-400 {
+  color: #6b7280 !important;
+  font-style: italic !important;
+}
+
+.dark #edit-docente-options .px-4.py-3.text-gray-500,
+.dark #edit-docente-options .px-4.py-3.dark\\:text-gray-400 {
+  color: #9ca3af !important;
+}
+
+/* Mensaje de no resultados */
+#edit-docente-options .px-4.py-3[aria-label="No se encontraron docentes"] {
+  color: #6b7280 !important;
+  font-style: italic !important;
+  text-align: center !important;
+}
+
+.dark #edit-docente-options .px-4.py-3[aria-label="No se encontraron docentes"] {
+  color: #9ca3af !important;
+}
+
+/* Input del dropdown de docente */
+#edit-docente-select {
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  padding: 0.75rem !important;
+  min-height: 48px !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid #d1d5db !important;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.dark #edit-docente-select {
+  border-color: #4b5563 !important;
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+#edit-docente-select:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.dark #edit-docente-select:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1) !important;
+}
+
+/* Dropdown de opciones */
+#edit-docente-options {
+  max-height: 240px !important;
+  overflow-y: auto !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #e5e7eb !important;
+  background-color: #ffffff !important;
+  z-index: 9999 !important;
+}
+
+.dark #edit-docente-options {
+  border-color: #4b5563 !important;
+  background-color: #1f2937 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}

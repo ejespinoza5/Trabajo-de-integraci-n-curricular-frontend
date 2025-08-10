@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Periodo, VerHorariosDocentesService } from '../ver-horarios-docentes.service';
 import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -18,6 +18,14 @@ export class VerHorariosDocentesComponent {
   DocenteSeleccionado: number = 0;
   periodos: Periodo[] = [];
   docentes: any[] = [];
+
+  // Custom dropdown properties
+  dropdownPeriodoOpen: boolean = false;
+  dropdownDocenteOpen: boolean = false;
+  searchTermPeriodo: string = '';
+  searchTermDocente: string = '';
+  periodosFiltrados: Periodo[] = [];
+  docentesFiltrados: any[] = [];
 
   horariosFiltrados: any[] = [];
   materiasUnicas: any[] = [];
@@ -79,7 +87,9 @@ export class VerHorariosDocentesComponent {
   };
 
   constructor(private verHorariosDocentesService: VerHorariosDocentesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit(): void {
@@ -90,6 +100,7 @@ export class VerHorariosDocentesComponent {
     this.verHorariosDocentesService.obtenerPeriodos().subscribe({
       next: (data) => {
         this.periodos = data;
+        this.periodosFiltrados = [...data];
         if (this.periodos.length > 0) {
           this.PeriodoSeleccionado = this.periodos[this.periodos.length - 1].id;
           this.onPeriodoChange(this.PeriodoSeleccionado);
@@ -104,6 +115,7 @@ export class VerHorariosDocentesComponent {
   onPeriodoChange(idPeriodo: number): void {
     if (!idPeriodo) {
       this.docentes = [];
+      this.docentesFiltrados = [];
       this.DocenteSeleccionado = 0;
       return;
     }
@@ -111,6 +123,7 @@ export class VerHorariosDocentesComponent {
     this.verHorariosDocentesService.obtenerDocentesPorPeriodoYCarrera(idPeriodo).subscribe({
       next: (data) => {
         this.docentes = data;
+        this.docentesFiltrados = [...data];
         this.DocenteSeleccionado = 0;
         this.limpiarCalendario();
       },
@@ -127,6 +140,7 @@ export class VerHorariosDocentesComponent {
         .subscribe({
           next: (data) => {
             this.docentes = data;
+            this.docentesFiltrados = [...data];
             this.DocenteSeleccionado = 0;
           },
           error: (err) => {
@@ -545,6 +559,87 @@ obtenerInfoCursos(curso: any): string {
   // Si es un curso único
   return curso.nombre || '';
 }
+
+  // Custom dropdown methods
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown-container')) {
+      this.ngZone.run(() => {
+        this.dropdownPeriodoOpen = false;
+        this.dropdownDocenteOpen = false;
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  toggleDropdownPeriodo(): void {
+    this.ngZone.run(() => {
+      this.dropdownPeriodoOpen = !this.dropdownPeriodoOpen;
+      if (this.dropdownPeriodoOpen) {
+        this.periodosFiltrados = [...this.periodos];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownDocente(): void {
+    this.ngZone.run(() => {
+      this.dropdownDocenteOpen = !this.dropdownDocenteOpen;
+      if (this.dropdownDocenteOpen) {
+        this.docentesFiltrados = [...this.docentes];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  getSelectedPeriodoName(): string {
+    const periodo = this.periodos.find(p => p.id === this.PeriodoSeleccionado);
+    return periodo ? periodo.nombre : 'Seleccionar periodo';
+  }
+
+  getSelectedDocenteName(): string {
+    const docente = this.docentes.find(d => d.id === this.DocenteSeleccionado);
+    return docente ? docente.nombre.toUpperCase() : 'SELECCIONAR DOCENTE';
+  }
+
+  getFilteredPeriodos(): Periodo[] {
+    if (!this.searchTermPeriodo) {
+      return this.periodosFiltrados;
+    }
+    return this.periodosFiltrados.filter(periodo =>
+      periodo.nombre.toLowerCase().includes(this.searchTermPeriodo.toLowerCase())
+    );
+  }
+
+  getFilteredDocentes(): any[] {
+    if (!this.searchTermDocente) {
+      return this.docentesFiltrados;
+    }
+    return this.docentesFiltrados.filter(docente =>
+      docente.nombre.toLowerCase().includes(this.searchTermDocente.toLowerCase())
+    );
+  }
+
+  selectPeriodo(periodo: Periodo): void {
+    this.ngZone.run(() => {
+      this.PeriodoSeleccionado = periodo.id;
+      this.searchTermPeriodo = '';
+      this.dropdownPeriodoOpen = false;
+      this.onPeriodoChange(this.PeriodoSeleccionado);
+      this.cdr.detectChanges();
+    });
+  }
+
+  selectDocente(docente: any): void {
+    this.ngZone.run(() => {
+      this.DocenteSeleccionado = docente.id;
+      this.searchTermDocente = '';
+      this.dropdownDocenteOpen = false;
+      this.onDocenteChange();
+      this.cdr.detectChanges();
+    });
+  }
 
 
 }

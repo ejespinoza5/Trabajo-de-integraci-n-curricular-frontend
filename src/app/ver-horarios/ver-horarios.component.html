@@ -75,14 +75,30 @@
                   <p class="dark:text-gray-200 ">Periodo</p>
                 </span>
               </label>
-              <div class="custom-ng-select">
-                <ng-select [items]="periodos" bindLabel="nombre" bindValue="id" [(ngModel)]="PeriodoSeleccionado"
-                  placeholder="Seleccionar periodo" (change)="onPeriodoChange(PeriodoSeleccionado)" [searchable]="true"
-                  [clearable]="false" [appendTo]="'body'">
-                  <ng-template ng-label-tmp let-item="item">
-                    <div class="text-sm">{{ item ? item.nombre : 'Seleccionar periodo' }}</div>
-                  </ng-template>
-                </ng-select>
+              <div class="dropdown-container">
+                <button type="button" (click)="toggleDropdownPeriodo()" class="dropdown-button">
+                  <span class="dropdown-text">{{ getSelectedPeriodoName() }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownPeriodoOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <div *ngIf="dropdownPeriodoOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input type="text" [(ngModel)]="searchTermPeriodo" name="searchPeriodo" 
+                           placeholder="Buscar periodo..." (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let periodo of getFilteredPeriodos()" 
+                         class="dropdown-option" 
+                         (click)="selectPeriodo(periodo)">
+                      {{ periodo.nombre }}
+                    </div>
+                    <div *ngIf="getFilteredPeriodos().length === 0" class="dropdown-option disabled">
+                      No se encontraron periodos
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -100,14 +116,30 @@
                   <p class="dark:text-gray-200">Carrera</p>
                 </span>
               </label>
-              <div class="custom-ng-select">
-                <ng-select [items]="carreras" bindLabel="nombre" bindValue="id" [(ngModel)]="CarreraSeleccionada"
-                  placeholder="Seleccionar carrera" (change)="onCarreraChange()" [searchable]="true" [clearable]="false"
-                  [appendTo]="'body'" [disabled]="!PeriodoSeleccionado">
-                  <ng-template ng-label-tmp let-item="item">
-                    <div class="text-sm">{{ item ? item.nombre : 'Seleccionar carrera' }}</div>
-                  </ng-template>
-                </ng-select>
+              <div class="dropdown-container">
+                <button type="button" (click)="toggleDropdownCarrera()" class="dropdown-button" [class.disabled]="!PeriodoSeleccionado">
+                  <span class="dropdown-text">{{ getSelectedCarreraName() }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownCarreraOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <div *ngIf="dropdownCarreraOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input type="text" [(ngModel)]="searchTermCarrera" name="searchCarrera" 
+                           placeholder="Buscar carrera..." (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let carrera of getFilteredCarreras()" 
+                         class="dropdown-option" 
+                         (click)="selectCarrera(carrera)">
+                      {{ carrera.nombre }}
+                    </div>
+                    <div *ngIf="getFilteredCarreras().length === 0" class="dropdown-option disabled">
+                      No se encontraron carreras
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -122,14 +154,30 @@
                   <p class="dark:text-gray-200">Curso</p>
                 </span>
               </label>
-              <div class="custom-ng-select">
-                <ng-select [items]="cursos" bindLabel="nombre" bindValue="id" [(ngModel)]="CursoSeleccionado"
-                  placeholder="Seleccionar curso" (change)="onCursoChange()" [searchable]="true" [clearable]="false"
-                  [appendTo]="'body'" [disabled]="!CarreraSeleccionada">
-                  <ng-template ng-label-tmp let-item="item">
-                    <div class="text-sm">{{ item ? item.nombre : 'Seleccionar curso' }}</div>
-                  </ng-template>
-                </ng-select>
+              <div class="dropdown-container">
+                <button type="button" (click)="toggleDropdownCurso()" class="dropdown-button" [class.disabled]="!CarreraSeleccionada">
+                  <span class="dropdown-text">{{ getSelectedCursoName() }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownCursoOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+                
+                <div *ngIf="dropdownCursoOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input type="text" [(ngModel)]="searchTermCurso" name="searchCurso" 
+                           placeholder="Buscar curso..." (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let curso of getFilteredCursos()" 
+                         class="dropdown-option" 
+                         (click)="selectCurso(curso)">
+                      {{ curso.nombre }}
+                    </div>
+                    <div *ngIf="getFilteredCursos().length === 0" class="dropdown-option disabled">
+                      No se encontraron cursos
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

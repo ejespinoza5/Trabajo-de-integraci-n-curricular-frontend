@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Carreras, Coordinadores, CoordinadoresService, CoordinadoresTodos } from '../coordinadores.service';
 import { NotificationService } from '../notificacion.service';
 import { Subject } from 'rxjs';
@@ -21,12 +21,107 @@ export class CoordinadoresComponent implements OnInit {
   itemsPorPagina: number = 5;
   totalPaginas: number = 0;
 
-  constructor(private coordinadoresService: CoordinadoresService, private notificationService : NotificationService ) {}
+  // Propiedades para dropdowns personalizados
+  dropdownCoordinadorOpen = false;
+  dropdownCarreraOpen = false;
+  searchTermCoordinador = '';
+  searchTermCarrera = '';
+  coordinadoresFiltrados: Coordinadores[] = [];
+  carrerasFiltradas: Carreras[] = [];
+
+  constructor(
+    private coordinadoresService: CoordinadoresService, 
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
     this.cargarCoordinadores();
     this.cargarCarreras();
     this.cargarCoordinadoresNombres();
+  }
+
+  // =============================
+  // MÉTODOS PARA DROPDOWNS PERSONALIZADOS
+  // =============================
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    if (!target.closest('.dropdown-container') && !target.closest('.dropdown-button')) {
+      this.ngZone.run(() => {
+        this.dropdownCoordinadorOpen = false;
+        this.dropdownCarreraOpen = false;
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  toggleDropdownCoordinador(): void {
+    this.ngZone.run(() => {
+      this.dropdownCoordinadorOpen = !this.dropdownCoordinadorOpen;
+      this.dropdownCarreraOpen = false;
+      if (this.dropdownCoordinadorOpen) {
+        this.coordinadoresFiltrados = [...this.coordinadoresTotales];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownCarrera(): void {
+    this.ngZone.run(() => {
+      this.dropdownCarreraOpen = !this.dropdownCarreraOpen;
+      this.dropdownCoordinadorOpen = false;
+      if (this.dropdownCarreraOpen) {
+        this.carrerasFiltradas = [...this.carrerasTotales];
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  getSelectedCoordinadorName(): string {
+    if (!this.coordinadorSeleccionado) return '-- Selecciona --';
+    return `${this.coordinadorSeleccionado.DOCUMENTO_USUARIOS} - ${this.coordinadorSeleccionado.APELLIDOS_USUARIOS.toUpperCase()} ${this.coordinadorSeleccionado.NOMBRES_USUARIOS.toUpperCase()}`;
+  }
+
+  getSelectedCarreraName(): string {
+    if (!this.carreraSeleccionada) return '-- Selecciona --';
+    const carrera = this.carrerasTotales.find(c => c.ID_CARRERAS === this.carreraSeleccionada);
+    return carrera ? carrera.NOMBRE_CARRERAS.toUpperCase() : '-- Selecciona --';
+  }
+
+  getFilteredCoordinadores(): Coordinadores[] {
+    if (!this.searchTermCoordinador) {
+      return this.coordinadoresFiltrados;
+    }
+    return this.coordinadoresFiltrados.filter(coordinador =>
+      coordinador.DOCUMENTO_USUARIOS.toLowerCase().includes(this.searchTermCoordinador.toLowerCase()) ||
+      coordinador.APELLIDOS_USUARIOS.toLowerCase().includes(this.searchTermCoordinador.toLowerCase()) ||
+      coordinador.NOMBRES_USUARIOS.toLowerCase().includes(this.searchTermCoordinador.toLowerCase())
+    );
+  }
+
+  getFilteredCarreras(): Carreras[] {
+    if (!this.searchTermCarrera) {
+      return this.carrerasFiltradas;
+    }
+    return this.carrerasFiltradas.filter(carrera =>
+      carrera.NOMBRE_CARRERAS.toLowerCase().includes(this.searchTermCarrera.toLowerCase())
+    );
+  }
+
+  selectCoordinador(coordinador: Coordinadores): void {
+    this.coordinadorSeleccionado = coordinador;
+    this.dropdownCoordinadorOpen = false;
+    this.searchTermCoordinador = '';
+  }
+
+  selectCarrera(carrera: Carreras): void {
+    this.carreraSeleccionada = carrera.ID_CARRERAS;
+    this.dropdownCarreraOpen = false;
+    this.searchTermCarrera = '';
   }
 
   cargarCoordinadores(): void {
@@ -35,16 +130,11 @@ export class CoordinadoresComponent implements OnInit {
       this.totalPaginas = Math.ceil(this.coordinadoresTodos.length / this.itemsPorPagina);
     });
   }
-searchInput = new Subject<string>();
-  customSearchFn(term: string, item: any): boolean {
-  term = term.toLowerCase();
-  return item.DOCUMENTO_USUARIOS.toLowerCase().includes(term) ||
-         item.APELLIDOS_USUARIOS.toLowerCase().includes(term) ||
-         item.NOMBRES_USUARIOS.toLowerCase().includes(term);
-}
+
     cargarCoordinadoresNombres(): void {
     this.coordinadoresService.obtenerNombresCoordinadores().subscribe(data => {
       this.coordinadoresTotales = data;
+      this.coordinadoresFiltrados = [...data];
 
       // Para futura tabla (sin afectar select)
       this.totalPaginas = Math.ceil(this.coordinadoresTotales.length / this.itemsPorPagina);
@@ -54,6 +144,7 @@ searchInput = new Subject<string>();
   cargarCarreras(): void {
     this.coordinadoresService.obtenerCarreras().subscribe(data => {
       this.carrerasTotales = data;
+      this.carrerasFiltradas = [...data];
     });
   }
 

@@ -1,5 +1,5 @@
 // 1. IMPORTS ORDENADOS Y LIMPIOS
-import { ChangeDetectorRef, Component, OnInit, ViewChild, NgZone, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, NgZone, OnDestroy, HostListener } from '@angular/core';
 import { HorariosService } from '../horarios.service';
 import { AulasService } from '../aulas.service';
 import { CalendarOptions, EventInput, EventClickArg, Calendar } from '@fullcalendar/core';
@@ -160,6 +160,45 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
   nuevaCarreraArticulada: number | null = null;
   nuevoCursoArticulado: number | null = null;
 
+  // Propiedades para dropdowns personalizados
+  // Dropdowns principales
+  dropdownPeriodoOpen = false;
+  dropdownTipoClaseOpen = false;
+  dropdownCarreraOpen = false;
+  dropdownCombinacionOpen = false;
+  dropdownAulaOpen = false;
+  dropdownDiaOpen = false;
+
+  // Dropdowns para cursos articulados
+  dropdownCarreraArticuladaOpen = false;
+  dropdownCursoArticuladoOpen = false;
+
+  // Dropdowns del modal de edición
+  dropdownEditAulaOpen = false;
+  dropdownEditDiaOpen = false;
+
+  dropdownDocenteAsignaturaOpen = false;
+
+  // Términos de búsqueda para dropdowns
+  searchTermPeriodo = '';
+  searchTermTipoClase = '';
+  searchTermCarrera = '';
+  searchTermCombinacion = '';
+  searchTermAula = '';
+  searchTermDia = '';
+  searchTermCarreraArticulada = '';
+  searchTermCursoArticulado = '';
+  searchTermEditAula = '';
+  searchTermEditDia = '';
+
+  searchTermDocenteAsignatura = '';
+
+  // Propiedades para el dropdown de docente personalizado en el modal de edición
+  searchTerm = '';
+  isDropdownOpen = false;
+  selectedDocente: any = null;
+  docentesFiltrados: any[] = [];
+
   // --- Calendario ---
   calendar!: Calendar;
   viewMode: 'calendar' | 'list' | 'compact' = 'calendar';
@@ -280,10 +319,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   // --- Búsqueda y dropdowns ---
   searchInput = new Subject<string>();
-  searchTerm: string = '';
-  isDropdownOpen: boolean = false;
-  selectedDocente: any = null;
-  docentesFiltrados: any[] = [];
 
   // --- Otros ---
   private destroy$ = new Subject<void>();
@@ -1339,7 +1374,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       this.editDocenteSeleccionado = Number(horario.docente.id);
       this.onEditModalOpen(horario.docente.id);
 
-      // ✅ NUEVO: Guardar docente original y resetear observación
+      // Guardar docente original
       this.docenteOriginal = Number(horario.docente.id);
       this.mostrarObservacion = false;
       this.observacion = '';
@@ -1368,10 +1403,11 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     this.modoEdicion = true;
     this.mensajeModal = '';
     this.tipoMensajeModal = '';
-
-    // ✅ SOLUCIÓN: Cerrar el dropdown del select de docente al activar modo edición
-    this.isDropdownOpen = false;
-    this.initializeSelectedDocente();
+    
+    // Establecer docente original si no se ha establecido
+    if (this.horarioSeleccionado && this.docenteOriginal === 0) {
+      this.docenteOriginal = Number(this.horarioSeleccionado.docente.id);
+    }
   }
 
   cancelarEdicion(): void {
@@ -1384,7 +1420,7 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
       this.editFechaFin = this.formatFecha(this.horarioSeleccionado.fechaFin);
       this.editFechaInicio = this.formatFecha(this.horarioSeleccionado.fechaInicio);
 
-      // ✅ NUEVO: Resetear observación
+      // Resetear observación
       this.mostrarObservacion = false;
       this.observacion = '';
     }
@@ -1859,94 +1895,35 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  toggleDropdown(show: boolean) {
-    this.isDropdownOpen = show;
-    if (show) {
-      // Cuando se abre, limpiar el término de búsqueda para permitir búsqueda
-      this.searchTerm = '';
-      this.docentesFiltrados = [...this.docentesUnicos];
-    } else {
-      // Cuando se cierra, mostrar el docente seleccionado
-      if (this.selectedDocente) {
-        this.searchTerm = this.selectedDocente.DOCENTE;
-      } else {
-        this.searchTerm = '';
-      }
-    }
-  }
-  onInputFocus() {
-    // ✅ SOLUCIÓN: Solo abrir el dropdown si no está en modo edición o si el usuario hace click explícitamente
-    if (!this.modoEdicion) {
-      this.toggleDropdown(true);
-      // Limpiar el campo para permitir búsqueda
-      this.searchTerm = '';
-      this.docentesFiltrados = [...this.docentesUnicos];
-    }
-  }
-  onSearchChange() {
-    if (!this.searchTerm.trim()) {
-      this.docentesFiltrados = [...this.docentesUnicos];
-    } else {
-      this.docentesFiltrados = this.docentesUnicos.filter(docente =>
-        docente.DOCENTE.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
-    }
-  }
 
-  // Seleccionar un docente
-  selectDocente(docente: any) {
-    this.selectedDocente = docente;
-    this.editDocenteSeleccionado = docente?.ID_DOCENTE || null;
-    this.searchTerm = docente?.DOCENTE || '';
-    this.isDropdownOpen = false;
-
-    // Llamar a tu función existente si es necesario
-    if (this.onDocenteEditChange) {
-      this.onDocenteEditChange(this.editDocenteSeleccionado);
-    }
-  }
-  initializeSelectedDocente() {
-    // ✅ SOLUCIÓN: Asegurar que el dropdown esté cerrado
-    this.isDropdownOpen = false;
-
-    if (this.editDocenteSeleccionado) {
-      this.selectedDocente = this.docentesUnicos.find(
-        d => d.ID_DOCENTE === this.editDocenteSeleccionado
-      );
-      this.searchTerm = this.selectedDocente?.DOCENTE || '';
-    } else {
-      this.selectedDocente = null;
-      this.searchTerm = '';
-    }
-    this.docentesFiltrados = [...this.docentesUnicos];
-  }
-  onInputBlur() {
-    // Pequeño delay para permitir que el click en una opción funcione
-    setTimeout(() => {
-      if (!this.isDropdownOpen) {
-        this.searchTerm = this.selectedDocente?.DOCENTE || '';
-      }
-    }, 200);
-  }
-  onEditModalOpen(docenteId: any) {
+    onEditModalOpen(docenteId: any) {
     this.editDocenteSeleccionado = docenteId;
-    if (!this.docentes || this.docentes.length === 0) {
-      if (this.PeriodoSeleccionado > 0) {
-        this.horariosService.obtenerDocentePeriodo(this.PeriodoSeleccionado).subscribe({
-          next: (data) => {
-            this.docentes = data;
-            this.initializeSelectedDocente();
-          },
-          error: () => {
-            this.docentes = [];
-            this.docentesFiltrados = [];
-          }
-        });
-      } else {
-        this.docentesFiltrados = [];
-      }
+    
+    // Cargar docentes usando el servicio original
+    if (this.PeriodoSeleccionado > 0) {
+      this.horariosService.obtenerDocentePeriodo(this.PeriodoSeleccionado).subscribe({
+        next: (data) => {
+          // Eliminar duplicados basándose en ID_DOCENTE
+          const docentesUnicos = data.filter((docente: any, index: number, self: any[]) => 
+            index === self.findIndex((d: any) => d.ID_DOCENTE === docente.ID_DOCENTE)
+          );
+          
+          this.docentes = docentesUnicos;
+          this.docentesFiltrados = [...docentesUnicos];
+
+          // Inicializar el docente seleccionado en el dropdown personalizado
+          this.initializeSelectedDocente();
+        },
+        error: (error) => {
+          this.docentes = [];
+          this.docentesFiltrados = [];
+          console.error('Error cargando docentes:', error);
+        }
+      });
     } else {
-      this.initializeSelectedDocente();
+      this.docentes = [];
+      this.docentesFiltrados = [];
+      
     }
   }
 
@@ -1957,7 +1934,6 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDatosIniciales();
-    this.initializeSelectedDocente();
     this.analyzeEventDensity();
     this.setupCalendar();
     this.searchInput.pipe(
@@ -1981,6 +1957,506 @@ export class GenerarHorariosComponent implements OnInit, OnDestroy {
 
   toggleAccordion(): void {
     this.isAccordionOpen = !this.isAccordionOpen;
+  }
+
+  // =============================
+  // ========================================
+  // NUEVA IMPLEMENTACIÓN DE DROPDOWNS DESDE CERO
+  // ========================================
+
+  // Método simple para cerrar todos los dropdowns
+
+
+  // Métodos simples para toggle de dropdowns
+  toggleDropdownPeriodo(): void {
+    this.ngZone.run(() => {
+      this.dropdownPeriodoOpen = !this.dropdownPeriodoOpen;
+      this.dropdownTipoClaseOpen = false;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCombinacionOpen = false;
+      this.dropdownAulaOpen = false;
+      this.dropdownDiaOpen = false;
+      this.dropdownCarreraArticuladaOpen = false;
+      this.dropdownCursoArticuladoOpen = false;
+      this.dropdownEditAulaOpen = false;
+      this.dropdownEditDiaOpen = false;
+      this.dropdownDocenteAsignaturaOpen = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownTipoClase(): void {
+    this.ngZone.run(() => {
+      this.dropdownTipoClaseOpen = !this.dropdownTipoClaseOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCombinacionOpen = false;
+      this.dropdownAulaOpen = false;
+      this.dropdownDiaOpen = false;
+      this.dropdownCarreraArticuladaOpen = false;
+      this.dropdownCursoArticuladoOpen = false;
+      this.dropdownEditAulaOpen = false;
+      this.dropdownEditDiaOpen = false;
+      this.dropdownDocenteAsignaturaOpen = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownCarrera(): void {
+    this.ngZone.run(() => {
+      this.dropdownCarreraOpen = !this.dropdownCarreraOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownTipoClaseOpen = false;
+      this.dropdownCombinacionOpen = false;
+      this.dropdownAulaOpen = false;
+      this.dropdownDiaOpen = false;
+      this.dropdownCarreraArticuladaOpen = false;
+      this.dropdownCursoArticuladoOpen = false;
+      this.dropdownEditAulaOpen = false;
+      this.dropdownEditDiaOpen = false;
+      this.dropdownDocenteAsignaturaOpen = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownCombinacion(): void {
+    this.dropdownCombinacionOpen = !this.dropdownCombinacionOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownTipoClaseOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownAulaOpen = false;
+    this.dropdownDiaOpen = false;
+    this.dropdownCarreraArticuladaOpen = false;
+    this.dropdownCursoArticuladoOpen = false;
+    this.dropdownEditAulaOpen = false;
+    this.dropdownEditDiaOpen = false;
+    this.dropdownDocenteAsignaturaOpen = false;
+  }
+
+  toggleDropdownAula(): void {
+    this.ngZone.run(() => {
+      this.dropdownAulaOpen = !this.dropdownAulaOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownTipoClaseOpen = false;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCombinacionOpen = false;
+      this.dropdownDiaOpen = false;
+      this.dropdownCarreraArticuladaOpen = false;
+      this.dropdownCursoArticuladoOpen = false;
+      this.dropdownEditAulaOpen = false;
+      this.dropdownEditDiaOpen = false;
+      this.dropdownDocenteAsignaturaOpen = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownDia(): void {
+    this.ngZone.run(() => {
+      this.dropdownDiaOpen = !this.dropdownDiaOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownTipoClaseOpen = false;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCombinacionOpen = false;
+      this.dropdownAulaOpen = false;
+      this.dropdownCarreraArticuladaOpen = false;
+      this.dropdownCursoArticuladoOpen = false;
+      this.dropdownEditAulaOpen = false;
+      this.dropdownEditDiaOpen = false;
+      this.dropdownDocenteAsignaturaOpen = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+  toggleDropdownCarreraArticulada(): void {
+    this.dropdownCarreraArticuladaOpen = !this.dropdownCarreraArticuladaOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownTipoClaseOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCombinacionOpen = false;
+    this.dropdownAulaOpen = false;
+    this.dropdownDiaOpen = false;
+    this.dropdownCursoArticuladoOpen = false;
+    this.dropdownEditAulaOpen = false;
+    this.dropdownEditDiaOpen = false;
+    this.dropdownDocenteAsignaturaOpen = false;
+  }
+
+  toggleDropdownCursoArticulado(): void {
+    this.dropdownCursoArticuladoOpen = !this.dropdownCursoArticuladoOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownTipoClaseOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCombinacionOpen = false;
+    this.dropdownAulaOpen = false;
+    this.dropdownDiaOpen = false;
+    this.dropdownCarreraArticuladaOpen = false;
+    this.dropdownEditAulaOpen = false;
+    this.dropdownEditDiaOpen = false;
+    this.dropdownDocenteAsignaturaOpen = false;
+  }
+
+  toggleDropdownEditAula(): void {
+    this.dropdownEditAulaOpen = !this.dropdownEditAulaOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownTipoClaseOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCombinacionOpen = false;
+    this.dropdownAulaOpen = false;
+    this.dropdownDiaOpen = false;
+    this.dropdownCarreraArticuladaOpen = false;
+    this.dropdownCursoArticuladoOpen = false;
+          this.dropdownEditDiaOpen = false;
+      this.dropdownDocenteAsignaturaOpen = false;
+  }
+
+  toggleDropdownEditDia(): void {
+    this.dropdownEditDiaOpen = !this.dropdownEditDiaOpen;
+    this.dropdownPeriodoOpen = false;
+    this.dropdownTipoClaseOpen = false;
+    this.dropdownCarreraOpen = false;
+    this.dropdownCombinacionOpen = false;
+    this.dropdownAulaOpen = false;
+    this.dropdownDiaOpen = false;
+    this.dropdownCarreraArticuladaOpen = false;
+    this.dropdownCursoArticuladoOpen = false;
+    this.dropdownEditAulaOpen = false;
+    this.dropdownDocenteAsignaturaOpen = false;
+  }
+
+
+
+  toggleDropdownDocenteAsignatura(): void {
+    this.ngZone.run(() => {
+      this.dropdownDocenteAsignaturaOpen = !this.dropdownDocenteAsignaturaOpen;
+      this.dropdownPeriodoOpen = false;
+      this.dropdownTipoClaseOpen = false;
+      this.dropdownCarreraOpen = false;
+      this.dropdownCombinacionOpen = false;
+      this.dropdownAulaOpen = false;
+      this.dropdownDiaOpen = false;
+      this.dropdownCarreraArticuladaOpen = false;
+      this.dropdownCursoArticuladoOpen = false;
+      this.dropdownEditAulaOpen = false;
+      this.dropdownEditDiaOpen = false;
+      this.cdr.detectChanges();
+    });
+  }
+
+
+
+  // Métodos para obtener nombres seleccionados
+  getSelectedPeriodoName(): string {
+    const periodo = this.periodos.find(p => p.ID_PERIODO === this.PeriodoSeleccionado);
+    return periodo ? periodo.NOMBRE_PERIODO : '';
+  }
+
+  getSelectedTipoClaseName(): string {
+    const tipo = this.tiposClase.find(t => t.valor === this.tipoClaseSeleccionado);
+    return tipo ? tipo.nombre : '';
+  }
+
+  getSelectedCarreraName(): string {
+    const carrera = this.carreras.find(c => c.ID_CARRERAS === this.CarreraSeleccionada);
+    return carrera ? carrera.NOMBRE_CARRERAS : '';
+  }
+
+  getSelectedCombinacionName(): string {
+    if (!this.CombinacionSeleccionada || this.CombinacionSeleccionada === '0') return '';
+    const combinacion = this.docenteAsignaturaNivel.find(c => c.ID_DOCENTE + '-' + c.ID_ASIGNATURA === this.CombinacionSeleccionada);
+    return combinacion ? `${combinacion.DOCENTE} - ${combinacion.ASIGNATURA}` : '';
+  }
+
+  getSelectedAulaName(): string {
+    const aula = this.aulas.find(a => a.ID_AULA === this.AulaSeleccionada);
+    return aula ? aula.NOMBRE_AULA : '';
+  }
+
+  getSelectedDiaName(): string {
+    const dia = this.dias.find(d => d.ID_DIA === this.DiaSeleccionado);
+    return dia ? dia.NOMBRE_DIA : '';
+  }
+
+  getSelectedCarreraArticuladaName(): string {
+    const carrera = this.carrerasArticuladas.find(c => c.ID_CARRERAS === this.nuevaCarreraArticulada);
+    return carrera ? carrera.NOMBRE_CARRERAS : '';
+  }
+
+  getSelectedCursoArticuladoName(): string {
+    const curso = this.cursosDisponibles.find(c => c.ID_CURSOS === this.nuevoCursoArticulado);
+    return curso ? curso.NOMBRE_CURSOS : '';
+  }
+
+  getSelectedEditAulaName(): string {
+    const aula = this.aulas.find(a => a.ID_AULA === this.editAulaSeleccionada);
+    return aula ? aula.NOMBRE_AULA : '';
+  }
+
+  getSelectedEditDiaName(): string {
+    const dia = this.dias.find(d => d.ID_DIA === this.editDiaSeleccionado);
+    return dia ? dia.NOMBRE_DIA : '';
+  }
+
+
+
+  getSelectedDocenteAsignaturaName(): string {
+    if (!this.DocenteAsignaturaSeleccionada) return '';
+    return `${this.DocenteAsignaturaSeleccionada.DOCENTE} - ${this.DocenteAsignaturaSeleccionada.ASIGNATURA}`;
+  }
+
+  // Métodos para filtrar opciones
+  getFilteredPeriodos(): any[] {
+    if (!this.searchTermPeriodo) return this.periodos;
+    return this.periodos.filter(p => 
+      p.NOMBRE_PERIODO.toLowerCase().includes(this.searchTermPeriodo.toLowerCase())
+    );
+  }
+
+  getFilteredTiposClase(): any[] {
+    if (!this.searchTermTipoClase) return this.tiposClase;
+    return this.tiposClase.filter(t => 
+      t.nombre.toLowerCase().includes(this.searchTermTipoClase.toLowerCase())
+    );
+  }
+
+  getFilteredCarreras(): any[] {
+    if (!this.searchTermCarrera) return this.carreras;
+    return this.carreras.filter(c => 
+      c.NOMBRE_CARRERAS.toLowerCase().includes(this.searchTermCarrera.toLowerCase())
+    );
+  }
+
+  getFilteredCombinaciones(): any[] {
+    if (!this.searchTermCombinacion) return this.docenteAsignaturaNivel;
+    return this.docenteAsignaturaNivel.filter(c => 
+      `${c.DOCENTE} - ${c.ASIGNATURA}`.toLowerCase().includes(this.searchTermCombinacion.toLowerCase())
+    );
+  }
+
+  getFilteredAulas(): any[] {
+    if (!this.searchTermAula) return this.aulas;
+    return this.aulas.filter(a => 
+      a.NOMBRE_AULA.toLowerCase().includes(this.searchTermAula.toLowerCase())
+    );
+  }
+
+  getFilteredDias(): any[] {
+    if (!this.searchTermDia) return this.dias;
+    return this.dias.filter(d => 
+      d.NOMBRE_DIA.toLowerCase().includes(this.searchTermDia.toLowerCase())
+    );
+  }
+
+  getFilteredCarrerasArticuladas(): any[] {
+    if (!this.searchTermCarreraArticulada) return this.carrerasArticuladas;
+    return this.carrerasArticuladas.filter(c => 
+      c.NOMBRE_CARRERAS.toLowerCase().includes(this.searchTermCarreraArticulada.toLowerCase())
+    );
+  }
+
+  getFilteredCursosArticulados(): any[] {
+    if (!this.searchTermCursoArticulado) return this.cursosDisponibles;
+    return this.cursosDisponibles.filter(c => 
+      c.NOMBRE_CURSOS.toLowerCase().includes(this.searchTermCursoArticulado.toLowerCase())
+    );
+  }
+
+  getFilteredEditAulas(): any[] {
+    if (!this.searchTermEditAula) return this.aulas;
+    return this.aulas.filter(a => 
+      a.NOMBRE_AULA.toLowerCase().includes(this.searchTermEditAula.toLowerCase())
+    );
+  }
+
+  getFilteredEditDias(): any[] {
+    if (!this.searchTermEditDia) return this.dias;
+    return this.dias.filter(d => 
+      d.NOMBRE_DIA.toLowerCase().includes(this.searchTermEditDia.toLowerCase())
+    );
+  }
+
+
+
+  getFilteredDocentesAsignatura(): any[] {
+    if (!this.searchTermDocenteAsignatura) return this.docentes;
+    return this.docentes.filter(d => 
+      `${d.DOCENTE} - ${d.ASIGNATURA}`.toLowerCase().includes(this.searchTermDocenteAsignatura.toLowerCase())
+    );
+  }
+
+  // Métodos para seleccionar opciones
+  selectPeriodo(periodo: any): void {
+    this.PeriodoSeleccionado = periodo.ID_PERIODO;
+    this.onPeriodoChange(periodo.ID_PERIODO);
+    this.dropdownPeriodoOpen = false;
+    this.searchTermPeriodo = '';
+  }
+
+  selectTipoClase(tipo: any): void {
+    this.tipoClaseSeleccionado = tipo.valor;
+    this.onTipoClaseChange(tipo.valor);
+    this.dropdownTipoClaseOpen = false;
+    this.searchTermTipoClase = '';
+  }
+
+  selectCarrera(carrera: any): void {
+    this.CarreraSeleccionada = carrera.ID_CARRERAS;
+    this.onCarreraChange(carrera.ID_CARRERAS);
+    this.dropdownCarreraOpen = false;
+    this.searchTermCarrera = '';
+  }
+
+  selectCombinacion(combinacion: any): void {
+    this.CombinacionSeleccionada = combinacion.ID_DOCENTE + '-' + combinacion.ID_ASIGNATURA;
+    this.onCombinacionChange(combinacion);
+    this.dropdownCombinacionOpen = false;
+    this.searchTermCombinacion = '';
+  }
+
+  selectAula(aula: any): void {
+    this.AulaSeleccionada = aula.ID_AULA;
+    this.dropdownAulaOpen = false;
+    this.searchTermAula = '';
+  }
+
+  selectDia(dia: any): void {
+    this.DiaSeleccionado = dia.ID_DIA;
+    this.dropdownDiaOpen = false;
+    this.searchTermDia = '';
+  }
+
+  selectCarreraArticulada(carrera: any): void {
+    this.nuevaCarreraArticulada = carrera.ID_CARRERAS;
+    this.onNuevaCarreraArticuladaChange(carrera.ID_CARRERAS);
+    this.dropdownCarreraArticuladaOpen = false;
+    this.searchTermCarreraArticulada = '';
+  }
+
+  selectCursoArticulado(curso: any): void {
+    this.nuevoCursoArticulado = curso.ID_CURSOS;
+    this.dropdownCursoArticuladoOpen = false;
+    this.searchTermCursoArticulado = '';
+  }
+
+  selectEditAula(aula: any): void {
+    this.editAulaSeleccionada = aula.ID_AULA;
+    this.dropdownEditAulaOpen = false;
+    this.searchTermEditAula = '';
+  }
+
+  selectEditDia(dia: any): void {
+    this.editDiaSeleccionado = dia.ID_DIA;
+    this.dropdownEditDiaOpen = false;
+    this.searchTermEditDia = '';
+  }
+
+  onDocenteChange(): void {
+
+    
+    // Mostrar campo de observación si el docente cambió
+    if (this.editDocenteSeleccionado !== this.docenteOriginal) {
+      this.mostrarObservacion = true;
+      this.observacion = '';
+
+    } else {
+      this.mostrarObservacion = false;
+      this.observacion = '';
+
+    }
+  }
+
+  // Métodos para el dropdown de docente personalizado en el modal de edición
+  toggleDropdown(open: boolean): void {
+    this.isDropdownOpen = open;
+    if (open) {
+      this.docentesFiltrados = [...this.docentes];
+    }
+  }
+
+  onInputFocus(): void {
+    this.toggleDropdown(true);
+  }
+
+  onSearchChange(): void {
+    if (!this.searchTerm) {
+      this.docentesFiltrados = [...this.docentes];
+    } else {
+      this.docentesFiltrados = this.docentes.filter(docente =>
+        docente.DOCENTE.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
+
+  selectDocente(docente: any): void {
+    if (docente === null) {
+      this.selectedDocente = null;
+      this.editDocenteSeleccionado = this.DEFAULT_SELECTION;
+      this.searchTerm = '';
+    } else {
+      this.selectedDocente = docente;
+      this.editDocenteSeleccionado = docente.ID_DOCENTE;
+      this.searchTerm = docente.DOCENTE;
+    }
+    
+    this.isDropdownOpen = false;
+    
+    // Mostrar campo de observación si el docente cambió
+    if (this.editDocenteSeleccionado !== this.docenteOriginal) {
+      this.mostrarObservacion = true;
+      this.observacion = '';
+    } else {
+      this.mostrarObservacion = false;
+      this.observacion = '';
+    }
+  }
+
+  initializeSelectedDocente(): void {
+    if (this.editDocenteSeleccionado && this.docentes.length > 0) {
+      const docente = this.docentes.find(d => d.ID_DOCENTE === this.editDocenteSeleccionado);
+      if (docente) {
+        this.selectedDocente = docente;
+        this.searchTerm = docente.DOCENTE;
+      }
+    }
+  }
+
+  onInputBlur(): void {
+    // Pequeño delay para permitir que el clic en las opciones se procese
+    setTimeout(() => {
+      this.isDropdownOpen = false;
+    }, 200);
+  }
+
+  selectDocenteAsignatura(docente: any): void {
+    this.DocenteAsignaturaSeleccionada = docente;
+    this.onDocenteAsignaturaChange(docente);
+    this.dropdownDocenteAsignaturaOpen = false;
+    this.searchTermDocenteAsignatura = '';
+  }
+
+  // HostListener para cerrar dropdowns al hacer clic fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    
+    // No cerrar si el clic es en el botón del dropdown o dentro del contenedor del dropdown
+    if (!target.closest('.dropdown-container') && !target.closest('.dropdown-button') && !target.closest('.custom-select-container')) {
+      this.ngZone.run(() => {
+        this.dropdownPeriodoOpen = false;
+        this.dropdownTipoClaseOpen = false;
+        this.dropdownCarreraOpen = false;
+        this.dropdownCombinacionOpen = false;
+        this.dropdownAulaOpen = false;
+        this.dropdownDiaOpen = false;
+        this.dropdownCarreraArticuladaOpen = false;
+        this.dropdownCursoArticuladoOpen = false;
+        this.dropdownEditAulaOpen = false;
+        this.dropdownEditDiaOpen = false;
+
+        this.dropdownDocenteAsignaturaOpen = false;
+        this.isDropdownOpen = false;
+        this.cdr.detectChanges();
+      });
+    }
   }
 }
 

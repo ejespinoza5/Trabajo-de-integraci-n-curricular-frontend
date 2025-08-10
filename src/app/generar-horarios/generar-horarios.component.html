@@ -37,7 +37,7 @@
     <!-- Accordion Content -->
     <div
       id="accordion-content"
-      class="border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl overflow-hidden transition-all duration-500 ease-in-out shadow-lg"
+      class="border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl overflow-visible transition-all duration-500 ease-in-out shadow-lg"
       [ngClass]="{
     'max-h-0 opacity-0': !isAccordionOpen,
     'max-h-[1000px] opacity-100': isAccordionOpen
@@ -62,29 +62,47 @@
                 <p class="dark:text-gray-200">Periodo: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="periodo-select"
-                  [items]="periodos"
-                  bindLabel="NOMBRE_PERIODO"
-                  bindValue="ID_PERIODO"
-                  [(ngModel)]="PeriodoSeleccionado"
-                  name="periodo"
-                  placeholder="Seleccionar periodo"
-                  (change)="onPeriodoChange(PeriodoSeleccionado)"
-                  [searchable]="true"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  class="custom-select"
-                  [attr.aria-required]="true"
-                  [attr.aria-invalid]="!PeriodoSeleccionado"
-                  aria-describedby="periodo-error">
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm">{{ item ? item.NOMBRE_PERIODO : 'Seleccionar periodo' }}</div>
-                </ng-template>
-              </ng-select>
-                <div id="periodo-error" class="sr-only" *ngIf="!PeriodoSeleccionado">
-                  Error: Debe seleccionar un periodo
+              <!-- Dropdown personalizado para Periodo -->
+              <div class="dropdown-container">
+                                    <button 
+                      type="button"
+                      (click)="toggleDropdownPeriodo()"
+                      class="dropdown-button"
+                      [attr.aria-required]="true"
+                      [attr.aria-invalid]="!PeriodoSeleccionado"
+                      aria-describedby="periodo-error">
+                  <span>{{ getSelectedPeriodoName() || 'Seleccionar periodo' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownPeriodoOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div *ngIf="dropdownPeriodoOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input 
+                      type="text"
+                      [(ngModel)]="searchTermPeriodo"
+                      name="searchPeriodo"
+                      placeholder="Buscar periodo..."
+                      (click)="$event.stopPropagation()"
+                      (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredPeriodos()" 
+                         class="dropdown-option"
+                         (click)="selectPeriodo(item)">
+                      {{ item.NOMBRE_PERIODO }}
+                    </div>
+                    <div *ngIf="getFilteredPeriodos().length === 0 && searchTermPeriodo" 
+                         class="dropdown-option disabled">
+                      No se encontraron periodos que coincidan con "{{ searchTermPeriodo }}"
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div id="periodo-error" class="sr-only" *ngIf="!PeriodoSeleccionado">
+                Error: Debe seleccionar un periodo
+              </div>
             </div>
           </div>
 
@@ -99,29 +117,34 @@
                 <p class="dark:text-gray-200">Tipo de Clase: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="tipo-clase-select"
-                  [items]="tiposClase"
-                  bindLabel="nombre"
-                  bindValue="valor"
-                  [(ngModel)]="tipoClaseSeleccionado"
-                  name="tipoClase"
-                  placeholder="Seleccionar tipo"
-                  (change)="onTipoClaseChange(tipoClaseSeleccionado)"
-                  [searchable]="false"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  class="custom-select"
-                  [attr.aria-required]="true"
-                  [attr.aria-invalid]="!tipoClaseSeleccionado"
-                  aria-describedby="tipo-clase-error">
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm">{{ item ? item.nombre : 'Seleccionar tipo' }}</div>
-                </ng-template>
-              </ng-select>
-                <div id="tipo-clase-error" class="sr-only" *ngIf="!tipoClaseSeleccionado">
-                  Error: Debe seleccionar un tipo de clase
+              <!-- Dropdown personalizado para Tipo de Clase -->
+              <div class="dropdown-container">
+                                    <button 
+                      type="button"
+                      (click)="toggleDropdownTipoClase()"
+                      class="dropdown-button"
+                      [attr.aria-required]="true"
+                      [attr.aria-invalid]="!tipoClaseSeleccionado"
+                      aria-describedby="tipo-clase-error">
+                  <span>{{ getSelectedTipoClaseName() || 'Seleccionar tipo' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownTipoClaseOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div *ngIf="dropdownTipoClaseOpen" class="dropdown-menu">
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredTiposClase()" 
+                         class="dropdown-option"
+                         (click)="selectTipoClase(item)">
+                      {{ item.nombre }}
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div id="tipo-clase-error" class="sr-only" *ngIf="!tipoClaseSeleccionado">
+                Error: Debe seleccionar un tipo de clase
+              </div>
             </div>
           </div>
 
@@ -136,27 +159,46 @@
                 <p class="dark:text-gray-200">Carrera: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="carrera-select"
-                  [items]="carreras"
-                  bindLabel="NOMBRE_CARRERAS"
-                  bindValue="ID_CARRERAS"
-                  [(ngModel)]="CarreraSeleccionada"
-                  name="carrera"
-                  placeholder="Seleccionar carrera"
-                  (change)="onCarreraChange(CarreraSeleccionada)"
-                  [searchable]="true"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  class="custom-select"
+              <!-- Dropdown personalizado para Carrera -->
+              <div class="dropdown-container">
+                <button 
+                  type="button"
+                  (click)="toggleDropdownCarrera()"
+                  class="dropdown-button"
+                  [class.disabled]="!PeriodoSeleccionado"
                   aria-describedby="carrera-error">
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm">{{ item ? item.NOMBRE_CARRERAS : 'Seleccionar carrera' }}</div>
-                </ng-template>
-              </ng-select>
-                <div id="carrera-error" class="sr-only" *ngIf="!CarreraSeleccionada">
-                  Error: Debe seleccionar una carrera
+                  <span>{{ getSelectedCarreraName() || 'Seleccionar carrera' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownCarreraOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div *ngIf="dropdownCarreraOpen && PeriodoSeleccionado" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input 
+                      type="text"
+                      [(ngModel)]="searchTermCarrera"
+                      name="searchCarrera"
+                      placeholder="Buscar carrera..."
+                      (click)="$event.stopPropagation()"
+                      (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredCarreras()" 
+                         class="dropdown-option"
+                         (click)="selectCarrera(item)">
+                      {{ item.NOMBRE_CARRERAS }}
+                    </div>
+                    <div *ngIf="getFilteredCarreras().length === 0 && searchTermCarrera" 
+                         class="dropdown-option disabled">
+                      No se encontraron carreras que coincidan con "{{ searchTermCarrera }}"
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div id="carrera-error" class="sr-only" *ngIf="!CarreraSeleccionada">
+                Error: Debe seleccionar una carrera
+              </div>
             </div>
           </div>
 
@@ -208,22 +250,41 @@
                   <p class="dark:text-gray-200">Carrera:</p>
                 </label>
                 <div class="select-container">
-                      <ng-select
-                        id="nueva-carrera-articulada"
-                        [items]="carrerasArticuladas"
-                        bindLabel="NOMBRE_CARRERAS"
-                        bindValue="ID_CARRERAS"
-                        [(ngModel)]="nuevaCarreraArticulada"
-                        name="nuevaCarreraArticulada"
-                        placeholder="Seleccionar carrera"
-                        (change)="onNuevaCarreraArticuladaChange(nuevaCarreraArticulada)"
-                        [searchable]="true"
-                        [clearable]="true"
-                        class="custom-select-small">
-                    <ng-template ng-label-tmp let-item="item">
-                      <div class="text-sm">{{ item ? item.NOMBRE_CARRERAS : 'Seleccionar carrera' }}</div>
-                    </ng-template>
-                  </ng-select>
+                  <!-- Dropdown personalizado para Carrera Articulada -->
+                  <div class="dropdown-container">
+                    <button 
+                      type="button"
+                      (click)="toggleDropdownCarreraArticulada()"
+                      class="dropdown-button">
+                      <span>{{ getSelectedCarreraArticuladaName() || 'Seleccionar carrera' }}</span>
+                      <svg class="dropdown-arrow" [class.open]="dropdownCarreraArticuladaOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    <div *ngIf="dropdownCarreraArticuladaOpen" class="dropdown-menu">
+                      <div class="dropdown-search">
+                        <input 
+                          type="text"
+                          [(ngModel)]="searchTermCarreraArticulada"
+                          name="searchCarreraArticulada"
+                          placeholder="Buscar carrera..."
+                          (click)="$event.stopPropagation()"
+                          (input)="$event.stopPropagation()">
+                      </div>
+                      <div class="dropdown-options">
+                        <div *ngFor="let item of getFilteredCarrerasArticuladas()" 
+                             class="dropdown-option"
+                             (click)="selectCarreraArticulada(item)">
+                          {{ item.NOMBRE_CARRERAS }}
+                        </div>
+                        <div *ngIf="getFilteredCarrerasArticuladas().length === 0 && searchTermCarreraArticulada" 
+                             class="dropdown-option disabled">
+                          No se encontraron carreras que coincidan con "{{ searchTermCarreraArticulada }}"
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -232,23 +293,43 @@
                   <p class="dark:text-gray-200">Curso:</p>
                 </label>
                 <div class="select-container">
-                      <ng-select
-                        id="nuevo-curso-articulado"
-                        [items]="cursosDisponibles"
-                        bindLabel="NOMBRE_CURSOS"
-                        bindValue="ID_CURSOS"
-                        [(ngModel)]="nuevoCursoArticulado"
-                        name="nuevoCursoArticulado"
-                        placeholder="Seleccionar curso"
-                        [searchable]="true"
-                        [clearable]="true"
-                        [disabled]="!nuevaCarreraArticulada"
-                        class="custom-select-small"
-                        [attr.aria-disabled]="!nuevaCarreraArticulada">
-                    <ng-template ng-label-tmp let-item="item">
-                      <div class="text-sm">{{ item ? item.NOMBRE_CURSOS : 'Seleccionar curso' }}</div>
-                    </ng-template>
-                  </ng-select>
+                  <!-- Dropdown personalizado para Curso Articulado -->
+                  <div class="dropdown-container">
+                    <button 
+                      type="button"
+                      (click)="toggleDropdownCursoArticulado()"
+                      class="dropdown-button"
+                      [class.disabled]="!nuevaCarreraArticulada"
+                      [attr.aria-disabled]="!nuevaCarreraArticulada">
+                      <span>{{ getSelectedCursoArticuladoName() || 'Seleccionar curso' }}</span>
+                      <svg class="dropdown-arrow" [class.open]="dropdownCursoArticuladoOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    <div *ngIf="dropdownCursoArticuladoOpen && nuevaCarreraArticulada" class="dropdown-menu">
+                      <div class="dropdown-search">
+                        <input 
+                          type="text"
+                          [(ngModel)]="searchTermCursoArticulado"
+                          name="searchCursoArticulado"
+                          placeholder="Buscar curso..."
+                          (click)="$event.stopPropagation()"
+                          (input)="$event.stopPropagation()">
+                      </div>
+                      <div class="dropdown-options">
+                        <div *ngFor="let item of getFilteredCursosArticulados()" 
+                             class="dropdown-option"
+                             (click)="selectCursoArticulado(item)">
+                          {{ item.NOMBRE_CURSOS }}
+                        </div>
+                        <div *ngIf="getFilteredCursosArticulados().length === 0 && searchTermCursoArticulado" 
+                             class="dropdown-option disabled">
+                          No se encontraron cursos que coincidan con "{{ searchTermCursoArticulado }}"
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -281,50 +362,50 @@
                 <p class="dark:text-gray-200">Docente - Asignatura - Nivel: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="docente-asignatura-nivel-select"
-                  [items]="docenteAsignaturaNivel"
-                  [searchFn]="customSearchFn"
-                  [(ngModel)]="CombinacionSeleccionada"
-                  name="docenteAsignaturaNivel"
-                  placeholder="Seleccionar docente, asignatura y nivel"
-                  (change)="onCombinacionChange(CombinacionSeleccionada)"
-                  [searchable]="true"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  [groupBy]="'DOCENTE'"
-                  [virtualScroll]="true"
-                  class="custom-select"
+              <!-- Dropdown personalizado para Combinación -->
+              <div class="dropdown-container">
+                <button 
+                  type="button"
+                  (click)="toggleDropdownCombinacion()"
+                  class="dropdown-button"
                   [attr.aria-required]="true"
                   [attr.aria-invalid]="!CombinacionSeleccionada"
                   aria-describedby="docente-asignatura-nivel-error">
+                  <span>{{ getSelectedCombinacionName() || 'Seleccionar docente, asignatura y nivel' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownCombinacionOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm truncate">
-                    {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) + ' - ' + (item.NIVEL |
-                    uppercase) : 'Seleccionar docente, asignatura y nivel' }}
+                <div *ngIf="dropdownCombinacionOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input 
+                      type="text"
+                      [(ngModel)]="searchTermCombinacion"
+                      name="searchCombinacion"
+                      placeholder="Buscar docente o asignatura..."
+                      (click)="$event.stopPropagation()"
+                      (input)="$event.stopPropagation()">
                   </div>
-                </ng-template>
-
-                <ng-template ng-option-tmp let-item="item">
-                  <div class="text-sm py-2">
-                    <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
-                    <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
-                    <div><strong>Nivel:</strong> {{ item.NIVEL | uppercase }}</div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredCombinaciones()" 
+                         class="dropdown-option"
+                         (click)="selectCombinacion(item)">
+                      <div class="text-sm">
+                        <div><strong>Docente:</strong> {{ item.DOCENTE }}</div>
+                        <div><strong>Asignatura:</strong> {{ item.ASIGNATURA }}</div>
+                      </div>
+                    </div>
+                    <div *ngIf="getFilteredCombinaciones().length === 0 && searchTermCombinacion" 
+                         class="dropdown-option disabled">
+                      No se encontraron combinaciones que coincidan con "{{ searchTermCombinacion }}"
+                    </div>
                   </div>
-                </ng-template>
-
-                <ng-template ng-header-tmp>
-                  <div class="text-sm font-semibold p-2">Seleccionar docente, asignatura y nivel</div>
-                </ng-template>
-
-                <ng-template ng-notfound-tmp>
-                  <div class="text-sm p-3">No se encontraron resultados</div>
-                </ng-template>
-              </ng-select>
-                <div id="docente-asignatura-nivel-error" class="sr-only" *ngIf="!CombinacionSeleccionada">
-                  Error: Debe seleccionar un docente, asignatura y nivel.
                 </div>
+              </div>
+              <div id="docente-asignatura-nivel-error" class="sr-only" *ngIf="!CombinacionSeleccionada">
+                Error: Debe seleccionar un docente, asignatura y nivel.
+              </div>
             </div>
           </div>
 
@@ -339,55 +420,50 @@
                 <p class="dark:text-gray-200">Docente - Asignatura: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="docente-asignatura-select"
-                  [items]="docentes"
-                  [(ngModel)]="DocenteAsignaturaSeleccionada"
-                  name="docenteAsignatura"
-                placeholder="Seleccionar docente y asignatura"
-                  (change)="onDocenteAsignaturaChange(DocenteAsignaturaSeleccionada)"
-                  [searchable]="true"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  [groupBy]="'DOCENTE'"
-                  [virtualScroll]="true"
-                  bindLabel="SEARCH_TEXT"
-                  [searchFn]="customSearchFn"
-                  class="custom-select"
+              <!-- Dropdown personalizado para Docente-Asignatura -->
+              <div class="dropdown-container">
+                <button 
+                  type="button"
+                  (click)="toggleDropdownDocenteAsignatura()"
+                  class="dropdown-button"
                   [attr.aria-required]="true"
                   [attr.aria-invalid]="!DocenteAsignaturaSeleccionada"
                   aria-describedby="docente-asignatura-error">
+                  <span>{{ getSelectedDocenteAsignaturaName() || 'Seleccionar docente y asignatura' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownDocenteAsignaturaOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-                <!-- Etiqueta cuando está seleccionado -->
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm truncate">
-                    {{ item ? (item.DOCENTE | uppercase) + ' - ' + (item.ASIGNATURA | uppercase) : 'Seleccionar docente
-                    y
-                    asignatura' }}
+                <div *ngIf="dropdownDocenteAsignaturaOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input 
+                      type="text"
+                      [(ngModel)]="searchTermDocenteAsignatura"
+                      name="searchDocenteAsignatura"
+                      placeholder="Buscar docente o asignatura..."
+                      (click)="$event.stopPropagation()"
+                      (input)="$event.stopPropagation()">
                   </div>
-                </ng-template>
-
-                <!-- Opciones desplegables -->
-                <ng-template ng-option-tmp let-item="item">
-                  <div class="text-sm py-2">
-                    <div><strong>Docente:</strong> {{ item.DOCENTE | uppercase }}</div>
-                    <div><strong>Asignatura:</strong> {{ item.ASIGNATURA | uppercase }}</div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredDocentesAsignatura()" 
+                         class="dropdown-option"
+                         (click)="selectDocenteAsignatura(item)">
+                      <div class="text-sm">
+                        <div><strong>Docente:</strong> {{ item.DOCENTE }}</div>
+                        <div><strong>Asignatura:</strong> {{ item.ASIGNATURA }}</div>
+                      </div>
+                    </div>
+                    <div *ngIf="getFilteredDocentesAsignatura().length === 0 && searchTermDocenteAsignatura" 
+                         class="dropdown-option disabled">
+                      No se encontraron docentes que coincidan con "{{ searchTermDocenteAsignatura }}"
+                    </div>
                   </div>
-                </ng-template>
-
-                <!-- Cabecera de resultados -->
-                <ng-template ng-header-tmp>
-                  <div class="text-sm font-semibold p-2">Seleccionar docente y asignatura</div>
-                </ng-template>
-
-                <!-- Si no hay resultados -->
-                <ng-template ng-notfound-tmp>
-                  <div class="text-sm p-3">No se encontraron resultados</div>
-                </ng-template>
-              </ng-select>
-                <div id="docente-asignatura-error" class="sr-only" *ngIf="!DocenteAsignaturaSeleccionada">
-                  Error: Debe seleccionar un docente y una asignatura.
                 </div>
+              </div>
+              <div id="docente-asignatura-error" class="sr-only" *ngIf="!DocenteAsignaturaSeleccionada">
+                Error: Debe seleccionar un docente y una asignatura.
+              </div>
             </div>
           </div>
 
@@ -402,26 +478,45 @@
                 <p class="dark:text-gray-200">Aula: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="aula-select"
-                  [items]="aulas"
-                  bindLabel="NOMBRE_AULA"
-                  bindValue="ID_AULA"
-                  [(ngModel)]="AulaSeleccionada"
-                  name="aula"
-                  placeholder="Seleccionar aula"
-                  [searchable]="true"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  class="custom-select"
+              <!-- Dropdown personalizado para Aula -->
+              <div class="dropdown-container">
+                <button 
+                  type="button"
+                  (click)="toggleDropdownAula()"
+                  class="dropdown-button"
                   aria-describedby="aula-error">
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm">{{ item ? item.NOMBRE_AULA : 'Seleccionar aula' }}</div>
-                </ng-template>
-              </ng-select>
-                <div id="aula-error" class="sr-only" *ngIf="!AulaSeleccionada">
-                  Error: Debe seleccionar una aula.
+                  <span>{{ getSelectedAulaName() || 'Seleccionar aula' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownAulaOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div *ngIf="dropdownAulaOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input 
+                      type="text"
+                      [(ngModel)]="searchTermAula"
+                      name="searchAula"
+                      placeholder="Buscar aula..."
+                      (click)="$event.stopPropagation()"
+                      (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredAulas()" 
+                         class="dropdown-option"
+                         (click)="selectAula(item)">
+                      {{ item.NOMBRE_AULA }}
+                    </div>
+                    <div *ngIf="getFilteredAulas().length === 0 && searchTermAula" 
+                         class="dropdown-option disabled">
+                      No se encontraron aulas que coincidan con "{{ searchTermAula }}"
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div id="aula-error" class="sr-only" *ngIf="!AulaSeleccionada">
+                Error: Debe seleccionar una aula.
+              </div>
             </div>
           </div>
 
@@ -436,26 +531,45 @@
                 <p class="dark:text-gray-200">Día: <span class="text-red-500" aria-label="requerido">*</span></p>
             </label>
             <div class="select-container">
-                <ng-select
-                  id="dia-select"
-                  [items]="dias"
-                  bindLabel="NOMBRE_DIA"
-                  bindValue="ID_DIA"
-                  [(ngModel)]="DiaSeleccionado"
-                  name="dia"
-                  placeholder="Seleccionar día"
-                  [searchable]="true"
-                  [clearable]="false"
-                  [appendTo]="'body'"
-                  class="custom-select"
+              <!-- Dropdown personalizado para Día -->
+              <div class="dropdown-container">
+                <button 
+                  type="button"
+                  (click)="toggleDropdownDia()"
+                  class="dropdown-button"
                   aria-describedby="dia-error">
-                <ng-template ng-label-tmp let-item="item">
-                  <div class="text-sm">{{ item ? item.NOMBRE_DIA : 'Seleccionar día' }}</div>
-                </ng-template>
-              </ng-select>
-                <div id="dia-error" class="sr-only" *ngIf="!DiaSeleccionado">
-                  Error: Debe seleccionar un día.
+                  <span>{{ getSelectedDiaName() || 'Seleccionar día' }}</span>
+                  <svg class="dropdown-arrow" [class.open]="dropdownDiaOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div *ngIf="dropdownDiaOpen" class="dropdown-menu">
+                  <div class="dropdown-search">
+                    <input 
+                      type="text"
+                      [(ngModel)]="searchTermDia"
+                      name="searchDia"
+                      placeholder="Buscar día..."
+                      (click)="$event.stopPropagation()"
+                      (input)="$event.stopPropagation()">
+                  </div>
+                  <div class="dropdown-options">
+                    <div *ngFor="let item of getFilteredDias()" 
+                         class="dropdown-option"
+                         (click)="selectDia(item)">
+                      {{ item.NOMBRE_DIA }}
+                    </div>
+                    <div *ngIf="getFilteredDias().length === 0 && searchTermDia" 
+                         class="dropdown-option disabled">
+                      No se encontraron días que coincidan con "{{ searchTermDia }}"
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div id="dia-error" class="sr-only" *ngIf="!DiaSeleccionado">
+                Error: Debe seleccionar un día.
+              </div>
             </div>
           </div>
 
@@ -645,7 +759,7 @@
                   <div class="flex items-center gap-3">
                     <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                     <div>
                       <span class="block text-sm font-medium text-gray-600 dark:text-gray-400">Nivel</span>
@@ -778,68 +892,37 @@
   <div class="space-y-3">
     <!-- Docente -->
     <div class="bg-white dark:bg-gray-700 p-3 rounded-xl border border-gray-200 dark:border-gray-600">
+      <label for="edit-docente-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          Docente:
+        </div>
+      </label>
       <div class="custom-select-container">
-        <label for="edit-docente-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            Docente:
-          </div>
-        </label>
-
         <div class="relative w-full">
           <!-- Input de búsqueda que simula el select -->
-          <input type="text" [(ngModel)]="searchTerm" (click)="toggleDropdown(true)" (blur)="onInputBlur()"
-            (input)="onSearchChange()" [placeholder]="'Seleccionar docente...'"
-            class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-h-[48px]"
-            autocomplete="off"
-            id="edit-docente-select"
-            aria-label="Buscar docente para editar"
-            aria-controls="edit-docente-options"
-            [attr.aria-expanded]="isDropdownOpen">
-
+          <input type="text" [(ngModel)]="searchTerm" (click)="toggleDropdown(true)" (blur)="onInputBlur()" (input)="onSearchChange()" [placeholder]="'Seleccionar docente...'" class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-h-[48px]" autocomplete="off" id="edit-docente-select" aria-label="Buscar docente para editar" aria-controls="edit-docente-options" [attr.aria-expanded]="isDropdownOpen">
           <!-- Flecha del dropdown -->
           <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-            <button type="button"
-                    (click)="toggleDropdown(!isDropdownOpen)"
-                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1"
-                    aria-label="Abrir lista de docentes">
+            <button type="button" (click)="toggleDropdown(!isDropdownOpen)" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1" aria-label="Abrir lista de docentes">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
           </div>
-
           <!-- Dropdown con opciones -->
-          <div id="edit-docente-options"
-               *ngIf="isDropdownOpen"
-               class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto"
-               role="listbox"
-               aria-activedescendant="edit-docente-option-0">
-
+          <div id="edit-docente-options" *ngIf="isDropdownOpen" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto" role="listbox" aria-activedescendant="edit-docente-option-0">
             <!-- Opción vacía -->
-            <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-500 dark:text-gray-400"
-              (click)="selectDocente(null)"
-              role="option"
-              aria-selected="false"
-              aria-label="Seleccionar docente...">
+            <div class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-500 dark:text-gray-400" (click)="selectDocente(null)" role="option" aria-selected="false" aria-label="Seleccionar docente...">
               Seleccionar docente...
             </div>
-
             <!-- Lista de docentes filtrados -->
-            <div *ngFor="let docente of docentesFiltrados; let i = index"
-              class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-900 dark:text-gray-200 break-words"
-              [class.bg-blue-50]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE"
-              [class.dark:bg-blue-900]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE"
-              (click)="selectDocente(docente)"
-              role="option"
-              [attr.aria-selected]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE"
-              [attr.aria-label]="'Seleccionar docente ' + docente.DOCENTE">
+            <div *ngFor="let docente of docentesFiltrados; let i = index" class="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm text-gray-900 dark:text-gray-200 break-words" [class.bg-blue-50]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE" [class.dark:bg-blue-900]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE" (click)="selectDocente(docente)" role="option" [attr.aria-selected]="selectedDocente?.ID_DOCENTE === docente.ID_DOCENTE" [attr.aria-label]="'Seleccionar docente ' + docente.DOCENTE">
               {{ docente.DOCENTE }}
             </div>
-
             <!-- Mensaje cuando no hay resultados -->
             <div *ngIf="docentesFiltrados.length === 0 && searchTerm" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" role="option" aria-label="No se encontraron docentes">
               No se encontraron docentes
@@ -882,27 +965,44 @@
             Día:
           </div>
         </label>
-        <ng-select
-          id="edit-dia-select"
-          [items]="dias"
-          bindLabel="NOMBRE_DIA"
-          bindValue="ID_DIA"
-          [(ngModel)]="editDiaSeleccionado"
-          name="editDia"
-          placeholder="Seleccionar día"
-          [searchable]="true"
-          [clearable]="false"
-          class="w-full min-h-[48px]"
-          aria-label="Seleccionar día para editar"
-          aria-required="true"
-          aria-invalid="!editDiaSeleccionado">
-          <ng-template ng-label-tmp let-item="item">
-            <div class="text-sm">{{ item ? item.NOMBRE_DIA : 'Seleccionar día' }}</div>
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item">
-            <div class="text-sm" aria-label="Opción de día">{{ item.NOMBRE_DIA }}</div>
-          </ng-template>
-        </ng-select>
+        <!-- Dropdown personalizado para Día de Edición -->
+                      <div class="dropdown-container">
+          <button 
+            type="button"
+            (click)="toggleDropdownEditDia()"
+            class="dropdown-button w-full min-h-[48px]"
+            aria-label="Seleccionar día para editar"
+            aria-required="true"
+            aria-invalid="!editDiaSeleccionado">
+            <span>{{ getSelectedEditDiaName() || 'Seleccionar día' }}</span>
+            <svg class="dropdown-arrow" [class.open]="dropdownEditDiaOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div *ngIf="dropdownEditDiaOpen" class="dropdown-menu">
+            <div class="dropdown-search">
+              <input 
+                type="text"
+                [(ngModel)]="searchTermEditDia"
+                name="searchEditDia"
+                placeholder="Buscar día..."
+                (click)="$event.stopPropagation()"
+                (input)="$event.stopPropagation()">
+            </div>
+            <div class="dropdown-options">
+              <div *ngFor="let item of getFilteredEditDias()" 
+                   class="dropdown-option"
+                   (click)="selectEditDia(item)">
+                {{ item.NOMBRE_DIA }}
+              </div>
+              <div *ngIf="getFilteredEditDias().length === 0 && searchTermEditDia" 
+                   class="dropdown-option disabled">
+                No se encontraron días que coincidan con "{{ searchTermEditDia }}"
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Aula -->
@@ -916,27 +1016,44 @@
             Aula:
           </div>
         </label>
-        <ng-select
-          id="edit-aula-select"
-          [items]="aulas"
-          bindLabel="NOMBRE_AULA"
-          bindValue="ID_AULA"
-          [(ngModel)]="editAulaSeleccionada"
-          name="editAula"
-          placeholder="Seleccionar aula"
-          [searchable]="true"
-          [clearable]="false"
-          class="w-full min-h-[48px]"
-          aria-label="Seleccionar aula para editar"
-          aria-required="true"
-          aria-invalid="!editAulaSeleccionada">
-          <ng-template ng-label-tmp let-item="item">
-            <div class="text-sm" aria-label="Opción de aula">{{ item ? item.NOMBRE_AULA : 'Seleccionar aula' }}</div>
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item">
-            <div class="text-sm" aria-label="Opción de aula">{{ item.NOMBRE_AULA }}</div>
-          </ng-template>
-        </ng-select>
+        <!-- Dropdown personalizado para Aula de Edición -->
+                      <div class="dropdown-container">
+          <button 
+            type="button"
+            (click)="toggleDropdownEditAula()"
+            class="dropdown-button w-full min-h-[48px]"
+            aria-label="Seleccionar aula para editar"
+            aria-required="true"
+            aria-invalid="!editAulaSeleccionada">
+            <span>{{ getSelectedEditAulaName() || 'Seleccionar aula' }}</span>
+            <svg class="dropdown-arrow" [class.open]="dropdownEditAulaOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div *ngIf="dropdownEditAulaOpen" class="dropdown-menu">
+            <div class="dropdown-search">
+              <input 
+                type="text"
+                [(ngModel)]="searchTermEditAula"
+                name="searchEditAula"
+                placeholder="Buscar aula..."
+                (click)="$event.stopPropagation()"
+                (input)="$event.stopPropagation()">
+            </div>
+            <div class="dropdown-options">
+              <div *ngFor="let item of getFilteredEditAulas()" 
+                   class="dropdown-option"
+                   (click)="selectEditAula(item)">
+                {{ item.NOMBRE_AULA }}
+              </div>
+              <div *ngIf="getFilteredEditAulas().length === 0 && searchTermEditAula" 
+                   class="dropdown-option disabled">
+                No se encontraron aulas que coincidan con "{{ searchTermEditAula }}"
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
