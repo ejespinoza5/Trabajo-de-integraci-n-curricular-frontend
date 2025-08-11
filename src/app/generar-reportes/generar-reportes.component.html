@@ -27,7 +27,7 @@
       
       <!-- Botón de Configuración en la esquina superior derecha -->
       <button
-        *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR']) || (observacion && usuarioService.tieneRol(['COORDINADOR']))"
+        *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'ADMINISTRADOR','COORDINADOR','VICERRECTOR']) || (observacion && usuarioService.tieneRol(['COORDINADOR']))"
         class="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         (click)="abrirModalConfiguracion()">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -10,11 +10,19 @@ import { NotificationService } from '../notificacion.service';
 })
 export class InicioComponent implements OnInit {
   dashboardData: any = null;
-   loading: boolean = true;
+  loading: boolean = true;
   error: string = '';
-constructor(public usuarioService: AuthService, private router:Router, private notificationService: NotificationService){}
+  nombreCarrera: string = '';
+  mostrarCarrera: boolean = false;
+  carrerasDocente: any[] = [];
+  mostrarCarrerasDocente: boolean = false;
+  carrerasExpandidas: boolean = false;
+
+  constructor(public usuarioService: AuthService, private router:Router, private notificationService: NotificationService){}
 ngOnInit(): void {
   this.cargarDashboard();
+  this.cargarCarrera();
+  this.cargarCarrerasDocente();
 }
 
   cargarDashboard(): void {
@@ -32,6 +40,53 @@ ngOnInit(): void {
         this.notificationService.showError('Error al cargar el dashboard');
       }
     });
+  }
+
+  cargarCarrera(): void {
+    // Verificar si el usuario es coordinador o estudiante
+    const idRol = this.usuarioService.ObtenerIdRol();
+    if (idRol === 17 || idRol === 14) { // 17 = COORDINADOR, 14 = ESTUDIANTE
+      const idCarrera = this.usuarioService.obtenerIdCarrera();
+      if (idCarrera) {
+        this.usuarioService.getCarreraById(idCarrera).subscribe({
+          next: (data) => {
+            this.nombreCarrera = data.NOMBRE_CARRERAS.toUpperCase() || '';
+            this.mostrarCarrera = true;
+          },
+          error: (error) => {
+            console.error('Error al cargar la carrera:', error);
+            this.mostrarCarrera = false;
+          }
+        });
+      } else {
+        this.mostrarCarrera = false;
+      }
+    } else {
+      this.mostrarCarrera = false;
+    }
+  }
+
+  cargarCarrerasDocente(): void {
+    // Verificar si el usuario es docente
+    const idRol = this.usuarioService.ObtenerIdRol();
+    if (idRol === 15) { // 15 = DOCENTE
+      this.usuarioService.getCarreraDocentesById().subscribe({
+        next: (data) => {
+          this.carrerasDocente = data || [];
+          this.mostrarCarrerasDocente = this.carrerasDocente.length > 0;
+        },
+        error: (error) => {
+          console.error('Error al cargar las carreras del docente:', error);
+          this.mostrarCarrerasDocente = false;
+        }
+      });
+    } else {
+      this.mostrarCarrerasDocente = false;
+    }
+  }
+
+  toggleCarreras(): void {
+    this.carrerasExpandidas = !this.carrerasExpandidas;
   }
 // Función para navegar a las rutas
   navegarA(ruta: string): void {

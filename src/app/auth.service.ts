@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   obtenerIdCarrera(): number | null {
-  if (this.ObtenerIdRol() === 17) {
+  if (this.ObtenerIdRol() === 17 || 14 ) {
     const token = this.obtenerToken();
     if (!token) return null;
 
@@ -77,6 +77,38 @@ export class AuthService {
 
   return null; // En caso de que el rol no sea 17
 }
+
+  obtenerPeriodoId(): number | null {
+    const token = this.obtenerToken();
+    if (!token) return null;
+
+    try {
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) return null;
+
+      const payload = JSON.parse(atob(tokenParts[1]));
+      return payload.periodoId;
+    } catch (error) {
+      console.error('Error al decodificar el token', error);
+      return null;
+    }
+  }
+
+  obtenerIdDocente(): number | null {
+    const token = this.obtenerToken();
+    if (!token) return null;
+
+    try {
+      const tokenParts = token.split('.');
+      if (tokenParts.length !== 3) return null;
+
+      const payload = JSON.parse(atob(tokenParts[1]));
+      return payload.id2; // El id2 en el token corresponde al ID del docente
+    } catch (error) {
+      console.error('Error al decodificar el token', error);
+      return null;
+    }
+  }
 
 
   guardarToken(token: string) {
@@ -97,10 +129,18 @@ export class AuthService {
     const headers = this.getAuthHeaders();
     return this.http.get(`${this.apiUrl}/usuario/${id}`, { headers });
   }
+  getCarreraById(id: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/carrera/${id}`, { headers });
+  }
+  getCarreraDocentesById(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/carreras-docente`, { headers });
+  }
 
   getCoordinadorById(id: number): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get(`${this.apiUrl}/coordinador/${id}`, { headers });
+    return this.http.get(`${this.apiUrl}/coordinadores/${id}`, { headers });
   }
   getRolNombre(): string | null {
     const rol = this.ObtenerIdRol();

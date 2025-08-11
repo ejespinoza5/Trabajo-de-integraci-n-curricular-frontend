@@ -15,6 +15,7 @@ export class PrincipalComponent implements OnInit {
   isInicioPage: boolean = false;
   nombreUsuario: string = '';
   apellidoUsuario: string = '';
+  imagenUsuario: string = '';
   mostrarMenuUsuario: boolean = false;
   isMobile: boolean = false;
   mobileMenuOpen: boolean = false;
@@ -95,6 +96,8 @@ export class PrincipalComponent implements OnInit {
         next: (data) => {
           this.nombreUsuario = data.NOMBRE_COORDINADOR.toUpperCase();
           this.apellidoUsuario = data.APELLIDO_COORDINADOR.toUpperCase();
+          // Asignar imagen del coordinador usando el mismo campo
+          this.imagenUsuario = data.IMAGEN_COORDINADOR || '';
         },
         error: (err) => {
         }
@@ -107,6 +110,7 @@ export class PrincipalComponent implements OnInit {
         next: (data) => {
           this.nombreUsuario = data.NOMBRES_USUARIOS.toUpperCase();
           this.apellidoUsuario = data.APELLIDOS_USUARIOS.toUpperCase();
+          this.imagenUsuario = data.IMAGEN_USUARIOS || '';
         },
         error: (err) => {
         }
@@ -260,4 +264,11 @@ toggleDarkMode(): void {
     this.configMenuOpen = false;
   }
 
+  // Método para manejar errores de carga de imagen
+  onImageError(event: any): void {
+    // Si la imagen falla al cargar, limpiar la URL para mostrar el ícono por defecto
+    this.imagenUsuario = '';
+    // Forzar la detección de cambios para actualizar la vista
+    this.cdr.detectChanges();
+  }
 }

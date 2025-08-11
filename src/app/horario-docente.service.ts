@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from './api-config';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { API_BASE_URL } from './api-config';
 export class HorarioDocenteService {
 private apiUrl = API_BASE_URL;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -21,13 +22,27 @@ private apiUrl = API_BASE_URL;
 
   //obtener horario
 obtenerHorarioDocente(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/horario-docente`, {
+    const periodoId = this.authService.obtenerPeriodoId();
+    const docenteId = this.authService.obtenerIdDocente();
+    
+    if (!periodoId || !docenteId) {
+      throw new Error('No se pudo obtener el periodoId o docenteId del token');
+    }
+
+    return this.http.get<any[]>(`${this.apiUrl}/horario-docente?periodoId=${periodoId}&docenteId=${docenteId}`, {
       headers: this.getAuthHeaders()
     });
   }
    //Obtener pdf docente
    generarPdfDocente(): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/pdf-docente`, {
+    const periodoId = this.authService.obtenerPeriodoId();
+    const docenteId = this.authService.obtenerIdDocente();
+    
+    if (!periodoId || !docenteId) {
+      throw new Error('No se pudo obtener el periodoId o docenteId del token');
+    }
+
+    return this.http.get(`${this.apiUrl}/pdf-docente?periodoId=${periodoId}&docenteId=${docenteId}`, {
       headers: this.getAuthHeaders(),
       responseType: 'blob'
     });

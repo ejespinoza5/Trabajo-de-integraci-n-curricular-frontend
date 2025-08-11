@@ -43,10 +43,22 @@
           <!-- Avatar y datos con diseño moderno -->
           <div class="flex items-center space-x-3 group">
             <div class="relative">
+              <!-- Avatar con imagen del usuario o ícono por defecto -->
               <div
-                class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                  class="w-6 h-6 text-white">
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 overflow-hidden">
+                <!-- Imagen del usuario si existe -->
+                <img *ngIf="imagenUsuario && imagenUsuario.trim() !== ''" 
+                     [src]="imagenUsuario" 
+                     [alt]="nombreUsuario + ' ' + apellidoUsuario"
+                     class="w-full h-full object-cover"
+                     (error)="onImageError($event)">
+                <!-- Ícono por defecto si no hay imagen -->
+                <svg *ngIf="!imagenUsuario || imagenUsuario.trim() === ''" 
+                     xmlns="http://www.w3.org/2000/svg" 
+                     fill="none" 
+                     viewBox="0 0 24 24" 
+                     stroke="currentColor"
+                     class="w-6 h-6 text-white">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -410,7 +422,7 @@
           <nav class="p-4">
             <ul class="space-y-2">
               <!-- INICIO -->
-              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR'])">
+              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ESTUDIANTE', 'DOCENTE', 'ADMINISTRADOR','VICERRECTOR'])">
                 <a [routerLink]="['/inicio/bienvenida']"
                    routerLinkActive="bg-verde-claro text-white"
                    [routerLinkActiveOptions]="{ exact: true }"
@@ -474,7 +486,7 @@
               </li>
 
               <!-- Generar Reportes -->
-              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR'])">
+              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR', 'COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'])">
                 <a [routerLink]="['/inicio/generar-reporte']"
                    routerLinkActive="bg-verde-claro text-white"
                    [routerLinkActiveOptions]="{ exact: true }"
@@ -490,7 +502,7 @@
               </li>
 
               <!-- Ver Horarios -->
-              <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR'])">
+              <li *ngIf="usuarioService.tieneRol(['COORDINADOR','SUPERADMINISTRADOR', 'ADMINISTRADOR','VICERRECTOR'])">
                 <a [routerLink]="['/inicio/ver-horario']"
                    routerLinkActive="bg-verde-claro text-white"
                    [routerLinkActiveOptions]="{ exact: true }"
@@ -506,7 +518,7 @@
               </li>
 
               <!-- Ver Horarios Docentes -->
-              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR'])">
+              <li *ngIf="usuarioService.tieneRol(['SUPERADMINISTRADOR','COORDINADOR', 'ADMINISTRADOR','VICERRECTOR'])">
                 <a [routerLink]="['/inicio/ver-horario-docente']"
                    routerLinkActive="bg-verde-claro text-white"
                    [routerLinkActiveOptions]="{ exact: true }"
